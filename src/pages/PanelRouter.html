@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>District 05 Panel</title>
+<script src="/codes/scripts.js" defer></script>
+
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0b0f14;
+  color:white;
+}
+
+.panel{
+  padding:40px;
+}
+
+h1{
+  font-size:26px;
+  margin-bottom:10px;
+}
+
+.back{
+  margin-top:30px;
+  font-size:12px;
+  color:#3b82f6;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* 🔥 PANEL COMPONENTS (later aparte files mogelijk) */
+
+function BurgerPanel(){
+  return `
+    <div class="panel">
+      <h1>Burger Panel</h1>
+      <p>Welkom burger in het GMS systeem.</p>
+      <div class="back" onclick="goRoles()">← Terug naar diensten</div>
+    </div>
+  `;
+}
+
+function PolitiePanel(){
+  return `
+    <div class="panel">
+      <h1>Politie MDT</h1>
+      <p>Meldingen / surveillance / database.</p>
+      <div class="back" onclick="goRoles()">← Terug naar diensten</div>
+    </div>
+  `;
+}
+
+function BrandweerPanel(){
+  return `
+    <div class="panel">
+      <h1>Brandweer MDT</h1>
+      <p>Brandmeldingen en inzet.</p>
+      <div class="back" onclick="goRoles()">← Terug naar diensten</div>
+    </div>
+  `;
+}
+
+function AmbulancePanel(){
+  return `
+    <div class="panel">
+      <h1>Ambulance MDT</h1>
+      <p>Medische meldingen.</p>
+      <div class="back" onclick="goRoles()">← Terug naar diensten</div>
+    </div>
+  `;
+}
+
+
+/* 🔥 PANEL MAP */
+const PANEL_MAP = {
+  burger: BurgerPanel,
+  politie: PolitiePanel,
+  brandweer: BrandweerPanel,
+  ambulance: AmbulancePanel
+};
+
+
+/* 🔥 ROUTER */
+function loadPanel(){
+
+  let path = window.location.pathname;
+
+  // verwacht: /panel/politie.html of /panel/politie
+  let role =
+    path.split("/panel/")[1]
+      ?.replace(".html","")
+      ?.replace("/","");
+
+  if(!role){
+    role = sessionStorage.getItem("role");
+  }
+
+  if(!role || !PANEL_MAP[role]){
+    window.location.href = "/roles.html";
+    return;
+  }
+
+  sessionStorage.setItem("role", role);
+
+  const panelHtml = PANEL_MAP[role]();
+  document.getElementById("app").innerHTML = panelHtml;
+
+}
+
+
+/* back */
+function goRoles(){
+  window.location.href = "/roles.html";
+}
+
+/* first load */
+loadPanel();
+
+/* SPA support (als je later history.pushState gebruikt) */
+window.onpopstate = loadPanel;
+
+</script>
+
+</body>
+</html>

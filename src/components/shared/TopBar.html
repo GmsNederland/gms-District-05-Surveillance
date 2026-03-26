@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D05 GMS TopBar</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/codes/topbar.js" defer></script>
+</head>
+<body>
+
+  <div id="topbar">
+
+    <!-- LEFT: Logo + Service + Roepnummer -->
+    <div class="left">
+      <span class="logo">D05·GMS</span>
+
+      <span id="service">ERROR</span>
+
+      <span class="divider"></span>
+
+      <span id="roepnummer" onclick="editRnr()">RNR instellen</span>
+      <input type="text" id="rnrInput" style="display:none" placeholder="Roepnummer...">
+    </div>
+
+    <!-- CENTER: Connection indicators -->
+    <div class="center" style="display:flex; gap:15px; align-items:center;">
+
+      <!-- API offline -->
+      <span class="conn offline" style="display:flex; align-items:center; gap:5px;">
+        <img src="https://www.svgrepo.com/show/535742/wifi-slash.svg" alt="Offline" width="16" height="16">
+        API
+      </span>
+
+      <!-- RBLX offline -->
+      <span class="conn offline" style="display:flex; align-items:center; gap:5px;">
+        <img src="https://www.svgrepo.com/show/535742/wifi-slash.svg" alt="Offline" width="16" height="16">
+        RBLX
+      </span>
+
+      <!-- RTDB online -->
+      <span class="conn offline" style="display:flex; align-items:center; gap:5px;">
+        <img src="https://www.svgrepo.com/show/533744/wifi-exclamation.svg" alt="Online" width="16" height="16">
+        RTDB
+      </span>
+
+    </div>
+
+    <div class="middel">
+      <span id="clock"></span>
+    </div>
+
+    <!-- RIGHT: Unit status, clock, user -->
+    <div class="right">
+
+      <div class="statusBox">
+        <button onclick="toggleStatus()" id="statusBtn">
+          <div class="dot online"></div>Beschikbaar ▼
+        </button>
+        <div id="statusMenu" class="menu">
+            <div onclick="setStatus('Beschikbaar', 'online')"><div class="dot online"></div> Beschikbaar</div>
+            <div onclick="setStatus('Onderweg', 'busy')"><div class="dot busy"></div> Onderweg</div>
+            <div onclick="setStatus('Ter plaatse', 'connecting')"><div class="dot connecting"></div> Ter plaatse</div>
+            <div onclick="setStatus('Niet beschikbaar', 'offline')"><div class="dot offline"></div> Niet beschikbaar</div>
+        </div>
+      </div>
+
+      <span id="clock"></span>
+
+      <span id="user">agent@test.nl</span>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Close status menu when clicking outside
+    document.addEventListener('click', e => {
+      const menu = document.getElementById('statusMenu');
+      const btn = document.getElementById('statusBtn');
+      if(!menu.contains(e.target) && e.target !== btn) {
+        menu.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

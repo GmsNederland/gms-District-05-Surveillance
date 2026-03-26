@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Broadcast Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; margin: 0; padding: 20px; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
+    .panel { background: white; border-radius: 8px; width: 100%; max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .panel-header { padding: 12px; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+    .panel-body { padding: 12px; overflow-y: auto; flex: 1; }
+    .broadcast-types { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+    .bt-button { padding: 8px; border-radius: 4px; border: 1px solid #ccc; background: #eee; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .bt-button.selected { border-color: #007bff; background: #cce5ff; }
+    .send-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .send-form input, .send-form textarea { padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 100%; font-size: 12px; }
+    .send-form textarea { resize: none; height: 60px; }
+    .send-button { padding: 8px; border: none; border-radius: 4px; background: #007bff; color: white; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .send-button:disabled { background: #aaa; cursor: not-allowed; }
+    .confirmation { background: #d4edda; border: 1px solid #c3e6cb; padding: 8px; border-radius: 4px; color: #155724; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .broadcast-log { font-size: 12px; }
+    .broadcast-item { border: 1px solid #ccc; border-radius: 4px; padding: 6px; margin-bottom: 6px; background: #f9f9f9; }
+    .broadcast-item .header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; }
+    .close-button { background: none; border: none; cursor: pointer; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="broadcast-panel">
+  <div class="panel">
+    <div class="panel-header">
+      <div>⚠️ Alarm & Broadcast Systeem</div>
+      <button class="close-button" id="close-panel">✖️</button>
+    </div>
+    <div class="panel-body">
+      <div id="confirmation" class="confirmation" style="display:none">✅ Broadcast verzonden!</div>
+      <div class="broadcast-types" id="broadcast-types"></div>
+      <div class="send-form" id="send-form" style="display:none">
+        <input type="text" id="broadcast-title" placeholder="Titel van broadcast..." />
+        <textarea id="broadcast-message" placeholder="Bericht..."></textarea>
+        <button id="send-button" class="send-button">📤 Broadcast Verzenden</button>
+      </div>
+      <div class="broadcast-log">
+        <div style="font-weight:bold; margin-bottom:4px;">Broadcast Log</div>
+        <div id="broadcast-log-items">Geen broadcasts</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Voorbeelddata
+  const BROADCAST_TYPES = [
+    { key: 'burgernet', label: 'Burgernet', icon: '👤' },
+    { key: 'nl_alert', label: 'NL-Alert', icon: '📱' },
+    { key: 'amber_alert', label: 'Amber Alert', icon: '🟠' },
+    { key: 'sirene', label: 'Sirene / Luchtalarm', icon: '🔴' },
+    { key: 'pager_politie', label: 'P2000 Politie', icon: '🔵' },
+    { key: 'pager_ambulance', label: 'P2000 Ambulance', icon: '🟡' },
+    { key: 'pager_brandweer', label: 'P2000 Brandweer', icon: '🔴' },
+  ];
+
+  let broadcasts = [];
+  let selectedType = null;
+
+  const broadcastTypesDiv = document.getElementById('broadcast-types');
+  const sendForm = document.getElementById('send-form');
+  const titleInput = document.getElementById('broadcast-title');
+  const messageInput = document.getElementById('broadcast-message');
+  const sendButton = document.getElementById('send-button');
+  const confirmationDiv = document.getElementById('confirmation');
+  const broadcastLogDiv = document.getElementById('broadcast-log-items');
+  const closePanelBtn = document.getElementById('close-panel');
+  const panel = document.getElementById('broadcast-panel');
+
+  // Maak buttons voor broadcast types
+  BROADCAST_TYPES.forEach(bt => {
+    const btn = document.createElement('button');
+    btn.className = 'bt-button';
+    btn.innerHTML = `${bt.icon} ${bt.label}`;
+    btn.onclick = () => {
+      selectedType = bt.key;
+      document.querySelectorAll('.bt-button').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      sendForm.style.display = 'flex';
+    };
+    broadcastTypesDiv.appendChild(btn);
+  });
+
+  sendButton.onclick = () => {
+    if (!selectedType || !titleInput.value.trim() || !messageInput.value.trim()) return;
+
+    // Simuleer verzenden
+    const broadcast = {
+      id: broadcasts.length + 1,
+      type: selectedType,
+      title: titleInput.value.trim(),
+      message: messageInput.value.trim(),
+      created_date: new Date().toISOString()
+    };
+    broadcasts.unshift(broadcast);
+
+    // Toon confirmation
+    const bt = BROADCAST_TYPES.find(b => b.key === selectedType);
+    confirmationDiv.textContent = `✅ Broadcast "${bt.label}" succesvol verzonden!`;
+    confirmationDiv.style.display = 'flex';
+    setTimeout(() => { confirmationDiv.style.display = 'none'; }, 3000);
+
+    // Reset form
+    selectedType = null;
+    document.querySelectorAll('.bt-button').forEach(b => b.classList.remove('selected'));
+    titleInput.value = '';
+    messageInput.value = '';
+    sendForm.style.display = 'none';
+
+    renderBroadcastLog();
+  };
+
+  function renderBroadcastLog() {
+    if (broadcasts.length === 0) {
+      broadcastLogDiv.textContent = 'Geen broadcasts';
+      return;
+    }
+    broadcastLogDiv.innerHTML = '';
+    broadcasts.forEach(b => {
+      const bt = BROADCAST_TYPES.find(t => t.key === b.type);
+      const div = document.createElement('div');
+      div.className = 'broadcast-item';
+      div.innerHTML = `
+        <div class="header">${bt.icon} ${bt.label} <span style="font-family:monospace; font-size:10px;">${new Date(b.created_date).toLocaleTimeString('nl-NL')}</span></div>
+        <div>${b.title}</div>
+        <div style="color:#666; font-size:11px;">${b.message}</div>
+      `;
+      broadcastLogDiv.appendChild(div);
+    });
+  }
+
+  closePanelBtn.onclick = () => {
+    panel.style.display = 'none';
+  };
+
+</script>
+
+</body>
+</html>

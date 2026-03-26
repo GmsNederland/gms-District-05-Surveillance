@@ -1,0 +1,291 @@
+/* TopBar — Persistent header */
+#topbar {
+  height: 44px;
+  background: #0f141a;
+  /* background: gray; */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  font-size: 11px;
+  color: #fff;
+  font-family: monospace;
+}
+
+#topbar .left,
+#topbar .center,
+#topbar .right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#topbar .center {
+  margin: auto;
+}
+
+#topbar .right {
+  margin-left: auto;
+}
+
+#topbar .logo {
+  letter-spacing: 3px;
+  opacity: 0.6;
+}
+
+#topbar .divider {
+  width: 1px;
+  height: 12px;
+  background: white;
+  opacity: 0.2;
+}
+
+#topbar .conn {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+#topbar .conn.offline {
+  opacity: 0.3;
+}
+
+.statusBox {
+  position: relative;
+  display: inline-block;
+}
+
+.statusBox button {
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statusBox .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    margin-top: 0.25rem;
+    min-width: 160px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.statusBox .menu div {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statusBox .menu div:hover {
+    background-color: #f3f4f6;
+}
+
+.dot {
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+.online { background-color: #22c55e;}
+.offline { background-color: #6b7280;}
+.busy { background-color: #f97316;}
+.alert { background-color: #ef4444;}
+.connecting { background-color: #2563eb;}
+
+#rnrInput {
+  font-size: 11px;
+  font-family: monospace;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid #3b82f6;
+  outline: none;
+  width: 80px;
+}
+
+#clock {
+  font-family: monospace;
+  font-size: 11px;
+}
+
+#user {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* <!--meldkamer */
+/* SIDEBAR */
+.sidebar {
+  width: 56px;          /* smal icon sidebar */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  padding: 12px 0;
+  gap: 4px;
+  position: fixed; 
+  left: 0;
+  /* top: 0; */
+  z-index: 50;
+}
+
+.sidebar b {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(0, 123, 255, 0.2);
+    margin-bottom: 6px;
+}
+
+/* Divider line */
+.sidebar .divider {
+  width: 32px;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 6px 0;
+}
+
+/* Buttons */
+.sidebar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.sidebar-btn.active {
+  background: rgba(0,123,255,0.2);
+  border-color: rgba(0,123,255,0.3);
+  color: #007bff;
+}
+
+.sidebar-btn.danger {
+  color: #ff4d4f;
+}
+
+.sidebar-btn.danger:hover {
+  background: rgba(255,77,79,0.2);
+}
+
+/* Flex spacer to push logout to bottom */
+.flex-spacer {
+  flex: 1;
+}
+
+/* Icons */
+.sidebar svg.icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* //emtystate */
+.empty-state{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:48px 0;
+}
+
+.empty-icon{
+  height:40px;
+  width:40px;
+  border-radius:8px;
+  background:#2a2a2a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:12px;
+  color:#9ca3af;
+}
+
+.empty-title{
+  font-size:14px;
+  font-weight:500;
+  color:#9ca3af;
+  margin-bottom:4px;
+}
+
+.empty-message{
+  font-size:12px;
+  color:#6b7280;
+  max-width:260px;
+}
+
+/* burgerdeel */
+.body{
+  margin:0;
+  background:#0b0f14;
+  color:white;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:30px;
+}
+
+.panel{
+  background:rgba(255,255,255,0.04);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.input,select,textarea{
+  width:100%;
+  padding:7px;
+  margin-bottom:10px;
+  background:#05070a;
+  border:1px solid rgba(255,255,255,0.1);
+  color:white;
+  font-size:12px;
+}
+
+.button{
+  width:100%;
+  padding:10px;
+  background:#dc2626;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+.success{
+  text-align:center;
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>District 05 — Authenticatie</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#0b0f14;
+  color:white;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Grid background */
+.grid{
+  position:absolute;
+  inset:0;
+  opacity:0.03;
+  background-image:
+    linear-gradient(#3b82f6 1px, transparent 1px),
+    linear-gradient(90deg,#3b82f6 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+/* Scanline */
+.scanline{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.02) 3px
+  );
+}
+
+.container{
+  position:relative;
+  z-index:10;
+  text-align:center;
+}
+
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:12px;
+  background:rgba(59,130,246,0.1);
+  border:1px solid rgba(59,130,246,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:auto;
+}
+
+.logo svg{
+  width:28px;
+  height:28px;
+  fill:#3b82f6;
+}
+
+.brand{
+  margin-top:18px;
+}
+
+.brand h1{
+  font-size:14px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin:0;
+}
+
+.brand p{
+  font-size:11px;
+  color:#9ca3af;
+  margin-top:6px;
+  font-family: monospace;
+}
+
+.loader{
+  margin-top:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.spinner{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid rgba(59,130,246,0.2);
+  border-top:2px solid #3b82f6;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+
+.loader span{
+  font-size:11px;
+  font-family: monospace;
+  color:#9ca3af;
+}
+
+.sysinfo{
+  margin-top:18px;
+  font-size:9px;
+  font-family: monospace;
+  color:rgba(156,163,175,0.4);
+  letter-spacing:2px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="grid"></div>
+<div class="scanline"></div>
+
+<div class="container">
+
+  <div class="logo">
+    <!-- Shield icon -->
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2L4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z"/>
+    </svg>
+  </div>
+
+  <div class="brand">
+    <h1>District 05</h1>
+    <p>Gemeenschappelijke Meldkamer Systeem</p>
+  </div>
+
+  <div class="loader">
+    <div class="spinner"></div>
+    <span>Authenticatie...</span>
+  </div>
+
+  <div class="sysinfo">
+    GMS v2.0 · MDT · CAD
+  </div>
+
+</div>
+
+<script>
+/* Fake auth redirect simulation 🚓 */
+setTimeout(() => {
+  window.location.href = "/src/pages/rolenselect.html"
+}, 2500);
+</script>
+
+</body>
+</html>

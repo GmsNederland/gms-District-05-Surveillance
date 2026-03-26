@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nl" class="h-full bg-gray-900 text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>District 05 | Login</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #6366f1);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+    }
+
+    .form-input {
+      @apply w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
+             text-white text-sm focus:outline-none transition;
+             color: black;
+    }
+
+    .form-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .inputfeils {
+      width: 80%;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: black;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body class="h-screen flex items-center justify-center">
+
+  <div class="glass px-12 py-10 max-w-md w-full border border-blue-900 neon-blue animate-fade-in">
+
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-full mx-auto mb-4 flex items-center justify-center">
+        <span class="text-2xl font-bold">D05</span>
+      </div>
+
+      <h1 class="text-2xl font-bold">District 05</h1>
+      <p class="text-gray-400 text-sm">Meldkamer | GMS Systeem</p>
+    </div>
+
+    <form class="space-y-4 max-w-sm mx-auto text-center">
+
+      <div>
+        <label class="block text-xs uppercase text-gray-400 mb-1 ">
+          Discord ID
+        </label>
+        <input class="inputfeils" type="text" placeholder="Dsicord-ID" class="form-input" required>
+      </div>
+
+      <div>
+        <label class="block text-xs uppercase text-gray-400 mb-1">
+          Gebruikersnaam
+        </label>
+        <input class="inputfeils" type="text" placeholder="Gebruikersnaam" class="form-input" required>
+      </div>
+
+      <div>
+        <label class="block text-xs uppercase text-gray-400 mb-">
+          Wachtwoord
+        </label>
+        <input class="inputfeils" type="password" placeholder="wachtwoord" class="form-input" required>
+      </div>
+
+      <button id="loginBtn" type="submit"
+        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+        Inloggen
+      </button>
+<!-- inloggen -->
+      <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-lg hidden z-50">
+        Je bent ingelogd!
+      </div>
+      <div class="flex justify-center mt-1">
+        <a href="/src/pages/wachtwoordvergeten.html"
+        class="text-xs text-blue-400 hover:text-blue-300 transition">
+        Wachtwoord vergeten?
+        </a>
+      </div>
+
+    </form>
+
+    <p class="text-center text-gray-500 text-xs mt-6">
+      Officieel systeem voor Nederlandse RP-servers
+    </p>
+<!-- support buttons -->
+    <p class="text-center text-gray-400 text-xs mt-6">
+        Voor support klik hier.
+
+        <a href="https://discord.gg/JPFFRTrkn" target="_blank"
+        class="inline-block mt-3 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-xs font-medium transition-all duration-200 hoven:scale-105">
+                help
+        </a>
+    </p>
+  </div>
+
+<script>
+  document.getElementById('loginBtn').addEventListener('click', function() {
+    const popup = document.getElementById('popup');
+    popup.classList.remove('hidden');
+    setTimeout(() => {
+      popup.classList.add('hidden');
+      window.location.href = '/src/pages/login.html';
+    }, 2000); // 2 seconden zichtbaar
+  });
+</script>
+
+</body>
+</html>

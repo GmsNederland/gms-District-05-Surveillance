@@ -1,0 +1,48 @@
+<div id="dsi-panel" class="panel hidden h-full p-4 overflow-auto bg-gray-900 text-white">
+  <div class="max-w-5xl mx-auto space-y-4">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 py-2">
+      <div class="h-8 w-8 rounded-lg bg-indigo-100 border border-indigo-200 flex items-center justify-center">
+        🛡️
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-white">DSI Panel</p>
+        <p class="text-[11px] text-gray-400 font-mono">Special Intervention Service</p>
+      </div>
+      <div class="ml-auto flex items-center gap-1.5 text-[10px] font-mono text-gray-400/60">
+        <div class="h-1.5 w-1.5 rounded-full bg-gray-400/30"></div>
+        API offline
+      </div>
+    </div>
+
+    <!-- Player Search -->
+    <div class="glass-panel p-4 rounded-lg border border-gray-700 bg-gray-800/50 space-y-2">
+      <h3 class="text-sm font-semibold flex items-center gap-2">🔍 Zoek Speler</h3>
+      <input type="text" placeholder="Voer Roblox/Discord naam in..." class="w-full h-8 px-2 text-xs bg-gray-700 border border-gray-600 font-mono rounded"/>
+      <button class="w-full h-8 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold uppercase tracking-wider mt-1">
+        Zoek
+      </button>
+      <p class="text-[10px] text-gray-400 font-mono mt-1">
+        Voer de naam van de speler in om gegevens te zoeken (FIREBASE integratie vereist).
+      </p>
+    </div>
+
+    <!-- Active Missions / Actions -->
+    <div class="glass-panel p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+      <h3 class="text-sm font-semibold flex items-center gap-2">📋 Actieve Operaties</h3>
+      <p class="text-[11px] text-gray-400 font-mono mt-2">
+        Geen actieve operaties. Wordt geladen zodra API verbinding actief is.
+      </p>
+    </div>
+
+    <!-- Notes / Logs -->
+    <div class="glass-panel p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+      <h3 class="text-sm font-semibold flex items-center gap-2">📝 Notities / Logs</h3>
+      <p class="text-[11px] text-gray-400 font-mono mt-2">
+        Alle DSI logs verschijnen hier zodra de API verbonden is.
+      </p>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>GlassPanel Voorbeeld</title>
+<style>
+body {
+  background: #0b0f14;
+  font-family: system-ui;
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
+
+/* GlassPanel styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+/* Glow-opties per service */
+.service-glow-brandweer { box-shadow: 0 0 12px rgba(255,0,0,0.5); }
+.service-glow-ambulance { box-shadow: 0 0 12px rgba(0,255,120,0.5); }
+.service-glow-politie { box-shadow: 0 0 12px rgba(0,150,255,0.5); }
+
+/* Geen padding */
+.no-padding { padding: 0; }
+</style>
+</head>
+<body>
+
+<h2>GlassPanel Voorbeeld</h2>
+
+<!-- Statisch HTML voorbeeld -->
+<div class="glass-panel service-glow-brandweer">
+  <h3>112 Noodlijn</h3>
+  <p>District 05 Burgerdienst</p>
+</div>
+
+<div class="glass-panel service-glow-ambulance no-padding">
+  <p>Geen padding hier</p>
+</div>
+
+<!-- Dynamisch via JavaScript -->
+<div id="panelContainer"></div>
+
+<script>
+function createGlassPanel(contentHTML, serviceGlow, noPadding=false){
+  const div = document.createElement("div");
+  div.classList.add("glass-panel");
+  if(noPadding) div.classList.add("no-padding");
+  if(serviceGlow) div.classList.add(`service-glow-${serviceGlow}`);
+  div.innerHTML = contentHTML;
+  return div;
+}
+
+// Voorbeeld: voeg dynamisch panel toe
+const container = document.getElementById("panelContainer");
+container.appendChild(
+  createGlassPanel(
+    `<h3>112 Meldingen</h3><p>Hier verschijnt de status van meldingen</p>`,
+    "brandweer"
+  )
+);
+container.appendChild(
+  createGlassPanel(
+    `<h3>EmptyState</h3><p>Geen actieve meldingen</p>`,
+    "ambulance",
+    true
+  )
+);
+</script>
+
+</body>
+</html>

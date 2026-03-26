@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dienst Selectie — District 05</title>
+<link rel="icon" type="image/x-icon" href="/icone/logo.png">
+
+<style>
+body{
+  margin: 0;
+  font-family: system-ui;
+  background: #0b0f14;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* GRID EN SCANLINES */
+.grid{
+  position:absolute;
+  inset:0;
+  opacity:0.02;
+  background-image:
+    linear-gradient(#3b82f6 1px, transparent 1px),
+    linear-gradient(90deg,#3b82f6 1px, transparent 1px);
+  background-size:60px 60px;
+  z-index:0;
+}
+.scanline{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.02) 3px
+  );
+  z-index:1;
+}
+
+/* TOPBAR */
+.topbar{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  padding:12px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  position:relative;
+  z-index:2;
+}
+
+.topbar .brand{
+  font-family: monospace;
+  font-size:12px;
+  letter-spacing:2px;
+  color:#9ca3af;
+}
+
+.topbar .user{
+  font-size:11px;
+  opacity:0.7;
+  font-family: monospace;
+}
+
+.topbar button{
+  background:none;
+  border:none;
+  color: rgba(255,255,255,0.6);
+  font-family: monospace;
+  font-size:11px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.topbar button:hover{ color: #e53935; }
+
+/* MAIN CONTENT */
+.main{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+  position:relative;
+  z-index:2;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:40px;
+}
+.header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: rgba(0, 120, 255, 0.1);
+  border: 1px solid rgba(0, 120, 255, 0.2);
+  margin-bottom:12px;
+  font-size:28px;
+}
+.header h1{
+  font-size:22px;
+  font-weight:600;
+  margin:8px 0;
+}
+.header p{
+  font-size:12px;
+  font-family: monospace;
+  opacity:0.7;
+}
+
+/* ROLE GRID */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 16px;
+  max-width: 960px;
+  margin:0 auto;
+}
+
+.role-card {
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:18px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  display:flex;
+  flex-direction:column;
+}
+.role-card:hover{
+  transform:scale(1.025);
+  border-color: rgba(59,130,246,0.6);
+  box-shadow: 0 12px 30px rgba(37,99,235,0.5);
+}
+
+/* ACCENT BAR */
+.role-card .accent-bar{
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  border-radius:8px 8px 0 0;
+  opacity:0.8;
+}
+
+/* ROLE HEADER */
+.role-card .role-header{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+.role-icon{
+  width:50px; height:50px;
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+  flex-shrink:0;
+  background: rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+}
+.role-text .title{
+  font-size:16px;
+  font-weight:600;
+}
+.role-text .subtitle{
+  font-size:10px;
+  font-family: monospace;
+  opacity:0.6;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.role-text .desc{
+  font-size:12px;
+  opacity:0.7;
+  margin-top:6px;
+}
+.role-chevron{
+  position:absolute;
+  top:16px;
+  right:16px;
+  font-size:16px;
+  opacity:0.3;
+  transition: opacity 0.2s;
+}
+.role-card:hover .role-chevron{ opacity:0.6; }
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  font-size:10px;
+  font-family: monospace;
+  opacity:0.4;
+  margin-top:50px;
+}
+
+/* TOOLTIP */
+.role-card[data-tooltip]:hover::after{
+  content: attr(data-tooltip);
+  position:absolute;
+  bottom:110%;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color:white;
+  font-size:10px;
+  padding:4px 8px;
+  border-radius:6px;
+  white-space: nowrap;
+  opacity:1;
+  pointer-events:none;
+  transition: all 0.2s ease;
+}
+
+</style>
+</head>
+<body>
+
+<div class="grid"></div>
+<div class="scanline"></div>
+
+<div id="topbar-container"></div>
+
+<script>
+  fetch('/src/components/shared/TopBar.html')
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('topbar-container').innerHTML = html;
+    });
+</script>
+
+<div class="main">
+  <div class="header">
+    <div class="header-icon">🚨</div>
+    <h1>Selecteer Dienst</h1>
+    <p id="roleCount"></p>
+  </div>
+
+  <div class="role-grid" id="roleGrid"></div>
+
+  <div class="footer">
+    District 05 Surveillance · GMS/MDT/CAD · API verbinding inactief
+  </div>
+</div>
+
+<script>
+const SERVICES = {
+  politie:{label:"Politie", subLabel:'Wet', description:"Toegang tot meldingen, surveillance en interventies", color:'#0078ff', icon:'👮'},
+  ambulance:{label:"Ambulance", subLabel:'Medisch', description:"Medische meldingen en noodhulp", color:'#00ff78', icon:'🚑'},
+  brandweer:{label:'Brandweer', subLabel:'Nood', description:'HV en Branden', color:'#e53935', icon:'🔥'},
+  burger:{label:"Burger", description:"Basis toegang tot systeem", color:'#9ca3af', icon:'🧑'},
+  meldkamer:{label:"Meldkamer", description:"Toegang voor Meldkamer personeel", color:'#f59e0b', icon:'📟'},
+  admin:{label:"Admin", description: "Alleen voor serverbeheer", color:'#8b5cf6', icon:'🛠️'}
+};
+
+let userRoles = ["brandweer","politie","ambulance","burger","meldkamer","admin"];
+const roleGrid = document.getElementById('roleGrid');
+document.getElementById('roleCount').textContent = `Beschikbare diensten: ${userRoles.length}`;
+
+userRoles.forEach(roleKey=>{
+  const service = SERVICES[roleKey];
+  const card = document.createElement('div');
+  card.className='role-card';
+  card.setAttribute('data-tooltip', service.description);
+  card.innerHTML=`
+    <div class="accent-bar" style="background:${service.color}"></div>
+    <div class="role-header">
+      <div class="role-icon" style="background:${service.color}22;border:1px solid ${service.color}55;">${service.icon}</div>
+      <div class="role-text">
+        <div class="title">${service.label}</div>
+        <div class="subtitle">${service.subLabel || ''}</div>
+        <div class="desc">${service.description}</div>
+      </div>
+      <div class="role-chevron">➡️</div>
+    </div>
+  `;
+  card.onclick = ()=> selectRole(roleKey);
+  roleGrid.appendChild(card);
+});
+
+function selectRole(role){
+  sessionStorage.setItem("role", role);
+  window.location.href = "/src/pages/panels/" + role + ".html";
+}
+</script>
+
+</body>
+</html>

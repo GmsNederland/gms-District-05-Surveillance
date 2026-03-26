@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <script src="/codes/wachtwoordvergetn.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wachtwoord Vergeten</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #6366f1);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007bff;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-top: 1rem;
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Wachtwoord Vergeten</h2>
+        <p>Vul je e-mailadres in om je wachtwoord te resetten.</p>
+        <input type="email" id="email" placeholder="E-mail adres" required>
+        <button onclick="sendResetEmail()">Verstuur reset link</button>
+        <button id="inloggen" type="button">Inloggen</button>
+        <p class="message" id="message"></p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-database-compat.js"></script>
+</body>
+</html>

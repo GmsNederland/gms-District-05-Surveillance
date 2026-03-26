@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <script src="/codes/admin.js" defer></script>
+    <link rel="stylesheet" href="/styleadmin.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GMS District 05 Admin - Ultra Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    
+    <div class="header">
+        <h2>GMS District 05 Admin Panel</h2>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="openTab('users',this)">👤 Gebruikers</div>
+        <div class="tab" onclick="openTab('map',this)">🗺️ Kaart</div>
+        <div class="tab" onclick="openTab('audio',this)">🔊 Audio</div>
+        <div class="tab" onclick="openTab('logs',this)">📜 Logs</div>
+        <div class="tab" onclick="openTab('config',this)">⚙️ Config</div>
+    </div>
+
+    <!-- USERS -->
+    <div id="users" class="panel active">
+        <h3>Gebruikers & Rollen</h3>
+        <input type="text" id="searchUser" placeholder="Zoek gebruiker..." onkeyup="filterUsers()">
+        <select id="roleFilter" onchange="filterUsers()">
+            <option value="">Alle rollen</option>
+            <option value="admin">Admin</option>
+            <option value="member">Lid</option>
+        </select>
+        <table>
+            <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Rol</th>
+                <th>Status</th>
+                <th>Acties</th>
+                <th>Lid sinds</th>
+                <th>Laaste activiteit</th>
+            </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+        <button onclick="addTestUser()">Test gebruiker toevoegen</button>
+    </div>
+
+    <!-- MAP -->
+    <div id="map" class="panel">
+        <h3>Kaartbeheer</h3>
+        <div class="uploadBox" onclick="file.click()">Klik om kaart te uploaden</div>
+        <input type="file" id="file" hidden onchange="previewMap(event)">
+        <img id="preview">
+        <br>
+        <button onclick="uploadMap()">Upload</button>
+        <button onclick="deleteMap()">Verwijder Kaart</button>
+    </div>
+
+    <!-- AUDIO -->
+    <div id="audio" class="panel">
+        <h3>Audio Alerts</h3>
+        <div style="display:flex;gap:14px; flex-wrap:wrap;margin-top:12px;">
+            <button onclick="playTone(1000)">PRIO 1</button>
+            <button onclick="playTone(700)">PRIO 2</button>
+            <button onclick="playTone(400)">PRIO 3</button>
+        </div>
+    </div>
+
+    <!-- LOGS -->
+    <div id="logs" class="panel">
+        <h3>Systeem Logs</h3>
+        <div class="logs" id="logBox"></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div id="config" class="panel">
+        <h1>⚙️ GMS Admin Configuratie</h1>
+        <br>
+        <div class="config-grid">
+            <div class="panelshow">
+                <h3>GMS Configuratie</h3>
+                <br>
+                <label>Max gebruikers: <input type="number" id="maxUsers" value="100"></label><br><br>
+                <label>Discord Webhook URL: <input type="text" id="discordWebhook" placeholder="Webhook URL"></label><br><br>
+                <label>Bot Token: <input type="text" id="botToken" placeholder="Bot Token"></label><br><br>
+                <button onclick="saveConfig()">Opslaan</button>
+            </div>
+            <!--api-->
+            <div class="panelshow">
+                <br>
+                <h3>API Configuratie</h3>
+                <br>
+                <label>API-sleutel</label>
+                <br>
+                <input type="text" id="apikey" placeholder="Zet hier de API_key"><br>
+                <label class="textinfo"> sleutel is uniek voor jouw account. Deel deze niet met anderen.</label>
+                <br>
+                <br>
+                <label>API-URL</label>
+                <br>
+                <input type="text" id="apiurl" placeholder="Zet hier de API_URL"><br>
+                <br>
+                <button id="testConnection"><i class="fas fa-plug mr-2"></i>Test verbinding</button>
+                <button id="newapikey">Nieuwe API Key</button>
+                <br>
+                <button onclick="saveConfig(api, apikey)">Opslaan</button>
+            </div>
+        </div>
+    </div>
+
+    <!--popup bewerken-->
+    <div id="bewerkenpopup" class="popup">
+        <div class="panelshow">
+            <span id="bewerkenpopup" class="close" onclick="closePopup()">&times;</span>
+            <h3>Gebruiker Bewerken</h3>
+            <p>Hier kun je de info van de gebruiker aanpassen.</p>
+            <br>
+            <!--gebruikersnaam-->
+            <div class="field">
+                <label>Gebruikersnaam</label>
+                <input type="text" id="editUserName">
+            </div>
+            <!--wachtwoord-->
+            <div class="field">
+                <label>Wachtwoord:</label>
+                <input type="password" id="editPassword" readonly>
+                <button onclick="showpassword()">Toon|Wijzig</button>
+            </div>
+            <br>
+            <!--diensten-->
+            <div class="field">
+                <label>Dienst | Rol:</label>
+                <select id="editRole">
+                    <option value="Member">Lid</option>
+                    <option value="Admin">Staff</option>
+                    <option value="brandweer">Brandweer</option>
+                    <option value="politie">Politie</option>
+                    <option value="ambulance">Ambulance</option>
+                    <option value="Beheerder">Owner</option>
+                </select>
+            </div>
+            <br>
+            <!--status-->
+            <div class="field">
+                <label>Status:</label>
+                <span id="userStatus"></span>
+                <br>
+            </div>
+            <!--discord-->
+            <div class="field">
+                <label>Discord Account:</label>
+                <span id="userDiscord">Niet gekoppeld</span>
+                <br>
+                <label>Roblox Account:</label>
+                <span id="userRoblox">Niet gekoppeld</span>
+                <br>
+            </div>
+            <!--extra info-->
+            <div class="field">
+                <label>Info over gebruiker:</label>
+                <textarea id="userinfoadmin" placeholder="Type hier uw Bericht"></textarea>
+            </div>
+            <!--buttons-->
+            <div class="actions">
+                <button onclick="save()">Opslaan</button>
+                <button onclick="kickgebruiker()">Kick</button>
+                <button onclick="banUser()">Ban</button>
+                <button onclick="deleterUser()">Verwijder account</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Header</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+    }
+    header {
+      height: 3rem; /* h-12 ~ 48px */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .left, .center, .right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .system-id {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #6b7280; /* muted-foreground */
+    }
+    .service-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #2563eb; /* example primary color */
+    }
+    .divider {
+      width: 1px;
+      height: 1rem;
+      background-color: #d1d5db; /* bg-border */
+    }
+    .status {
+      font-size: 0.75rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 0.25rem;
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    .user-info {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: #6b7280;
+    }
+    .clock {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: #6b7280;
+      font-variant-numeric: tabular-nums;
+    }
+    button.icon-btn {
+      height: 1.75rem;
+      width: 1.75rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    button.icon-btn:hover {
+      color: #dc2626; /* hover color example */
+    }
+    svg {
+      height: 1rem;
+      width: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Left: System ID + Role -->
+    <div class="left">
+      <button class="icon-btn">
+        <!-- ArrowLeft icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <div class="system-id">
+        <!-- Shield icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #2563eb;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l8 4v6c0 5.25-3.75 10-8 12-4.25-2-8-6.75-8-12V6l8-4z"/>
+        </svg>
+        <span>D05-GMS</span>
+      </div>
+      <div class="divider"></div>
+      <span class="service-label">SERVICE</span>
+    </div>
+
+    <!-- Center: Connection status -->
+    <div class="center">
+      <span class="status">API: offline</span>
+      <span class="status">RBLX: offline</span>
+      <span class="status">RTDB: offline</span>
+    </div>
+
+    <!-- Right: User + Clock + Logout -->
+    <div class="right">
+      <span class="user-info">John Doe</span>
+      <span class="clock">12:34:56</span>
+      <button class="icon-btn">
+        <!-- LogOut icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+</body>
+</html>

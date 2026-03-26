@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Main Layout</title>
+  <style>
+    /* Basale styling vergelijkbaar met Tailwind */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #1e1e2f; /* bg-background */
+    }
+    .h-screen { height: 100vh; }
+    .flex { display: flex; }
+    .flex-1 { flex: 1; }
+    .flex-col { flex-direction: column; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-auto { overflow: auto; }
+    .min-w-0 { min-width: 0; }
+    .fixed { position: fixed; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .z-50 { z-index: 50; }
+    .pointer-events-none { pointer-events: none; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #2a2a3f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    /* TopBar */
+    .topbar {
+      height: 50px;
+      background-color: #3a3a5f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      flex-shrink: 0;
+    }
+
+    /* Scanline overlay */
+    .scanline-overlay {
+      background-image: linear-gradient(
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Main content area */
+    main {
+      padding: 1rem;
+      color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="h-screen flex overflow-hidden relative">
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay fixed inset-0 z-50 pointer-events-none"></div>
+
+    <!-- Left sidebar -->
+    <div class="sidebar">
+      <h2>Sidebar</h2>
+      <ul>
+        <li>Dashboard</li>
+        <li>Service Panel</li>
+        <li>Settings</li>
+      </ul>
+    </div>
+
+    <!-- Main area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- TopBar -->
+      <div class="topbar">
+        <h1>TopBar</h1>
+      </div>
+
+      <!-- Main content -->
+      <main>
+        <h2>Inhoud van de pagina</h2>
+        <p>Hier komt de inhoud die in React via &lt;Outlet/&gt; zou worden geladen.</p>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

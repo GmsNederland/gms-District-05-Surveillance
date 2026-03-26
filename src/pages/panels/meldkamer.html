@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meldkamer CAD - Professioneel NL 112 Dispatch</title>
+
+<link rel="stylesheet" href="/stylemk.css">
+
+
+<!--de modules-->
+<script src="/src/lib/dispatchService.js"></script>
+<script src="/src/lib/audioManager.js"></script>
+
+<!-- Leaflet Map CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<!-- Firebase SDK -->
+<script src="/codes/meldkamer.js" defer></script>
+<script src="/codes/App.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+</head>
+<body>  
+  
+  <!-- Topbar -->
+  <div id="topbar">
+    <div> <button id="terugnaarmenu" class="kliknop" type="button">⬅️</button><strong>MELDKAMER</strong> GMS / CAD</div>
+    <div>
+      <span>Centralist: <span id="operator-name">---</span></span>
+      <span class="status-indicator status-wachtend" id="waiting-count">0 wachtend</span>
+      <span class="status-indicator status-actief" id="active-count">0 actief</span>
+      <span class="status-indicator status-eenheid" id="units-count">0 eenheden</span>
+    </div>
+    <div>
+      <select id="region-selector">
+        <option>Alle regio's</option>
+        <option>Test</option>
+      </select>
+      <button id="mute-toggle">🔊</button>
+      <span id="connection-status">📶</span>
+      <time id="clock"></time>
+    </div>
+  </div>
+
+  <div id="container">
+    <section id="left-panel">
+      <h2>112 Meldingen</h2>
+      <div id="calls-list"></div>
+    </section>
+
+    <section id="center-panel">
+      <div id="map"></div>
+      <div id="map-stats">
+        Live Tactical Map &bull; <span id="map-units">0</span> eenheden &bull; <span id="map-incidents">0</span> incidenten
+      </div>
+    </section>
+    
+
+    <section id="right-panel">
+      <div class="tabs-list">
+        <div class="tab-trigger active" data-tab="incidents">Incidenten</div>
+        <div class="tab-trigger" data-tab="units">Eenheden</div>
+        <div class="tab-trigger" data-tab="systemen">systemen</div>
+      </div>
+
+      <div class="tab-content active" id="incidents"></div>
+      <div class="tab-content" id="units"></div>
+      <div class="tab-content" id="systemen"></div>
+      
+    </section>
+
+    <button onclick="audioManager.playDispatchConfirm()" id="bottom-left-btn">⚠ ALARM & BROADCAST</button>
+    <button onclick="audioManager.playDispatchConfirm()" id="bottom-right-btn">+ Nieuw Incident</button>
+  </div>`
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+  <div id="create-incident" class="modal hidden">
+    <div class="modal-content">
+      <h2>Nieuw Incident Aanmaken</h2>
+      <form id="incident-form">
+        <label>Titel / Omschrijving *</label>
+        <input type="text" id="incident-title" placeholder="Bijv. Brand woning, Ongeval A10..." required />
+
+        <label>Type incident</label>
+        <select id="incident-type">
+          <!-- opties komen uit INCIDENT_TYPES -->
+        </select>
+
+        <label>Prioriteit</label>
+        <select id="incident-priority">
+          <option value="1">PRIO 1 — Spoed</option>
+          <option value="2" selected>PRIO 2 — Dringend</option>
+          <option value="3">PRIO 3 — Gepland</option>
+        </select>
+
+        <label>Dienst</label>
+        <select id="incident-service">
+          <!-- opties komen uit SERVICE_LABELS -->
+        </select>
+
+        <label>Regio</label>
+        <select id="incident-region">
+          <!-- opties komen uit REGIONS -->
+        </select>
+
+        <label>Locatie</label>
+        <input type="text" id="incident-location" placeholder="Adres of locatiebeschrijving" />
+
+        <label>Melder ID</label>
+        <input type="text" id="incident-caller" placeholder="Roblox gebruikersnaam / telefoonnummer" />
+
+        <div class="form-actions">
+          <button type="button" id="incident-cancel">Annuleren</button>
+          <button type="submit" id="incident-submit">Incident Aanmaken</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<script type="module" src="/src/components/meldkamer/incidentBoard.js"></script>
+<script type="module" src="/src/components/meldkamer/rightSidebar.js"></script>
+</body>
+</html>

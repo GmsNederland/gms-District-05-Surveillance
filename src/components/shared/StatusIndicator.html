@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status Indicator</title>
+  <style>
+    body {
+      font-family: monospace, sans-serif;
+    }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dot {
+      border-radius: 50%;
+      background-color: gray; /* default offline */
+      flex-shrink: 0;
+    }
+    /* Sizes */
+    .dot-xs { height: 0.375rem; width: 0.375rem; }   /* 1.5 * 0.25rem */
+    .dot-sm { height: 0.5rem; width: 0.5rem; }       /* 2 * 0.25rem */
+    .dot-md { height: 0.625rem; width: 0.625rem; }   /* 2.5 * 0.25rem */
+    .dot-lg { height: 0.75rem; width: 0.75rem; }     /* 3 * 0.25rem */
+
+    /* Colors */
+    .online { background-color: #22c55e; }       /* bg-ambulance */
+    .offline { background-color: #6b7280; }      /* bg-muted-foreground */
+    .busy { background-color: #f97316; }         /* bg-mmt */
+    .alert { background-color: #ef4444; }        /* bg-brandweer */
+    .connecting { background-color: #2563eb; }   /* bg-primary */
+
+    /* Pulse animation */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Label */
+    .status-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #6b7280; /* muted-foreground */
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Voorbeeld van verschillende status indicatoren -->
+  <div class="status-indicator">
+    <div class="dot dot-sm online pulse"></div>
+    <span class="status-label">API</span>
+  </div>
+
+  <div class="status-indicator">
+    <div class="dot dot-sm offline"></div>
+    <span class="status-label">RBLX</span>
+  </div>
+
+  <div class="status-indicator">
+    <div class="dot dot-sm busy pulse"></div>
+    <span class="status-label">RTDB</span>
+  </div>
+
+  <div class="status-indicator">
+    <div class="dot dot-sm alert"></div>
+    <span class="status-label">ALERT</span>
+  </div>
+
+  <div class="status-indicator">
+    <div class="dot dot-sm connecting pulse"></div>
+    <span class="status-label">CONNECT</span>
+  </div>
+
+</body>
+</html>

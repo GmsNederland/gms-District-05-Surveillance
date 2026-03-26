@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>112 Meldingen</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .call-queue { display: flex; flex-direction: column; height: 400px; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
+    .queue-header { padding: 10px; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+    .badge { font-size: 10px; padding: 0 4px; border-radius: 3px; color: white; }
+    .badge-destructive { background: red; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.6;} }
+    .queue-body { flex: 1; overflow-y: auto; padding: 8px; }
+    .call-card { padding: 8px; border-left: 4px solid #888; border-radius: 4px; background: #f4f4f4; margin-bottom: 8px; transition: background 0.2s; }
+    .call-card:hover { background: #e0e0e0; }
+    .call-header { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center; }
+    .caller-info { display: flex; align-items: center; gap: 4px; font-family: monospace; font-size: 12px; }
+    .priority-label { font-size: 10px; padding: 0 4px; border-radius: 3px; }
+    .call-body { font-size: 10px; color: #555; margin-bottom: 6px; }
+    .call-body div { display: flex; align-items: center; gap: 4px; }
+    .accept-button { width: 100%; padding: 6px; font-size: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .accept-button:hover { background: #0056b3; }
+    .no-calls { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="call-queue">
+  <div class="queue-header">
+    <div>📞 112 Meldingen</div>
+    <div id="waiting-badge"></div>
+  </div>
+  <div class="queue-body" id="queue-body">
+    <div class="no-calls">
+      <div style="font-size:32px; opacity:0.3;">📞</div>
+      <span>Geen wachtende meldingen</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Voorbeelddata
+  const PRIORITY_COLORS = {
+    1: { border: 'red', label: 'Hoog' },
+    2: { border: 'orange', label: 'Middel' },
+    3: { border: 'green', label: 'Laag' }
+  };
+
+  const calls = [
+    { id: 1, caller_id: 'John', caller_location: 'Amsterdam', priority: 1, status: 'waiting', created_date: '2026-03-23T14:00:00' },
+    { id: 2, caller_id: 'Alice', caller_location: 'Rotterdam', priority: 2, status: 'waiting', created_date: '2026-03-23T14:10:00' },
+    { id: 3, caller_id: 'Bob', caller_location: '', priority: 3, status: 'completed', created_date: '2026-03-23T13:50:00' }
+  ];
+
+  const queueBody = document.getElementById('queue-body');
+  const waitingBadge = document.getElementById('waiting-badge');
+
+  function fromNow(dateStr) {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffSec = Math.floor((now - date)/1000);
+    if(diffSec < 60) return `${diffSec}s`;
+    if(diffSec < 3600) return `${Math.floor(diffSec/60)}m`;
+    if(diffSec < 86400) return `${Math.floor(diffSec/3600)}h`;
+    return `${Math.floor(diffSec/86400)}d`;
+  }
+
+  function renderQueue() {
+    const waitingCalls = calls.filter(c => c.status === 'waiting');
+    queueBody.innerHTML = '';
+
+    // Badge
+    waitingBadge.innerHTML = waitingCalls.length > 0 ? `<span class="badge badge-destructive">${waitingCalls.length}</span>` : '';
+
+    if (waitingCalls.length === 0) {
+      const noDiv = document.createElement('div');
+      noDiv.className = 'no-calls';
+      noDiv.innerHTML = '<div style="font-size:32px; opacity:0.3;">📞</div><span>Geen wachtende meldingen</span>';
+      queueBody.appendChild(noDiv);
+      return;
+    }
+
+    waitingCalls.forEach(call => {
+      const prio = PRIORITY_COLORS[call.priority] || PRIORITY_COLORS[2];
+
+      const card = document.createElement('div');
+      card.className = 'call-card';
+      card.style.borderLeftColor = prio.border;
+
+      card.innerHTML = `
+        <div class="call-header">
+          <div class="caller-info">📞 ${call.caller_id}</div>
+          <div class="priority-label" style="background:${prio.border}; color:white;">${prio.label}</div>
+        </div>
+        <div class="call-body">
+          ${call.caller_location ? `<div>📍 ${call.caller_location}</div>` : ''}
+          <div>⏱ Wacht: ${fromNow(call.created_date)}</div>
+        </div>
+        <button class="accept-button">📞 Aannemen</button>
+      `;
+
+      card.querySelector('.accept-button').onclick = () => {
+        alert(`Melding van ${call.caller_id} aangenomen!`);
+        call.status = 'completed';
+        renderQueue();
+      };
+
+      queueBody.appendChild(card);
+    });
+  }
+
+  renderQueue();
+  // Update wachttijd elke minuut
+  setInterval(renderQueue, 60000);
+</script>
+
+</body>
+</html>

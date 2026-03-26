@@ -1,0 +1,22 @@
+<div id="incidentEmpty"></div>
+
+<script>
+function renderEmptyState(el, title, message){
+  el.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🗄️</div>
+      <p class="empty-title">${title}</p>
+      <p class="empty-message">${message}</p>
+    </div>
+  `;
+}
+
+// render de component nadat de DOM volledig geladen is
+document.addEventListener("DOMContentLoaded", () => {
+  renderEmptyState(
+    document.getElementById("incidentEmpty"),
+    "Geen meldingen",
+    "Er zijn momenteel geen actieve incidenten."
+  );
+});
+</script>
