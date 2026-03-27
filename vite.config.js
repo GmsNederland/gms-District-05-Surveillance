@@ -12,6 +12,7 @@ export default defineConfig({
         meldkamer: resolve(__dirname, 'src/pages/panels/meldkamer.html'),
         burger: resolve(__dirname, 'src/pages/panels/burger.html'),
         admin: resolve(__dirname, 'src/pages/panels/admin.html'),
+        brandweerpanel: resolve(__dirname, 'src/pages/panels/brandweer.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
       }
     }
