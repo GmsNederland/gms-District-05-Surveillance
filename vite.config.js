@@ -9,6 +9,7 @@ export default defineConfig({
         index: resolve(__dirname, 'index.html'), // ⭐ ROOT
         login: resolve(__dirname, 'src/pages/login.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
+        rolenselect: resolve(__dirname, 'src/pages/rolenselect.html'),
       }
     }
   }
