@@ -10,6 +10,6 @@ export default defineConfig({
         
       }
     },
-    outDir: 'dist'
+    outDir: 'src'
   }
 });
