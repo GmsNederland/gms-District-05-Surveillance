@@ -7,6 +7,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/pages/login.html'),
         forgot: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
+        
       }
     },
     outDir: 'dist'
