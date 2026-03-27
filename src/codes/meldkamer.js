@@ -95,10 +95,10 @@
     document.getElementById('map-units').textContent=units.length;
   }
 
-  function acceptCall(id) {
-    console.log('Call accepted:',id);
-    // TODO: API call of Firebase update
-  }
+  // function acceptCall(id) {
+  //   console.log('Call accepted:',id);
+  //   // TODO: API call of Firebase update
+  // }
 
   // Listen for realtime updates from Firebase
   db.ref('meldingen').on('value', snapshot => {
