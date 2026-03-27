@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { reverse } from 'lodash'
 
 export default defineConfig({
   build: {
@@ -13,6 +14,7 @@ export default defineConfig({
         burger: resolve(__dirname, 'src/pages/panels/burger.html'),
         admin: resolve(__dirname, 'src/pages/panels/admin.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
+        stylemk: resolve(__dirname, 'src/stylemk.css')
       }
     }
   }
