@@ -141,9 +141,9 @@
     1: { bg: 'bg-red-600', text: 'text-red-400', border: 'border-red-600', label: 'PRIO 1', dot: 'bg-red-500' },
     2: { bg: 'bg-orange-500', text: 'text-orange-400', border: 'border-orange-500', label: 'PRIO 2', dot: 'bg-orange-500' },
     3: { bg: 'bg-emerald-600', text: 'text-emerald-400', border: 'border-emerald-600', label: 'PRIO 3', dot: 'bg-emerald-500' },
-    1: { border: 'red', dot: 'red', label: 'PRIO 1' },
-    2: { border: 'orange', dot: 'orange', label: 'PRIO 2' },
-    3: { border: 'green', dot: 'green', label: 'PRIO 3' },
+    4: { border: 'red', dot: 'red', label: 'PRIO 1' },
+    5: { border: 'orange', dot: 'orange', label: 'PRIO 2' },
+    6: { border: 'green', dot: 'green', label: 'PRIO 3' },
   };
 
   // === STATUS LABELS ===
@@ -468,14 +468,14 @@
   //===incident===
   // Prioriteit kleuren (voorbeeld)
 
-const STATUS_LABELS = {
-  NEW: 'Nieuw',
-  DISPATCHED: 'Gealarmeerd',
-  EN_ROUTE: 'Onderweg',
-  ON_SCENE: 'Ter plaatse',
-  TRANSPORT: 'Transport',
-  CLOSED: 'Afgehandeld',
-};
+// const STATUS_LABELS = {
+//   NEW: 'Nieuw',
+//   DISPATCHED: 'Gealarmeerd',
+//   EN_ROUTE: 'Onderweg',
+//   ON_SCENE: 'Ter plaatse',
+//   TRANSPORT: 'Transport',
+//   CLOSED: 'Afgehandeld',
+// };
 
 // Voorbeeld incidenten
 const incidents = [
