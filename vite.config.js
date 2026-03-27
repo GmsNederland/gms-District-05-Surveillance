@@ -11,6 +11,7 @@ export default defineConfig({
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
         error: resolve(__dirname, 'src/pages/error.html'),
         // voeg hier alle andere pagina's toe
+        
       }
     }
   }
