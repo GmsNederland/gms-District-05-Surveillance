@@ -124,5 +124,927 @@
   </div>
 <script type="module" src="/src/components/meldkamer/incidentBoard.js"></script>
 <script type="module" src="/src/components/meldkamer/rightSidebar.js"></script>
+
+<script>
+   // Firebase config (vul in met jouw eigen project config)
+  const firebaseConfig = {
+    apiKey: "API_KEY",
+    authDomain: "PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://PROJECT_ID.firebaseio.com",
+    projectId: "PROJECT_ID",
+    storageBucket: "PROJECT_ID.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Clock
+  const clock = document.getElementById('clock');
+  setInterval(() => {
+    const now = new Date();
+    clock.textContent = now.toLocaleTimeString('nl-NL', {hour12:false});
+  }, 1000);
+
+  // Map
+  const map = L.map('map').setView([52.37, 4.895], 13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(map);
+
+  const callsList = document.getElementById('calls-list');
+  const incidentList = document.getElementById('incident-list');
+  const unitsList = document.getElementById('units-list');
+
+  const markers = { units:new Map(), incidents:new Map(), calls:new Map() };
+
+  function updateCalls(calls) {
+    callsList.innerHTML='';
+    calls.forEach(call => {
+      const div=document.createElement('div');
+      div.className='call-card';
+      div.innerHTML=`
+        <div class="call-header">
+          <span class="call-name">${call.name}</span>
+          <span class="prio-badge prio-${call.prio}">PRIO ${call.prio}</span>
+        </div>
+        <div class="call-location">${call.location}</div>
+        <div class="call-wait">Wacht: ${call.wait}</div>
+        <button class="call-button" onclick="acceptCall('${call.id}')">Aannemen</button>
+      `;
+      callsList.appendChild(div);
+    });
+    document.getElementById('waiting-count').textContent=`${calls.length} wachtend`;
+  }
+
+  function updateIncidents(incidents) {
+    incidentList.innerHTML='';
+    incidents.forEach(inc => {
+      const div=document.createElement('div');
+      div.className=`incident-item incident-prio-${inc.prio}`;
+      div.innerHTML=`
+        <div class="incident-title">${inc.title}</div>
+        <div class="incident-location">${inc.location}</div>
+        <div class="incident-status">${inc.status}</div>
+      `;
+      incidentList.appendChild(div);
+
+      // Marker op map
+      if(!markers.incidents.has(inc.id)) {
+        const color = inc.prio==1?'#e83f3f':inc.prio==2?'#f18d29':'#47b04b';
+        const marker=L.circleMarker([inc.lat,inc.lng],{radius:10,color:color,weight:3,fillOpacity:0.6}).addTo(map);
+        markers.incidents.set(inc.id, marker);
+      }
+    });
+    document.getElementById('map-incidents').textContent=incidents.length;
+  }
+
+  function updateUnits(units) {
+    unitsList.innerHTML='';
+    units.forEach(unit => {
+      const div=document.createElement('div');
+      div.className='unit-item';
+      div.innerHTML=`
+        <div class="unit-info">
+          <div class="unit-callsign">${unit.callsign}</div>
+          <div class="unit-service">${unit.service}</div>
+        </div>
+        <div>
+          <span class="unit-status status-${unit.status.toLowerCase()}">${unit.status}</span>
+        </div>
+      `;
+      unitsList.appendChild(div);
+
+      // Marker op map
+      if(!markers.units.has(unit.id)) {
+        const color = unit.status=='Available'?'#47b04b':unit.status=='Responding'?'#2376f6':'#f18d29';
+        const marker=L.circleMarker([unit.lat,unit.lng],{radius:8,color:color,weight:2,fillOpacity:0.6}).addTo(map);
+        markers.units.set(unit.id, marker);
+      }
+    });
+    document.getElementById('map-units').textContent=units.length;
+  }
+
+  function acceptCall(id) {
+    console.log('Call accepted:',id);
+    // TODO: API call of Firebase update
+  }
+
+  // Listen for realtime updates from Firebase
+  db.ref('meldingen').on('value', snapshot => {
+    const calls = [];
+    snapshot.forEach(child => {
+      calls.push(child.val());
+    });
+    updateCalls(calls);
+  });
+
+  db.ref('incidenten').on('value', snapshot => {
+    const incidents=[];
+    snapshot.forEach(child => { incidents.push(child.val()); });
+    updateIncidents(incidents);
+  });
+
+  db.ref('eenheden').on('value', snapshot => {
+    const units=[];
+    snapshot.forEach(child => { units.push(child.val()); });
+    updateUnits(units);
+  });
+
+//   // test geluiden
+// audioManager.playIncomingCall();
+
+// setTimeout(() => {
+//   audioManager.playDispatchConfirm();
+// }, 1000);
+
+// setTimeout(() => {
+//   audioManager.playAlertSiren();
+// }, 2000);
+
+// setTimeout(() => {
+//   audioManager.playIncidentClosed();
+// }, 3500);
+
+  // === PRIORITY COLORS ===
+  window.PRIORITY_COLORS = {
+    1: { bg: 'bg-red-600', text: 'text-red-400', border: 'border-red-600', label: 'PRIO 1', dot: 'bg-red-500' },
+    2: { bg: 'bg-orange-500', text: 'text-orange-400', border: 'border-orange-500', label: 'PRIO 2', dot: 'bg-orange-500' },
+    3: { bg: 'bg-emerald-600', text: 'text-emerald-400', border: 'border-emerald-600', label: 'PRIO 3', dot: 'bg-emerald-500' },
+    1: { border: 'red', dot: 'red', label: 'PRIO 1' },
+    2: { border: 'orange', dot: 'orange', label: 'PRIO 2' },
+    3: { border: 'green', dot: 'green', label: 'PRIO 3' },
+  };
+
+  // === STATUS LABELS ===
+  window.STATUS_LABELS = {
+    NEW: 'Nieuw',
+    DISPATCHED: 'Gealarmeerd',
+    EN_ROUTE: 'Onderweg',
+    ON_SCENE: 'Ter plaatse',
+    TRANSPORT: 'Transport',
+    CLOSED: 'Afgehandeld',
+  };
+
+  // === STATUS FLOW ===
+  window.STATUS_FLOW = ['NEW', 'DISPATCHED', 'EN_ROUTE', 'ON_SCENE', 'TRANSPORT', 'CLOSED'];
+
+  // === UNIT STATUS COLORS ===
+  window.UNIT_STATUS_COLORS = {
+    available: 'bg-emerald-500',
+    responding: 'bg-blue-500',
+    on_scene: 'bg-orange-500',
+    busy: 'bg-red-500',
+    out_of_service: 'bg-slate-500',
+  };
+
+  // === UNIT STATUS LABELS ===
+  window.UNIT_STATUS_LABELS = {
+    available: 'Beschikbaar',
+    responding: 'Onderweg',
+    on_scene: 'Ter plaatse',
+    busy: 'Bezet',
+    out_of_service: 'Buiten dienst',
+  };
+
+  // === SERVICE COLORS ===
+  window.SERVICE_COLORS = {
+    politie: 'text-blue-400',
+    ambulance: 'text-yellow-400',
+    brandweer: 'text-red-400',
+    knrm: 'text-orange-400',
+  };
+
+  // === SERVICE LABELS ===
+  window.SERVICE_LABELS = {
+    politie: 'Politie',
+    ambulance: 'Ambulance',
+    brandweer: 'Brandweer',
+    knrm: 'KNRM',
+  };
+
+  // === INCIDENT TYPES ===
+  window.INCIDENT_TYPES = [
+    'Brand',
+    'Ongeval letsel',
+    'Ongeval materieel',
+    'Reanimatie',
+    'Steekpartij',
+    'Schietpartij',
+    'Overval',
+    'Inbraak',
+    'Huiselijk geweld',
+    'Vermissing',
+    'Waterongeval',
+    'Gaslek',
+    'Assistentie ambulance',
+    'Assistentie politie',
+    'Assistentie brandweer',
+    'Overlast',
+    'Verdachte situatie',
+    'Achtervolging',
+    'Verkeerscontrole',
+    'Overig',
+  ];
+
+  // === REGIONS ===
+  window.REGIONS = [
+    'Amsterdam-Amstelland',
+    'Rotterdam-Rijnmond',
+    'Den Haag',
+    'Utrecht',
+    'Noord-Holland-Noord',
+    'Midden-Nederland',
+    'Oost-Brabant',
+    'Limburg-Zuid',
+    'Gelderland-Zuid',
+    'Alle regio\'s',
+  ];
+
+  // === MAP DEFAULT ===
+  window.MAP_CENTER = [52.37, 4.89];
+  window.MAP_ZOOM = 13;
+  // === units screen ===
+  function renderUnitPanel(units, onFocusUnit, onDispatchUnit) {
+  const container = document.getElementById("units-list");
+  container.innerHTML = "";
+
+  if (units.length === 0) {
+    container.innerHTML = "<p>Geen eenheden geregistreerd</p>";
+    return;
+  }
+
+  const grouped = {
+    politie: units.filter(u => u.service === 'politie'),
+    ambulance: units.filter(u => u.service === 'ambulance'),
+    brandweer: units.filter(u => u.service === 'brandweer'),
+    knrm: units.filter(u => u.service === 'knrm'),
+  };
+
+  Object.entries(grouped).forEach(([service, serviceUnits]) => {
+    if (serviceUnits.length === 0) return;
+
+    const section = document.createElement("div");
+
+    const title = document.createElement("h4");
+    title.innerText = `${SERVICE_LABELS[service]} (${serviceUnits.length})`;
+    section.appendChild(title);
+
+    serviceUnits.forEach(unit => {
+      const card = document.createElement("div");
+      card.className = "unit-card";
+
+      const header = document.createElement("div");
+      header.className = "unit-header";
+      header.innerHTML = `
+        <span>${unit.callsign}</span>
+        <span>${SERVICE_LABELS[unit.service]}</span>
+      `;
+      card.appendChild(header);
+
+      if (unit.operator) {
+        const op = document.createElement("div");
+        op.innerText = unit.operator;
+        card.appendChild(op);
+      }
+
+      // STATUS SELECT
+      const select = document.createElement("select");
+      Object.entries(UNIT_STATUS_LABELS).forEach(([key, label]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.text = label;
+        if (unit.status === key) option.selected = true;
+        select.appendChild(option);
+      });
+
+      select.onchange = async (e) => {
+        await UnitService.update(unit.id, { status: e.target.value });
+      };
+
+      card.appendChild(select);
+
+      // BUTTONS
+      const actions = document.createElement("div");
+      actions.className = "unit-actions";
+
+      const btnDispatch = document.createElement("button");
+      btnDispatch.innerText = "Alarm";
+      btnDispatch.onclick = () => onDispatchUnit(unit);
+
+      const btnFocus = document.createElement("button");
+      btnFocus.innerText = "📍";
+      btnFocus.onclick = () => onFocusUnit(unit);
+
+      actions.appendChild(btnDispatch);
+      actions.appendChild(btnFocus);
+
+      card.appendChild(actions);
+
+      section.appendChild(card);
+    });
+
+    container.appendChild(section);
+  });
+}
+
+  //  ===112 meldingen===
+  function renderCallQueue(calls, onAcceptCall) {
+    const container = document.getElementById("calls-list");
+    container.innerHTML = "";
+
+    const waitingCalls = calls.filter(c => c.status === "waiting");
+
+    if (waitingCalls.length === 0) {
+      container.innerHTML = "<p>Geen wachtende meldingen</p>";
+      return;
+    }
+
+    waitingCalls.forEach(call => {
+      const prio = PRIORITY_COLORS[call.priority] || PRIORITY_COLORS[2];
+
+      const card = document.createElement("div");
+      card.className = "call-card";
+      card.style.borderLeftColor = prio.border;
+
+      const header = document.createElement("div");
+      header.className = "call-header";
+      header.innerHTML = `
+        <span>${call.caller_id}</span>
+        <span style="color:${prio.text}; font-size:10px;">${prio.label}</span>
+      `;
+      card.appendChild(header);
+
+      const body = document.createElement("div");
+      body.className = "call-body";
+
+      if (call.caller_location) {
+        const loc = document.createElement("div");
+        loc.innerText = `Locatie: ${call.caller_location}`;
+        body.appendChild(loc);
+      }
+
+      const waitTime = Math.floor((Date.now() - new Date(call.created_date)) / 60000);
+      const wait = document.createElement("div");
+      wait.innerText = `Wacht: ${waitTime} min`;
+      body.appendChild(wait);
+
+      card.appendChild(body);
+
+      const btn = document.createElement("button");
+      btn.className = "call-button";
+      btn.innerText = "Aannemen";
+      btn.onclick = () => onAcceptCall(call);
+
+      card.appendChild(btn);
+
+      container.appendChild(card);
+    });
+  }
+  
+  const calls = [
+    { id: 1, caller_id: "Jan", caller_location: "Amsterdam", priority: 1, status: "waiting", created_date: "2026-03-23T12:00:00Z" },
+    { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
+  ];
+
+  function acceptCall(id) {
+    const call = calls.find(c => c.id === id);
+    if(!call) return;
+    alert(`Melding aangenomen: ${call.caller_id}`);
+    call.status = 'accepted';
+    renderCalls();
+  }
+
+  renderCallQueue(calls, acceptCall);
+
+  // Vul select-opties
+  const typeSelect = document.getElementById("incident-type");
+  INCIDENT_TYPES.forEach(t => {
+    const option = document.createElement("option");
+    option.value = t;
+    option.innerText = t;
+    typeSelect.appendChild(option);
+  });
+
+  const serviceSelect = document.getElementById("incident-service");
+  Object.entries(SERVICE_LABELS).forEach(([k, v]) => {
+    const option = document.createElement("option");
+    option.value = k;
+    option.innerText = v;
+    serviceSelect.appendChild(option);
+  });
+
+  const regionSelect = document.getElementById("incident-region");
+  REGIONS.filter(r => r !== "Alle regio's").forEach(r => {
+    const option = document.createElement("option");
+    option.value = r;
+    option.innerText = r;
+    regionSelect.appendChild(option);
+  });
+
+  // Formulier submit
+  document.getElementById("incident-form").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const form = {
+      title: document.getElementById("incident-title").value,
+      incident_type: document.getElementById("incident-type").value,
+      priority: parseInt(document.getElementById("incident-priority").value),
+      service: document.getElementById("incident-service").value,
+      region: document.getElementById("incident-region").value,
+      location: document.getElementById("incident-location").value,
+      caller_id: document.getElementById("incident-caller").value,
+      status: "NEW",
+      incident_number: generateIncidentNumber(),
+    };
+
+    // maak incident aan
+    const incident = await IncidentService.create(form);
+
+    audioManager.playDispatchConfirm();
+
+    alert("Incident aangemaakt: " + incident.incident_number);
+
+    document.getElementById("create-incident").classList.add("hidden");
+  };
+
+  // Annuleer knop
+  document.getElementById("incident-cancel").onclick = () => {
+    document.getElementById("create-incident").classList.add("hidden");
+  };
+
+  // terug naar menu
+  document.getElementById("terugnaarmenu").onclick = function () {
+    window.location.href = "/src/pages/rolenselect.html";
+  }
+
+  // == popup nieuwe meldingen ==
+  // Open popup
+  function showIncidentPopup() {
+    document.getElementById("create-incident").classList.remove("hidden");
+  }
+
+  // Sluit popup
+  function hideIncidentPopup() {
+    document.getElementById("create-incident").classList.add("hidden");
+  }
+
+  // Event listener voor de knop +Nieuw Incident
+  document.getElementById("bottom-right-btn").addEventListener("click", showIncidentPopup);
+
+  // Annuleer knop in het formulier
+  document.getElementById("incident-cancel").addEventListener("click", hideIncidentPopup);
+
+  //===incident===
+  // Prioriteit kleuren (voorbeeld)
+
+const STATUS_LABELS = {
+  NEW: 'Nieuw',
+  DISPATCHED: 'Gealarmeerd',
+  EN_ROUTE: 'Onderweg',
+  ON_SCENE: 'Ter plaatse',
+  TRANSPORT: 'Transport',
+  CLOSED: 'Afgehandeld',
+};
+
+// Voorbeeld incidenten
+const incidents = [
+  { id: 1, incident_number: 'INC-20260323-001', title: 'Brand woning', priority: 1, status: 'NEW', location: 'Amsterdam', assigned_units: ['Unit1'], claimed_by: 'jan@politie.nl' },
+  { id: 2, incident_number: 'INC-20260323-002', title: 'Ongeval A10', priority: 2, status: 'DISPATCHED', location: 'Rotterdam', assigned_units: [], claimed_by: null },
+];
+
+// Render functie
+function renderIncidents() {
+  const container = document.getElementById('incidents');
+  container.innerHTML = '';
+
+  const activeIncidents = incidents.filter(i => i.status !== 'CLOSED');
+  const sortedIncidents = activeIncidents.sort((a,b) => (a.priority || 3) - (b.priority || 3));
+
+  if(sortedIncidents.length === 0){
+    container.innerHTML = '<div style="text-align:center; padding:12px; color:#94a3b8;">Geen actieve incidenten</div>';
+    return;
+  }
+
+  sortedIncidents.forEach(inc => {
+    const card = document.createElement('div');
+    card.className = 'incident-card';
+    card.style.borderColor = PRIORITY_COLORS[inc.priority]?.border || 'orange';
+
+    const assigned = inc.assigned_units?.length || 0;
+    const claimed = inc.claimed_by ? inc.claimed_by.split('@')[0] : '';
+
+    card.innerHTML = `
+      <div class="header">
+        <div class="title">${inc.incident_number}</div>
+        <div class="badge">${STATUS_LABELS[inc.status] || inc.status}</div>
+      </div>
+      <div class="title-main">${inc.title}</div>
+      ${inc.location ? `<div class="location">📍 ${inc.location}</div>` : ''}
+      <div class="footer">
+        <div>
+          ${assigned > 0 ? assigned + ' eenhe' + (assigned===1?'id':'den') : ''}
+          ${claimed ? ' • ' + claimed : ''}
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      alert(`Incident geopend: ${inc.title}`);
+    });
+
+    container.appendChild(card);
+  });
+}
+//lijsten switch
+document.addEventListener('DOMContentLoaded', () => {
+  const triggers = document.querySelectorAll('.tab-trigger');
+  const contents = document.querySelectorAll('.tab-content');
+  const loadedTabs = {}; // track welke tabs al geladen zijn
+  // Dummy data: 1 unit
+window.units = [
+  {
+    id: 1,
+    callsign: 'Unit 01',
+    service: 'politie',
+    status: 'Vrij',
+    operator: 'John Doe',
+    latitude: 52.0,
+    longitude: 5.1,
+    statusColor: 'status-enroute',      // groen, vrij
+    serviceLabel: 'Politie',
+  },
+    {
+    id: 1,
+    callsign: 'Unit 01',
+    service: 'brandweer',
+    status: 'Vrij',
+    operator: 'John Doe',
+    latitude: 52.0,
+    longitude: 5.1,
+    statusColor: 'status-busy',      // groen, vrij
+    serviceLabel: 'brandweer',
+  },
+      {
+    id: 1,
+    callsign: 'Unit 01',
+    service: 'ambulance',
+    status: 'Vrij',
+    operator: 'John Doe',
+    latitude: 52.0,
+    longitude: 5.1,
+    statusColor: 'status-available',      // groen, vrij
+    serviceLabel: 'ambulance',
+  }
+];
+
+// Callback functies voor de knoppen
+window.onDispatchUnit = (unit) => {
+  alert(`Dispatch Alarm naar ${unit.callsign}`);
+};
+
+window.onFocusUnit = (unit) => {
+  alert(`Focus op ${unit.callsign} (lat: ${unit.latitude}, lng: ${unit.longitude})`);
+};
+
+function renderUnits(container) {
+
+  container.innerHTML = '';
+
+  const SERVICE_LABELS = {
+    politie: 'politie',
+    ambulance: 'ambulance',
+    brandweer: 'brandweer',
+    knrm: 'KNRM'
+  };
+
+  const SERVICE_COLORS = {
+    politie: 'service-politie',
+    ambulance: 'service-ambulance',
+    brandweer: 'service-brandweer',
+    knrm: 'service-knrm'
+  };
+
+  const units = window.units || [];
+
+  if (!units.length) {
+    container.innerHTML =
+      '<div style="padding:2rem;text-align:center;color:#999;">Geen eenheden geregistreerd</div>';
+    return;
+  }
+
+  const grouped = {
+    politie: units.filter(u => u.service === 'politie'),
+    ambulance: units.filter(u => u.service === 'ambulance'),
+    brandweer: units.filter(u => u.service === 'brandweer'),
+    knrm: units.filter(u => u.service === 'knrm'),
+  };
+
+  Object.entries(grouped).forEach(([service, serviceUnits]) => {
+
+    if (!serviceUnits.length) return;
+
+    // ⭐ SERVICE BOX
+    const serviceBox = document.createElement('div');
+    serviceBox.className = 'units-service';
+
+    // ⭐ HEADER
+    const header = document.createElement('div');
+    header.className =
+      'units-service-header ' +
+      (SERVICE_COLORS[service] || '');
+
+    header.textContent =
+      `${SERVICE_LABELS[service]} (${serviceUnits.length})`;
+
+    serviceBox.appendChild(header);
+
+    // ⭐ UNITS
+    serviceUnits.forEach(unit => {
+
+      const card = document.createElement('div');
+      card.className = 'units-card';
+
+      card.innerHTML = `
+        <div class="units-top">
+          
+          <div class="units-left">
+            <div class="units-status ${unit.statusColor || ''}"></div>
+            <span class="units-callsign">${unit.callsign}</span>
+          </div>
+
+          <div class="units-service-badge ${SERVICE_COLORS[service]}">
+            ${SERVICE_LABELS[service]}
+          </div>
+
+        </div>
+
+        <div class="units-subinfo">
+          ${unit.operator ? `<span>${unit.operator}</span>` : ''}
+        </div>
+      `;
+
+      const btnmeldingselecer = document.createElement('div');
+      btnmeldingselecer.className = 'units-button';
+
+      const select = document.createElement('option');
+      select.className = 'untis-incident-select';
+
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'Kies een melding...';
+      select.appendChild(defaultOption);
+
+      (window.incident || []).filter(i => i.status !== 'CLOSED').forEach(incident => {
+        const option = document.createElement('option');
+        option.value = incident.id;
+        option.textContent = `${incident.title} (#${incident.incident_number})`;
+        select.appendChild(option);
+      });
+
+      btnmeldingselecer.appendChild(select);
+      card.appendChild(btnmeldingselecer);
+
+      const btnContainer = document.createElement('div');
+      btnContainer.className = 'units-card-buttons';
+
+      const dispatchBtn = document.createElement('div');
+      dispatchBtn.className = 'units-button';
+      dispatchBtn.textContent = 'Alarm';
+      dispatchBtn.onclick = () => {
+        const incidentId = select.value;
+        if (!incidentId) return alert('Kies eerst een melding!');
+        const incident = (window.incidents || []).find(i => i.id === incidentId);
+        if (!incident) return;
+        window.onDispatchUnit?.(unit, incident);
+      };
+
+      const focusBtn = document.createElement('div');
+      focusBtn.className = 'units-button';
+      focusBtn.textContent = 'Focus';
+
+      if (!unit.latitude || !unit.longitude) {
+        focusBtn.style.opacity = '0.5';
+      } else {
+        focusBtn.onclick = () => window.onFocusUnit?.(unit);
+      }
+
+      btnContainer.appendChild(dispatchBtn);
+      btnContainer.appendChild(focusBtn);
+
+      card.appendChild(btnContainer);
+      serviceBox.appendChild(card);
+
+    });
+
+    container.appendChild(serviceBox);
+
+  });
+
+}
+
+
+// 🔹 1️⃣ Dummy data
+window.systems = [
+  { id: 'amberalert', name: 'Amber Alert', type: 'Melding', status: 'Actief' },
+  { id: 'nlalert', name: 'NL-Alert', type: 'Melding', status: 'Standby' },
+  { id: 'anpr', name: 'ANPR', type: 'Verkeer', status: 'Actief' },
+  { id: 'luchtalarm', name: 'Luchtalarm', type: 'Melding', status: 'Actief' },
+  { id: 'p20000', name: 'P2000', type: 'Melding', status: 'Standby' },
+];
+
+// 🔹 2️⃣ Tab-switch functionaliteit
+document.querySelectorAll('.tab-trigger').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const tabName = tab.getAttribute('data-tab');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+  });
+});
+
+// 🔹 3️⃣ Functie om systemen te renderen
+function renderSystems(container) {
+  container.innerHTML = '';
+
+  if (!window.systems.length) {
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:#999;">Geen systemen beschikbaar</div>';
+    return;
+  }
+
+  window.systems.forEach(system => {
+    const card = document.createElement('div');
+    card.className = 'system-card';
+    card.id = `system-${system.id}`;
+
+    card.innerHTML = `
+      <div class="system-top">
+        <span class="system-name">${system.name}</span>
+        <span class="system-type">${system.type}</span>
+        <span class="system-status ${system.status === 'Actief' ? 'status-active' : 'status-standby'}">${system.status}</span>
+      </div>
+      <div class="system-actions">
+        <button class="btn-operate">Bedien</button>
+        <button class="btn-info">Details</button>
+      </div>
+    `;
+
+    // 📌 Bediening per systeem via popup
+    card.querySelector('.btn-operate').onclick = () => openSystemPopup(system);
+
+    // Info knop
+    card.querySelector('.btn-info').onclick = () => alert(`Details voor ${system.name}`);
+
+    container.appendChild(card);
+  });
+}
+
+// de inhoud van de systemen
+// Functie om een systeem-popup te openen
+// Functie om een systeem-popup te openen
+function openSystemPopup(system) {
+  // Check of popup al bestaat
+  let popup = document.getElementById(`popup-${system.id}`);
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.className = 'system-popup-overlay';
+    popup.id = `popup-${system.id}`;
+
+    // Begin van de popup
+    popup.innerHTML = `
+      <div class="system-popup">
+        <div class="popup-header">
+          <h2>${system.name}</h2>
+          <button class="btn-close">✖</button>
+        </div>
+        <div class="popup-body"></div>
+        <div class="popup-buttons">
+          <button class="btn-send">Verstuur</button>
+          <button class="btn-cancel">Annuleer</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    const body = popup.querySelector('.popup-body');
+
+    // Velden per systeem
+    const fields = [];
+    if(system.id === 'p20000') {
+      fields.push({label: 'Type eenheid', type:'select', options:['Brandweer','Ambulance']});
+      fields.push({label: 'Roblox speler', type:'select', options:['-- kies speler --','Player1','Player2']});
+      fields.push({label: 'Incident beschrijving', type:'textarea', placeholder:'Wat is er aan de hand?'});
+    } else if(system.id === 'nlalert') {
+      fields.push({label: 'Bericht', type:'textarea', placeholder:'Wat moeten mensen weten?'});
+      fields.push({label: 'Locatie', type:'text', placeholder:'Straatnaam, Stad'});
+      fields.push({label: 'Acties voor inwoners', type:'text', placeholder:'Bijv. Blijf binnen'});
+    } else if(system.id === 'luchtalarm') {
+      fields.push({label:'Palenselectie', type:'select', options:['Paal1','Paal2','Paal3'], multiple:true});
+      fields.push({label:'Alle palen af laten gaan?', type:'select', options:['Nee','Ja']});
+    } else if(system.id === 'amberalert') {
+      fields.push({label:'Naam van het kind', type:'text', placeholder:'Typ hier de Roblox naam'})
+      fields.push({label: 'Leeftijd van het kind', type: 'text', placeholder: 'Typ hier de leeftijd van het kind'});
+      fields.push({label: 'Opvallende kenmerken', type: 'text', placeholder: 'Bijv. moedervlek op arm'});
+      fields.push({label: 'Laatste bekende locatie', type: 'textarea', placeholder: 'Waar is het kind voor het laatst gezien?'});
+      fields.push({label: 'Datum & Tijd van verdwijning', type: 'text', placeholder: 'Bijv. 27-03-2026 15:30'});
+    } else {
+      fields.push({label:'Kenteken', type:'text', placeholder:'Typ hier het Kenteken'});
+      fields.push({label: 'Verdachten: Naam', type:'text', placeholder:'Typ hier de roblox naam in'});
+      fields.push({label:'Automerk', type:'select', options:['Audi','BMW']});
+      fields.push({label:'waar voor', type:'select', options:['Openstaande boetes of verkeerszaken','Verdacht voertuig of persoon', 'Gestolen voertuig', 'Criminele of opsporingsdoeleinden', 'Verlopen APK-keuring', 'Voertuig zonder APK', 'Afgekeurde APK', ]});
+      fields.push({label:'Extra info', type:'textarea', placeholder:'Typ hier extra info...'});
+    }
+
+    // Voeg velden toe
+    fields.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'popup-field';
+      div.innerHTML = `<label>${f.label}:</label>`;
+      if(f.type === 'textarea') {
+        div.innerHTML += `<textarea placeholder="${f.placeholder || ''}" rows="3"></textarea>`;
+      } else if(f.type === 'text') {
+        div.innerHTML += `<input type="text" placeholder="${f.placeholder || ''}" />`;
+      } else if(f.type === 'select') {
+        const multiple = f.multiple ? 'multiple' : '';
+        let options = f.options.map(o => `<option value="${o}">${o}</option>`).join('');
+        div.innerHTML += `<select ${multiple}>${options}</select>`;
+      }
+      body.appendChild(div);
+    });
+
+    // Sluitknoppen
+    const closePopup = () => popup.style.display='none';
+    popup.querySelector('.btn-close').onclick = closePopup;
+    popup.querySelector('.btn-cancel').onclick = closePopup;
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closePopup(); });
+
+    // Versturen
+    popup.querySelector('.btn-send').onclick = () => {
+      const inputs = popup.querySelectorAll('input, select, textarea');
+      let valid = true;
+      const data = {};
+      inputs.forEach(f => {
+        if(f.value === '' || f.value === null) valid = false;
+        data[f.previousElementSibling.textContent.replace(':','')] = f.value;
+      });
+      if(!valid) return alert('Vul alle velden in!');
+      alert(`Verstuurd via ${system.name}:\n${JSON.stringify(data,null,2)}`);
+      popup.style.display = 'none';
+    };
+  }
+
+  popup.style.display = 'flex';
+  popup.classList.add('show');
+}
+
+// 🔹 4️⃣ Render systemen zodra DOM geladen is
+
+  // Functie om data te renderen, callback uit main code
+  function loadTabContent(tab) {
+    const container = document.getElementById(tab);
+    container.innerHTML = ''; // clear previous content
+
+    switch(tab) {
+      case 'incidents':
+        if(typeof renderIncidents === 'function') renderIncidents(container);
+        break;
+      case 'units':
+        if(typeof renderUnits === 'function') renderUnits(container);
+        break;
+      case 'systemen':
+        if(typeof renderSystems === 'function') renderSystems(container);
+        break;
+      default:
+        container.innerHTML = '<div style="padding:1rem;color:#999;">Geen data</div>';
+    }
+  }
+
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const tab = trigger.dataset.tab;
+
+      triggers.forEach(t => t.classList.remove('active'));
+      trigger.classList.add('active');
+
+      contents.forEach(c => c.classList.toggle('active', c.id === tab));
+
+      if(!loadedTabs[tab]) {
+        loadTabContent(tab);
+        loadedTabs[tab] = true;
+      }
+    });
+  });
+
+  // systemen
+
+  // Laad automatisch de actieve tab
+  const activeTab = document.querySelector('.tab-trigger.active').dataset.tab;
+  loadTabContent(activeTab);
+});
+
+// Initial render
+renderIncidents();
+
+</script>
 </body>
 </html>
