@@ -13,6 +13,7 @@ export default defineConfig({
         burger: resolve(__dirname, 'src/pages/panels/burger.html'),
         admin: resolve(__dirname, 'src/pages/panels/admin.html'),
         brandweerpanel: resolve(__dirname, 'src/pages/panels/brandweer.html'),
+        ambulancepanel: resolve(__dirname, 'src/pages/panels/ambulance.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
       }
     }
