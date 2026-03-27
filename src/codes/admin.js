@@ -1,72 +1,122 @@
-function openTab(id,el){
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    el.classList.add("active");
-}
+// admin.js
+document.addEventListener("DOMContentLoaded", () => {
 
-/* --- Map --- */
-function previewMap(e){
-    let file=e.target.files[0];
-    let reader=new FileReader();
-    reader.onload=ev=>document.getElementById("preview").src=ev.target.result;
-    reader.readAsDataURL(file);
-}
-function uploadMap(){alert("Kaart geüpload! Backend call hier toevoegen.");}
-
-function deleteMap(){
-    if(confirm("Weet je zeker dat je de kaart wilt verwijderen?")){
-        document.getElementById("preview").src="";
-        alert("Kaart verwijderd!");
+    /* ---------------- Tabs ---------------- */
+    function openTab(id, el) {
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        el.classList.add("active");
     }
-}
+    window.openTab = openTab; // optioneel voor inline gebruik
 
-/* --- Audio --- */
-function playTone(freq){
-    let ctx=new AudioContext();
-    let osc=ctx.createOscillator();
-    osc.frequency.value=freq;
-    osc.connect(ctx.destination);
-    osc.start();
-    setTimeout(()=>osc.stop(),200);
-}
+    /* ---------------- Map ---------------- */
+    const preview = document.getElementById("preview");
 
-/* --- Logs --- */
-let logs=["[SYSTEEM] GMS gestart","[AUTH] wachten op verbinding","[WARN] Backend niet gekoppeld"];
-let box=document.getElementById("logBox");
+    function previewMap(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => preview.src = ev.target.result;
+        reader.readAsDataURL(file);
+    }
 
-function addLog(msg){
-    let p=document.createElement("div");
-    p.classList.add("logNew");
-    p.textContent=msg;
-    box.appendChild(p);
-    box.scrollTop=box.scrollHeight;
-}
-logs.forEach(l=>addLog(l));
+    function uploadMap() {
+        alert("Kaart geüpload! Backend call hier toevoegen.");
+        // TODO: Voeg hier fetch/axios call naar backend toe
+    }
 
-/* --- Users --- */
-function addTestUser(){
-    let tbody=document.getElementById("userTable");
-    let tr=document.createElement("tr");
-    tr.innerHTML=`<td>TestUser</td><td>Admin</td><td>Actief</td><td>Acties</td><td>Lid sinds</td><td>tijd</td>
-    <td>
-        <button onclick="openPopup(this)">Bewerk</button>
-    </td>`;
-    tbody.appendChild(tr);
-}
+    function deleteMap() {
+        if (confirm("Weet je zeker dat je de kaart wilt verwijderen?")) {
+            preview.src = "";
+            alert("Kaart verwijderd!");
+        }
+    }
 
-function openPopup(userData) {
-    document.getElementById("bewerkenpopup").style.display = "flex";
-}
+    document.getElementById("mapInput")?.addEventListener("change", previewMap);
+    document.getElementById("uploadMapBtn")?.addEventListener("click", uploadMap);
+    document.getElementById("deleteMapBtn")?.addEventListener("click", deleteMap);
 
-function closePopup() {
-    document.getElementById("bewerkenpopup").style.display = "none";
-}
+    /* ---------------- Audio ---------------- */
+    function playTone(freq) {
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        osc.frequency.value = freq;
+        osc.connect(ctx.destination);
+        osc.start();
+        setTimeout(() => osc.stop(), 200);
+    }
+    window.playTone = playTone;
 
-/* --- Config --- */
-function saveConfig(){
-    let maxUsers=document.getElementById("maxUsers").value;
-    let webhook=document.getElementById("discordWebhook").value;
-    let botToken=document.getElementById("botToken").value;
-    alert(`Config opgeslagen!\nMax Users:${maxUsers}\nWebhook:${webhook}\nBotToken:${botToken}`);
-}
+    /* ---------------- Logs ---------------- */
+    const box = document.getElementById("logBox");
+
+    function addLog(msg) {
+        const p = document.createElement("div");
+        p.classList.add("logNew");
+        p.textContent = msg;
+        box.appendChild(p);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    const logs = [
+        "[SYSTEEM] GMS gestart",
+        "[AUTH] wachten op verbinding",
+        "[WARN] Backend niet gekoppeld"
+    ];
+    logs.forEach(l => addLog(l));
+
+    window.addLog = addLog;
+
+    /* ---------------- Users ---------------- */
+    function addTestUser() {
+        const tbody = document.getElementById("userTable");
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>TestUser</td>
+            <td>Admin</td>
+            <td>Actief</td>
+            <td>Lid sinds</td>
+            <td>Tijd</td>
+            <td><button class="editBtn">Bewerk</button></td>
+        `;
+
+        tbody.appendChild(tr);
+
+        // Voeg event listener toe aan de knop
+        tr.querySelector(".editBtn").addEventListener("click", () => {
+            openPopup(tr);
+        });
+    }
+
+    window.addTestUser = addTestUser;
+
+    function openPopup(userData) {
+        document.getElementById("bewerkenpopup").style.display = "flex";
+        // TODO: vul popup met userData
+    }
+
+    function closePopup() {
+        document.getElementById("bewerkenpopup").style.display = "none";
+    }
+
+    document.getElementById("popupCloseBtn")?.addEventListener("click", closePopup);
+
+    window.openPopup = openPopup;
+    window.closePopup = closePopup;
+
+    /* ---------------- Config ---------------- */
+    function saveConfig() {
+        const maxUsers = document.getElementById("maxUsers").value;
+        const webhook = document.getElementById("discordWebhook").value;
+        const botToken = document.getElementById("botToken").value;
+
+        alert(`Config opgeslagen!\nMax Users: ${maxUsers}\nWebhook: ${webhook}\nBotToken: ${botToken}`);
+
+        // TODO: voeg hier echte backend save call toe
+    }
+
+    document.getElementById("saveConfigBtn")?.addEventListener("click", saveConfig);
+    window.saveConfig = saveConfig;
+});
