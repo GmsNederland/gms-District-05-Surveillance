@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GMS Brandweer</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<link rel="stylesheet" href="/src/stylebr.css">
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+</div>
+
+<!-- NOTIFICATION TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- DETAIL MODAL -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <h2 id="modal-title"></h2>
+    <p id="modal-body"></p>
+    <button onclick="closeModal()">Sluiten</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+  <!-- LINKS: UNITS -->
+  <div class="panel">
+    <h2>Eenheden</h2>
+    <div id="units"></div>
+  </div>
+
+  <!-- MIDDEN: MELDINGEN -->
+  <div class="panel main">
+    <h2>Meldingen</h2>
+    <div id="meldingen"></div>
+  </div>
+
+  <!-- RECHTS: STATUS -->
+  <div class="panel">
+    <h2>Status</h2>
+    <div id="status"></div>
+  </div>
+
+</div>
+
+<script>
+// CLOCK
+setInterval(() => {
+  document.getElementById("clock").innerText =
+    new Date().toLocaleTimeString();
+}, 1000);
+
+// FIREBASE INIT
+const firebaseConfig = {
+  apiKey: "JOUW_API_KEY",
+  authDomain: "JOUW_PROJECT.firebaseapp.com",
+  databaseURL: "https://JOUW_PROJECT.firebaseio.com",
+  projectId: "JOUW_PROJECT"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// TOAST NOTIFICATION
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.classList.remove("hidden");
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// MODAL
+function openModal(title, body){
+  document.getElementById("modal-title").innerText = title;
+  document.getElementById("modal-body").innerText = body;
+  document.getElementById("modal").classList.remove("hidden");
+}
+function closeModal(){
+  document.getElementById("modal").classList.add("hidden");
+}
+
+// MELDINGEN
+const meldingenRef = db.ref("meldingen");
+
+meldingenRef.on("child_added", snap => {
+  const m = snap.val();
+
+  const div = document.createElement("div");
+  div.className = `card ${m.color}`;
+  div.innerHTML = `
+    <div class="card-header">
+      <span class="badge">${m.priority}</span>
+      <span>${m.type}</span>
+    </div>
+    <div class="card-body">
+      <p>📍 ${m.location}</p>
+      <p>🚒 ${m.vehicles} voertuigen</p>
+      <p>👥 ${m.team}</p>
+    </div>
+  `;
+
+  div.onclick = () => {
+    openModal(m.type, `${m.location} | Prioriteit: ${m.priority}`);
+  };
+
+  document.getElementById("meldingen").prepend(div);
+
+  toast("Nieuwe melding: " + m.type);
+});
+
+// STATUS
+db.ref("statussen").on("value", snap => {
+  const data = snap.val();
+  const container = document.getElementById("status");
+  container.innerHTML = "";
+
+  for(const key in data){
+    const s = data[key];
+
+    const div = document.createElement("div");
+    div.className = `status-card ${s.color}`;
+    div.innerHTML = `
+      <h3>${s.name}</h3>
+      <div class="count">${s.units.length}</div>
+      <div class="units">${s.units.join(", ")}</div>
+      <div class="bar">
+        <div style="width:${s.percentage}%"></div>
+      </div>
+    `;
+    container.appendChild(div);
+  }
+});
+
+// UNITS
+db.ref("units").on("value", snap => {
+  const data = snap.val();
+  const container = document.getElementById("units");
+  container.innerHTML = "";
+
+  for(const key in data){
+    const u = data[key];
+    const div = document.createElement("div");
+    div.className = `unit ${u.status}`;
+    div.innerText = `${u.name} - ${u.team}`;
+    container.appendChild(div);
+  }
+});
+</script>
+
+</body>
+</html>

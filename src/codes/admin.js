@@ -117,16 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // TODO: voeg hier echte backend save call toe
     }
 
-    function deleteUser(button) {
-    const row = button.closest("tr"); // vind de rij van de knop
-    const username = row.querySelector("td").textContent; // pak gebruikersnaam
-    if(confirm(`Weet je zeker dat je ${username} wilt verwijderen?`)) {
-        row.remove();
-        addLog(`[USER] ${username} verwijderd`);
-    }
-}
-window.deleteUser = deleteUser;
-
     document.getElementById("saveConfigBtn")?.addEventListener("click", saveConfig);
     window.saveConfig = saveConfig;
 });
