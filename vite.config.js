@@ -9,9 +9,9 @@ export default defineConfig({
         index: resolve(__dirname, '/index.html'),
         login: resolve(__dirname, 'src/pages/login.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
-        error: resolve(__dirname, 'src/pages/error.html'),
+        // error: resolve(__dirname, 'src/pages/error.html'),
         // voeg hier alle andere pagina's toe
-        
+
       }
     }
   }
