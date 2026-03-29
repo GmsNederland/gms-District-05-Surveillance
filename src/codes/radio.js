@@ -53,12 +53,17 @@ function renderChannels(channels) {
   channelBox.innerHTML = "";
   userBox.innerHTML = "";
 
-  // ✅ filter hier
+  // ✅ filter eerst
   const filteredChannels = channels.filter(channel =>
     ALLOWED_CHANNEL_IDS.includes(channel.id)
   );
 
-  filteredChannels.forEach(channel => {
+  // ✅ sorteer A → Z
+  const sortedChannels = filteredChannels.sort((a, b) =>
+    a.name.localeCompare(b.name, "nl", { sensitivity: "base" })
+  );
+
+  sortedChannels.forEach(channel => {
     const div = document.createElement("div");
     div.className = "channel";
     div.innerText = channel.name;
