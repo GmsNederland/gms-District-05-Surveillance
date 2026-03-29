@@ -3,6 +3,11 @@ const API_URL = "https://surviveapi-production.up.railway.app";
 let selectedUser = null;
 let selectedChannel = null;
 
+const ALLOWED_CHANNEL_IDS = [
+  "1073724084631904436",
+  "1073724087391764531"
+];
+
 async function loadData() {
   try {
     const res = await fetch(`${API_URL}/api/voice-data`);
@@ -20,6 +25,10 @@ function renderChannels(channels) {
 
   channelBox.innerHTML = "";
   userBox.innerHTML = "";
+
+  const filteredChannels = channels.filter(channel =>
+    ALLOWED_CHANNEL_IDS.includes(channel.id)
+  );
 
   channels.forEach(channel => {
     const div = document.createElement("div");
