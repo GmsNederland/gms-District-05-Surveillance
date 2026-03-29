@@ -92,34 +92,53 @@ function renderUsers(users) {
   const userBox = document.getElementById("users");
   userBox.innerHTML = "";
 
-  users.forEach(user => {
+  const ROLE_PRIORITY = ["Politie", "Ambulance", "Brandweer"];
+
+  // alleen relevante users
+  const relevantUsers = users.filter(user =>
+    user.roles && user.roles.some(role => ROLE_PRIORITY.includes(role))
+  );
+
+  // sorteren op dienst prioriteit
+  relevantUsers.sort((a, b) => {
+    const aRole = a.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
+    const bRole = b.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
+
+    return ROLE_PRIORITY.indexOf(aRole) - ROLE_PRIORITY.indexOf(bRole);
+  });
+
+  relevantUsers.forEach(user => {
     const div = document.createElement("div");
     div.className = "user";
 
+    // naam
     const nameEl = document.createElement("div");
     nameEl.innerText = user.username;
     nameEl.style.fontWeight = "bold";
 
-    const rolesEl = document.createElement("div");
-    rolesEl.className = "roles";
+    // badges container
+    const badgeContainer = document.createElement("div");
+    badgeContainer.className = "badge-container";
 
-    let filteredRoles = [];
+    const filteredRoles = user.roles.filter(role =>
+      ROLE_PRIORITY.includes(role)
+    );
 
-    if (user.roles && user.roles.length > 0) {
-      filteredRoles = user.roles.filter(role =>
-        ALLOWED_ROLES.includes(role)
-      );
-    }
+    filteredRoles.forEach(role => {
+      const badge = document.createElement("span");
+      badge.className = "role-badge";
+      badge.innerText = role;
 
-    // tonen
-    if (filteredRoles.length > 0) {
-      rolesEl.innerText = filteredRoles.join(", ");
-    } else {
-      rolesEl.innerText = "Geen relevante rol";
-    }
+      // kleur per rol
+      if (role === "Politie") badge.classList.add("badge-police");
+      if (role === "Ambulance") badge.classList.add("badge-ambulance");
+      if (role === "Brandweer") badge.classList.add("badge-fire");
+
+      badgeContainer.appendChild(badge);
+    });
 
     div.appendChild(nameEl);
-    div.appendChild(rolesEl);
+    div.appendChild(badgeContainer);
 
     div.addEventListener("click", () => {
       selectedUser = user.id;
