@@ -84,7 +84,15 @@ async function moveUser() {
 }
 
 // Event listener voor knop
-document.getElementById("moveBtn").addEventListener("click", moveUser);
+document.addEventListener("DOMContentLoaded", () => {
+  const moveBtn = document.getElementById("moveBtn");
+
+  if (moveBtn) {
+    moveBtn.addEventListener("click", moveUser);
+  } else {
+    console.warn("moveBtn niet gevonden in DOM");
+  }
+});
 
 // Auto refresh
 setInterval(loadData, 5000);
