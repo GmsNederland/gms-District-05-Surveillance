@@ -609,3 +609,9 @@ button {
 .selected {
   background: #5865F2 !important;
 }
+
+.roles {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}

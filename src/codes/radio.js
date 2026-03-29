@@ -56,7 +56,24 @@ function renderUsers(users) {
   users.forEach(user => {
     const div = document.createElement("div");
     div.className = "user";
-    div.innerText = user.username;
+
+    // naam
+    const nameEl = document.createElement("div");
+    nameEl.innerText = user.username;
+    nameEl.style.fontWeight = "bold";
+
+    // rollen
+    const rolesEl = document.createElement("div");
+    rolesEl.className = "roles";
+
+    if (user.roles && user.roles.length > 0) {
+      rolesEl.innerText = user.roles.join(", ");
+    } else {
+      rolesEl.innerText = "Geen rol";
+    }
+
+    div.appendChild(nameEl);
+    div.appendChild(rolesEl);
 
     div.addEventListener("click", () => {
       selectedUser = user.id;
