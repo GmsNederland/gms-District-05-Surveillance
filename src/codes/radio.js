@@ -4,7 +4,6 @@ let selectedUser = null;
 let selectedChannel = null;
 
 const ALLOWED_CHANNEL_IDS = [
-[
   "1073724084631904436",
   "1073724087391764531",
   "1073724090633949305",
@@ -34,7 +33,6 @@ const ALLOWED_CHANNEL_IDS = [
   "1073724192287109254",
   "1073724193935458314",
   "1073724195181170698"
-]
 ];
 
 async function loadData() {
