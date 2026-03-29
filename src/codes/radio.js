@@ -1,6 +1,6 @@
 const API_URL = "https://surviveapi-production.up.railway.app";
 
-let selectedUser = null;
+let selectedUsers = [];
 let selectedChannel = null;
 
 let channelSearchTerm = "";
@@ -161,11 +161,25 @@ function renderUsers(users) {
       div.classList.add("selected");
     }
 
-    div.addEventListener("click", () => {
-      selectedUser = user.id;
+    div.addEventListener("click", (e) => {
+    const isCtrl = e.ctrlKey || e.metaKey; // Ctrl (Windows) / Cmd (Mac)
 
-      document.querySelectorAll(".user").forEach(u => u.classList.remove("selected"));
-      div.classList.add("selected");
+    if (isCtrl) {
+        // multi-select toggle
+        if (selectedUsers.includes(user.id)) {
+        selectedUsers = selectedUsers.filter(id => id !== user.id);
+        div.classList.remove("selected");
+        } else {
+        selectedUsers.push(user.id);
+        div.classList.add("selected");
+        }
+    } else {
+        // single select (reset)
+        selectedUsers = [user.id];
+
+        document.querySelectorAll(".user").forEach(u => u.classList.remove("selected"));
+        div.classList.add("selected");
+    }
     });
 
     userBox.appendChild(div);
