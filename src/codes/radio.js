@@ -1,6 +1,6 @@
 const API_URL = "https://surviveapi-production.up.railway.app";
 
-let selectedUsers = [];
+let selectedUser = null;
 let selectedChannel = null;
 
 let channelSearchTerm = "";
