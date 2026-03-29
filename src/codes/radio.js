@@ -36,6 +36,12 @@ const ALLOWED_CHANNEL_IDS = [
   "1073724156736192543"
 ];
 
+const ALLOWED_ROLES = [
+  "Politie",
+  "Ambulance",
+  "Brandweer"
+];
+
 async function loadData() {
   try {
     const res = await fetch(`${API_URL}/api/voice-data`);
@@ -90,19 +96,26 @@ function renderUsers(users) {
     const div = document.createElement("div");
     div.className = "user";
 
-    // naam
     const nameEl = document.createElement("div");
     nameEl.innerText = user.username;
     nameEl.style.fontWeight = "bold";
 
-    // rollen
     const rolesEl = document.createElement("div");
     rolesEl.className = "roles";
 
+    let filteredRoles = [];
+
     if (user.roles && user.roles.length > 0) {
-      rolesEl.innerText = user.roles.join(", ");
+      filteredRoles = user.roles.filter(role =>
+        ALLOWED_ROLES.includes(role)
+      );
+    }
+
+    // tonen
+    if (filteredRoles.length > 0) {
+      rolesEl.innerText = filteredRoles.join(", ");
     } else {
-      rolesEl.innerText = "Geen rol";
+      rolesEl.innerText = "Geen relevante rol";
     }
 
     div.appendChild(nameEl);
