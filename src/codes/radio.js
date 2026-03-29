@@ -157,6 +157,10 @@ function renderUsers(users) {
     div.appendChild(nameEl);
     div.appendChild(badgeContainer);
 
+    if (selectedUser === user.id) {
+      div.classList.add("selected");
+    }
+
     div.addEventListener("click", () => {
       selectedUser = user.id;
 
