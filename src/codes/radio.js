@@ -26,14 +26,14 @@ function renderChannels(channels) {
     div.className = "channel";
     div.innerText = channel.name;
 
-    div.onclick = () => {
+    div.addEventListener("click", () => {
       selectedChannel = channel.id;
 
       document.querySelectorAll(".channel").forEach(c => c.classList.remove("selected"));
       div.classList.add("selected");
 
       renderUsers(channel.members);
-    };
+    });
 
     channelBox.appendChild(div);
   });
@@ -48,12 +48,12 @@ function renderUsers(users) {
     div.className = "user";
     div.innerText = user.username;
 
-    div.onclick = () => {
+    div.addEventListener("click", () => {
       selectedUser = user.id;
 
       document.querySelectorAll(".user").forEach(u => u.classList.remove("selected"));
       div.classList.add("selected");
-    };
+    });
 
     userBox.appendChild(div);
   });
@@ -65,20 +65,27 @@ async function moveUser() {
     return;
   }
 
-  await fetch(`${API_URL}/api/move-user`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      userId: selectedUser,
-      channelId: selectedChannel
-    })
-  });
+  try {
+    await fetch(`${API_URL}/api/move-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: selectedUser,
+        channelId: selectedChannel
+      })
+    });
 
-  loadData();
+    loadData();
+  } catch (err) {
+    console.error("Move error:", err);
+  }
 }
 
-// auto refresh
+// Event listener voor knop
+document.getElementById("moveBtn").addEventListener("click", moveUser);
+
+// Auto refresh
 setInterval(loadData, 5000);
 loadData();
