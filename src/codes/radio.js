@@ -196,13 +196,12 @@
     }
     }
 
-    function openPopup(userData) {
-        document.getElementById("bewerkenpopup").style.display = "flex";
-        // TODO: vul popup met userData
+    function openPopup() {
+        document.getElementById("radiopopup").style.display = "flex";
     }
 
     function closePopup() {
-        document.getElementById("bewerkenpopup").style.display = "none";
+        document.getElementById("radiopopup").style.display = "none";
     }
 
     document.getElementById("popupCloseBtn")?.addEventListener("click", closePopup);
