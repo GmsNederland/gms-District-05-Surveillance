@@ -26,11 +26,12 @@ function renderChannels(channels) {
   channelBox.innerHTML = "";
   userBox.innerHTML = "";
 
+  // ✅ filter hier
   const filteredChannels = channels.filter(channel =>
     ALLOWED_CHANNEL_IDS.includes(channel.id)
   );
 
-  channels.forEach(channel => {
+  filteredChannels.forEach(channel => {
     const div = document.createElement("div");
     div.className = "channel";
     div.innerText = channel.name;
