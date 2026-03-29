@@ -122,7 +122,25 @@
       </form>
     </div>
   </div>
+
+  <div id="radio-channels" class="modal show">
+    <div class="modal-content">
+      <h2>Voice Channels</h2>
+
+      <div class="container">
+        <!-- Channels -->
+        <div id="channels" class="scroll-box"></div>
+
+        <!-- Users -->
+        <div id="users" class="scroll-box"></div>
+      </div>
+
+      <button onclick="moveUser()">Verplaats gebruiker</button>
+    </div>
+  </div>
+
 <script type="module" src="/src/components/meldkamer/incidentBoard.js"></script>
 <script type="module" src="/src/components/meldkamer/rightSidebar.js"></script>
+<script type="module" src="/src/codes/radio.js"></script>
 </body>
 </html>

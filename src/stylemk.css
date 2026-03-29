@@ -571,3 +571,41 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.modal-content {
+  background: #1e1e2f;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  width: 600px;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+}
+
+.scroll-box {
+  flex: 1;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #2a2a40;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.channel, .user {
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.channel:hover, .user:hover {
+  background: #3a3a60;
+}
+
+.selected {
+  background: #5865F2;
+}
