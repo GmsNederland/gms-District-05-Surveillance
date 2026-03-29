@@ -1,4 +1,4 @@
-const API_URL = "https://fastapi-production-3485.up.railway.app";
+const API_URL = "https://surviveapi-production.up.railway.app";
 
 let selectedUser = null;
 let selectedChannel = null;
