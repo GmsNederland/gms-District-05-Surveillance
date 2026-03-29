@@ -124,29 +124,34 @@
     </div>
   </div>
 
-  <div id="radio-channels" class="modal show">
-<span id="radiopopup" class="close" onclick="closePopup()">×</span>
-    <div class="modal-content">
-      <h2>🎧 Meldkamer Voice Control</h2>
+<div id="radio-channels" class="modal">
+  <div class="modal-content">
+    
+    <!-- Close button -->
+    <span class="close" onclick="closePopup()">×</span>
 
-      <div class="container">
-        <!-- Channels -->
-        <div>
-          <h3>Kanalen</h3>
-          <input id="channel-search" type="text" placeholder="Zoek Kanaal....">
-          <div id="channels" class="scroll-box"></div>
-        </div>
+    <h2>🎧 Meldkamer Voice Control</h2>
 
-        <!-- Users -->
-        <div>
-          <h3>Gebruikers</h3>
-          <input id="user-search" type="text" placeholder="Zoek gebruiker....">
-          <div id="users" class="scroll-box"></div>
-        </div>
+    <div class="container">
+      <!-- Channels -->
+      <div>
+        <h3>Kanalen</h3>
+        <input id="channel-search" type="text" placeholder="Zoek Kanaal....">
+        <div id="channels" class="scroll-box"></div>
       </div>
-          <button id="moveBtn">Verplaats gebruiker</button>    
+
+      <!-- Users -->
+      <div>
+        <h3>Gebruikers</h3>
+        <input id="user-search" type="text" placeholder="Zoek gebruiker....">
+        <div id="users" class="scroll-box"></div>
       </div>
+    </div>
+
+    <button id="moveBtn">Verplaats gebruiker</button>
+
   </div>
+</div>
 
 <script type="module" src="/src/components/meldkamer/incidentBoard.js"></script>
 <script type="module" src="/src/components/meldkamer/rightSidebar.js"></script>
