@@ -196,19 +196,32 @@
     }
     }
 
+    const modal = document.getElementById("radio-channels");
+
+        // Open popup
     function openPopup() {
-        document.getElementById("radiopopup").style.display = "flex";
+    modal.style.display = "block";
     }
 
+    // Close popup
     function closePopup() {
-        document.getElementById("radiopopup").style.display = "none";
+    modal.style.display = "none";
     }
 
-    document.getElementById("popupCloseBtn")?.addEventListener("click", closePopup);
+    // Klik buiten popup = sluiten
+    window.onclick = function(event) {
+    if (event.target === modal) {
+        closePopup();
+    }
+    }
 
-    window.openPopup = openPopup;
-    window.closePopup = closePopup;
-
+    // ESC toets = sluiten
+    document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closePopup();
+    }
+    });
+    
     // Event listener voor knop
     document.addEventListener("DOMContentLoaded", () => {
     const moveBtn = document.getElementById("moveBtn");

@@ -642,3 +642,11 @@ button {
 .badge-fire {
   background: #dd6b20; /* oranje */
 }
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 28px;
+  cursor: pointer;
+}
