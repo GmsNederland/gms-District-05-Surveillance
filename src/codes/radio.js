@@ -50,7 +50,14 @@ async function loadData() {
     const res = await fetch(`${API_URL}/api/voice-data`);
     const data = await res.json();
 
-    renderChannels(data.channels);
+    const prevSelectedChannel = selectedChannel;
+    const prevSelectedUser = selectedUser;
+
+    if (prevSelectedChannel) {
+        const channelEl = [...document.querySelectorAll(".channel")]
+            .find(el => el.innerText === data.channels.find(c => c.id === prevSelectedChannel)?.name);
+            if (channelEl) channelEl.classList.add("selected");
+    }
   } catch (err) {
     console.error("API fout:", err);
   }
