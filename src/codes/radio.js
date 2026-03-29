@@ -3,6 +3,9 @@ const API_URL = "https://surviveapi-production.up.railway.app";
 let selectedUser = null;
 let selectedChannel = null;
 
+let channelSearchTerm = "";
+let userSearchTerm = "";
+
 const ALLOWED_CHANNEL_IDS = [
   "1073724084631904436",
   "1073724087391764531",
@@ -60,17 +63,16 @@ function renderChannels(channels) {
   channelBox.innerHTML = "";
   userBox.innerHTML = "";
 
-  // ✅ filter eerst
-  const filteredChannels = channels.filter(channel =>
-    ALLOWED_CHANNEL_IDS.includes(channel.id)
-  );
+  const filteredChannels = channels
+    .filter(channel => ALLOWED_CHANNEL_IDS.includes(channel.id))
+    .filter(channel =>
+      channel.name.toLowerCase().includes(channelSearchTerm)
+    )
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, "nl", { sensitivity: "base" })
+    );
 
-  // ✅ sorteer A → Z
-  const sortedChannels = filteredChannels.sort((a, b) =>
-    a.name.localeCompare(b.name, "nl", { sensitivity: "base" })
-  );
-
-  sortedChannels.forEach(channel => {
+  filteredChannels.forEach(channel => {
     const div = document.createElement("div");
     div.className = "channel";
     div.innerText = channel.name;
@@ -94,29 +96,29 @@ function renderUsers(users) {
 
   const ROLE_PRIORITY = ["Politie", "Ambulance", "Brandweer"];
 
-  // alleen relevante users
-  const relevantUsers = users.filter(user =>
-    user.roles && user.roles.some(role => ROLE_PRIORITY.includes(role))
-  );
+  const relevantUsers = users
+    .filter(user =>
+      user.roles &&
+      user.roles.some(role => ROLE_PRIORITY.includes(role))
+    )
+    .filter(user =>
+      user.username.toLowerCase().includes(userSearchTerm)
+    )
+    .sort((a, b) => {
+      const aRole = a.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
+      const bRole = b.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
 
-  // sorteren op dienst prioriteit
-  relevantUsers.sort((a, b) => {
-    const aRole = a.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
-    const bRole = b.roles.find(r => ROLE_PRIORITY.includes(r)) || "";
-
-    return ROLE_PRIORITY.indexOf(aRole) - ROLE_PRIORITY.indexOf(bRole);
-  });
+      return ROLE_PRIORITY.indexOf(aRole) - ROLE_PRIORITY.indexOf(bRole);
+    });
 
   relevantUsers.forEach(user => {
     const div = document.createElement("div");
     div.className = "user";
 
-    // naam
     const nameEl = document.createElement("div");
     nameEl.innerText = user.username;
     nameEl.style.fontWeight = "bold";
 
-    // badges container
     const badgeContainer = document.createElement("div");
     badgeContainer.className = "badge-container";
 
@@ -129,7 +131,6 @@ function renderUsers(users) {
       badge.className = "role-badge";
       badge.innerText = role;
 
-      // kleur per rol
       if (role === "Politie") badge.classList.add("badge-police");
       if (role === "Ambulance") badge.classList.add("badge-ambulance");
       if (role === "Brandweer") badge.classList.add("badge-fire");
@@ -183,6 +184,25 @@ document.addEventListener("DOMContentLoaded", () => {
     moveBtn.addEventListener("click", moveUser);
   } else {
     console.warn("moveBtn niet gevonden in DOM");
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const channelInput = document.getElementById("channel-search");
+  const userInput = document.getElementById("user-search");
+
+  if (channelInput) {
+    channelInput.addEventListener("input", (e) => {
+      channelSearchTerm = e.target.value.toLowerCase();
+      loadData();
+    });
+  }
+
+  if (userInput) {
+    userInput.addEventListener("input", (e) => {
+      userSearchTerm = e.target.value.toLowerCase();
+      loadData();
+    });
   }
 });
 
