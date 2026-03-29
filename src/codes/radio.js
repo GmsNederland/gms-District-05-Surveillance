@@ -161,25 +161,11 @@ function renderUsers(users) {
       div.classList.add("selected");
     }
 
-    div.addEventListener("click", (e) => {
-    const isCtrl = e.ctrlKey || e.metaKey; // Ctrl (Windows) / Cmd (Mac)
+    div.addEventListener("click", () => {
+      selectedUser = user.id;
 
-    if (isCtrl) {
-        // multi-select toggle
-        if (selectedUsers.includes(user.id)) {
-        selectedUsers = selectedUsers.filter(id => id !== user.id);
-        div.classList.remove("selected");
-        } else {
-        selectedUsers.push(user.id);
-        div.classList.add("selected");
-        }
-    } else {
-        // single select (reset)
-        selectedUsers = [user.id];
-
-        document.querySelectorAll(".user").forEach(u => u.classList.remove("selected"));
-        div.classList.add("selected");
-    }
+      document.querySelectorAll(".user").forEach(u => u.classList.remove("selected"));
+      div.classList.add("selected");
     });
 
     userBox.appendChild(div);
