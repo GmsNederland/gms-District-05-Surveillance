@@ -71,10 +71,8 @@ async function loadData() {
 
 function renderChannels(channels) {
   const channelBox = document.getElementById("channels");
-  const userBox = document.getElementById("users");
 
   channelBox.innerHTML = "";
-  userBox.innerHTML = "";
 
   const filteredChannels = channels
     .filter(channel => ALLOWED_CHANNEL_IDS.includes(channel.id))
@@ -89,6 +87,11 @@ function renderChannels(channels) {
     const div = document.createElement("div");
     div.className = "channel";
     div.innerText = channel.name;
+
+    if (selectedChannel === channel.id) {
+      div.classList.add("selected");
+      renderUsers(channel.members); // 🔥 blijft zichtbaar bij refresh
+    }
 
     div.addEventListener("click", () => {
       selectedChannel = channel.id;
