@@ -251,44 +251,69 @@ body{
 </div>
 
 <script>
-const SERVICES = {
-  politie:{label:"Politie", subLabel:'Wet', description:"Toegang tot meldingen, surveillance en interventies", color:'#0078ff', icon:'👮'},
-  ambulance:{label:"Ambulance", subLabel:'Medisch', description:"Medische meldingen en noodhulp", color:'#00ff78', icon:'🚑'},
-  brandweer:{label:'Brandweer', subLabel:'Nood', description:'HV en Branden', color:'#e53935', icon:'🔥'},
-  burger:{label:"Burger", description:"Basis toegang tot systeem", color:'#9ca3af', icon:'🧑'},
-  meldkamer:{label:"Meldkamer", description:"Toegang voor Meldkamer personeel", color:'#f59e0b', icon:'📟'},
-  admin:{label:"Admin", description: "Alleen voor serverbeheer", color:'#8b5cf6', icon:'🛠️'}
-};
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-let userRoles = ["brandweer","politie","ambulance","burger","meldkamer","admin"];
-const roleGrid = document.getElementById('roleGrid');
-document.getElementById('roleCount').textContent = `Beschikbare diensten: ${userRoles.length}`;
+  const firebaseConfig = {
+    apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+    authDomain: "district05surveillance-e5183.firebaseapp.com",
+    databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "district05surveillance-e5183",
+    storageBucket: "district05surveillance-e5183.firebasestorage.app",
+    messagingSenderId: "492638820842",
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+  };
 
-userRoles.forEach(roleKey=>{
-  const service = SERVICES[roleKey];
-  const card = document.createElement('div');
-  card.className='role-card';
-  card.setAttribute('data-tooltip', service.description);
-  card.innerHTML=`
-    <div class="accent-bar" style="background:${service.color}"></div>
-    <div class="role-header">
-      <div class="role-icon" style="background:${service.color}22;border:1px solid ${service.color}55;">${service.icon}</div>
-      <div class="role-text">
-        <div class="title">${service.label}</div>
-        <div class="subtitle">${service.subLabel || ''}</div>
-        <div class="desc">${service.description}</div>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  /* 🔐 PROTECTION */
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // ❌ Niet ingelogd → direct kick
+      window.location.href = "/index.html";
+    } else {
+      console.log("✅ Ingelogd:", user.email);
+    }
+  });
+  const SERVICES = {
+    politie:{label:"Politie", subLabel:'Wet', description:"Toegang tot meldingen, surveillance en interventies", color:'#0078ff', icon:'👮'},
+    ambulance:{label:"Ambulance", subLabel:'Medisch', description:"Medische meldingen en noodhulp", color:'#00ff78', icon:'🚑'},
+    brandweer:{label:'Brandweer', subLabel:'Nood', description:'HV en Branden', color:'#e53935', icon:'🔥'},
+    burger:{label:"Burger", description:"Basis toegang tot systeem", color:'#9ca3af', icon:'🧑'},
+    meldkamer:{label:"Meldkamer", description:"Toegang voor Meldkamer personeel", color:'#f59e0b', icon:'📟'},
+    admin:{label:"Admin", description: "Alleen voor serverbeheer", color:'#8b5cf6', icon:'🛠️'}
+  };
+
+  let userRoles = ["brandweer","politie","ambulance","burger","meldkamer","admin"];
+  const roleGrid = document.getElementById('roleGrid');
+  document.getElementById('roleCount').textContent = `Beschikbare diensten: ${userRoles.length}`;
+
+  userRoles.forEach(roleKey=>{
+    const service = SERVICES[roleKey];
+    const card = document.createElement('div');
+    card.className='role-card';
+    card.setAttribute('data-tooltip', service.description);
+    card.innerHTML=`
+      <div class="accent-bar" style="background:${service.color}"></div>
+      <div class="role-header">
+        <div class="role-icon" style="background:${service.color}22;border:1px solid ${service.color}55;">${service.icon}</div>
+        <div class="role-text">
+          <div class="title">${service.label}</div>
+          <div class="subtitle">${service.subLabel || ''}</div>
+          <div class="desc">${service.description}</div>
+        </div>
+        <div class="role-chevron">➡️</div>
       </div>
-      <div class="role-chevron">➡️</div>
-    </div>
-  `;
-  card.onclick = ()=> selectRole(roleKey);
-  roleGrid.appendChild(card);
-});
+    `;
+    card.onclick = ()=> selectRole(roleKey);
+    roleGrid.appendChild(card);
+  });
 
-function selectRole(role){
-  sessionStorage.setItem("role", role);
-  window.location.href = "/src/pages/panels/" + role + ".html";
-}
+  function selectRole(role){
+    sessionStorage.setItem("role", role);
+    window.location.href = "/src/pages/panels/" + role + ".html";
+  }
 </script>
 
 </body>
