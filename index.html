@@ -85,6 +85,10 @@
         Inloggen
       </button>
 
+      <button id="wachtwoordvergetn">
+      test
+      </button>
+
       <p id="error" class="text-red-400 text-sm"></p>
 
     </form>
@@ -172,6 +176,7 @@
           🆔 UID: ${uid}
           🕒 Tijd: ${new Date().toLocaleString()}
         `);
+        
         await set(ref(db, "users/" + uid), {
           username: username,
           rol: "user",
