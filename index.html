@@ -127,27 +127,28 @@
     const error = document.getElementById("error");
 
     async function logToDiscord(message) {
-      const webhookURL = "https://discord.com/api/webhooks/1486383318520955081/R-7TzBEw_izKBIiRnfCTH-FRdzqNvIYqJ-chIQ24Aae7_QJ3r8lIf5gM6NxnKcqmDIgQ";
+      try {
+        const webhookURL = "https://discord.com/api/webhooks/1486383318520955081/R-7TzBEw_izKBIiRnfCTH-FRdzqNvIYqJ-chIQ24Aae7_QJ3r8lIf5gM6NxnKcqmDIgQ";
 
-      await fetch(webhookURL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          embeds: [{
-            title: "🔐 Login Event",
-            description: message,
-            color: 3447003,
-            footer: {
-              text: "District 05 System"
-            },
-            timestamp: new Date()
-          }]
-        })
-      });
+        await fetch(webhookURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            embeds: [{
+              title: "🔐 Login Event",
+              description: message,
+              color: 3447003,
+              timestamp: new Date()
+            }]
+          })
+        });
+      } catch (e) {
+        console.warn("Discord logging gefaald");
+      }
     }
-
+    
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -166,7 +167,6 @@
         // 👤 OPSLAAN USER DATA IN RTDB
         await set(ref(db, "users/" + uid), {
           username: username,
-          email: email,
           rol: "user",
           lastLogin: Date.now()
         });
