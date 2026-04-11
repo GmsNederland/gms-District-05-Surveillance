@@ -954,19 +954,65 @@ function openSystemPopup(system) {
     document.addEventListener('keydown', e => { if(e.key==='Escape') closePopup(); });
 
     // Versturen
-    popup.querySelector('.btn-send').onclick = () => {
-      const inputs = popup.querySelectorAll('input, select, textarea');
-      let valid = true;
-      const data = {};
-      inputs.forEach(f => {
-        if(f.value === '' || f.value === null) valid = false;
-        data[f.previousElementSibling.textContent.replace(':','')] = f.value;
-      });
-      if(!valid) return alert('Vul alle velden in!');
-      alert(`Verstuurd via ${system.name}:\n${JSON.stringify(data,null,2)}`);
-      popup.style.display = 'none';
-    };
-  }
+  popup.querySelector('.btn-send').onclick = () => {
+    const inputs = popup.querySelectorAll('input, select, textarea');
+
+    let valid = true;
+    const data = {};
+
+    inputs.forEach(f => {
+      if (f.value === '' || f.value === null) valid = false;
+      data[f.previousElementSibling.textContent.replace(':', '')] = f.value;
+    });
+
+    if (!valid) return alert('Vul alle velden in!');
+
+    // ================================
+    // 🚨 LUCHTALARM API MAPPING
+    // ================================
+
+    let payload = {};
+
+    const mode = data["Alle palen af laten gaan?"] || data["Mode"];
+    const selectie = data["Palenselectie"];
+
+    if (mode === "Ja" || mode === "Alle palen") {
+      payload.type = "all";
+    } else {
+      payload.type = "single";
+
+      // als multiple select → array
+      if (Array.isArray(selectie)) {
+        payload.nummer = selectie.map(p => parseInt(p.replace("Paal", "")));
+      } else {
+        payload.nummer = parseInt(selectie.replace("Paal", ""));
+      }
+    }
+
+    // ================================
+    // 📡 SEND TO API
+    // ================================
+
+    fetch("https://apiservi-uba4.onrender.com/api/luchtalarm", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log("✅ Verstuurd:", res);
+      alert(`🚨 Luchtalarm verstuurd!\n${JSON.stringify(payload, null, 2)}`);
+    })
+    .catch(err => {
+      console.error("❌ Error:", err);
+      alert("Fout bij versturen!");
+    });
+
+    popup.style.display = 'none';
+  };
+}
 
   popup.style.display = 'flex';
   popup.classList.add('show');
