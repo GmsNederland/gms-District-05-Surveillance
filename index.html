@@ -121,17 +121,32 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-        /* 🔐 CHECK LOGIN */
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        // ❌ Niet ingelogd → terug naar login
-        window.location.href = "/index.html";
-      }
-    });
     const db = getDatabase(app);
 
     const form = document.getElementById("loginForm");
     const error = document.getElementById("error");
+
+    async function logToDiscord(message) {
+      const webhookURL = "JOUW_WEBHOOK_URL";
+
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          embeds: [{
+            title: "🔐 Login Event",
+            description: message,
+            color: 3447003,
+            footer: {
+              text: "District 05 System"
+            },
+            timestamp: new Date()
+          }]
+        })
+      });
+    }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
