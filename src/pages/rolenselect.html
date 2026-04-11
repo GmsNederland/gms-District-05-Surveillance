@@ -271,7 +271,7 @@ body{
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       // ❌ Niet ingelogd → direct kick
-      window.location.href = "/index.html";
+      window.location.href = "/src/index.html";
     } else {
       console.log("✅ Ingelogd:", user.email);
     }
