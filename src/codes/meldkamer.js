@@ -62,6 +62,7 @@
       const raw = await res.json();
 
       const data = raw.players || [];
+      const newUnits = [];
 
       if (!Array.isArray(data)) {
         console.error("API structuur fout:", raw);
@@ -78,6 +79,29 @@
 
         const coords = toMapCoords(player.mapPosition);
         lastSeen[id] = Date.now();
+
+        const serviceMap = {
+          Politie: 'politie',
+          Ambulance: 'ambulance',
+          Brandweer: 'brandweer',
+          KNRM: 'knrm'
+        };
+
+        const service = serviceMap[player.team];
+
+        if (service) {
+          newUnits.push({
+            id: player.userId,
+            callsign: player.roepnummer || player.username,
+            service: service,
+            status: 'Actief',
+            operator: player.username,
+            latitude: coords[0],
+            longitude: coords[1],
+            statusColor: 'status-enroute',
+            serviceLabel: player.team
+          });
+        }
 
         if (liveMarkers[id]) {
           liveMarkers[id].setLatLng(coords);
@@ -116,7 +140,12 @@
           liveMarkers[id] = marker;
         }
       });
-
+        window.units = newUnits;
+        
+        const container = document.getElementById('unitsContainer');
+        if (container) {
+          renderUnits(container);
+        }
       // cleanup
       Object.keys(liveMarkers).forEach(id => {
         if (!activeIds.has(Number(id))) {
@@ -485,7 +514,6 @@
   }
   
   const calls = [
-    { id: 1, caller_id: "Jan", caller_location: "Amsterdam", priority: 1, status: "waiting", created_date: "2026-03-23T12:00:00Z" },
     { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
   ];
 
@@ -577,22 +605,8 @@
   // Annuleer knop in het formulier
   document.getElementById("incident-cancel").addEventListener("click", hideIncidentPopup);
 
-  //===incident===
-  // Prioriteit kleuren (voorbeeld)
-
-// const STATUS_LABELS = {
-//   NEW: 'Nieuw',
-//   DISPATCHED: 'Gealarmeerd',
-//   EN_ROUTE: 'Onderweg',
-//   ON_SCENE: 'Ter plaatse',
-//   TRANSPORT: 'Transport',
-//   CLOSED: 'Afgehandeld',
-// };
-
-// Voorbeeld incidenten
 const incidents = [
   { id: 1, incident_number: 'INC-20260323-001', title: 'Brand woning', priority: 1, status: 'NEW', location: 'Amsterdam', assigned_units: ['Unit1'], claimed_by: 'jan@politie.nl' },
-  { id: 2, incident_number: 'INC-20260323-002', title: 'Ongeval A10', priority: 2, status: 'DISPATCHED', location: 'Rotterdam', assigned_units: [], claimed_by: null },
 ];
 
 // Render functie
@@ -656,28 +670,6 @@ window.units = [
     statusColor: 'status-enroute',      // groen, vrij
     serviceLabel: 'Politie',
   },
-    {
-    id: 1,
-    callsign: 'Unit 01',
-    service: 'brandweer',
-    status: 'Vrij',
-    operator: 'John Doe',
-    latitude: 52.0,
-    longitude: 5.1,
-    statusColor: 'status-busy',      // groen, vrij
-    serviceLabel: 'brandweer',
-  },
-      {
-    id: 1,
-    callsign: 'Unit 01',
-    service: 'ambulance',
-    status: 'Vrij',
-    operator: 'John Doe',
-    latitude: 52.0,
-    longitude: 5.1,
-    statusColor: 'status-available',      // groen, vrij
-    serviceLabel: 'ambulance',
-  }
 ];
 
 // Callback functies voor de knoppen
