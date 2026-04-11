@@ -914,7 +914,7 @@ function openSystemPopup(system) {
       fields.push({label: 'Locatie', type:'text', placeholder:'Straatnaam, Stad'});
       fields.push({label: 'Acties voor inwoners', type:'text', placeholder:'Bijv. Blijf binnen'});
     } else if(system.id === 'luchtalarm') {
-      fields.push({label:'Palenselectie', type:'select', options:['Paal1','Paal2','Paal3'], multiple:true});
+      fields.push({label:'Palenselectie', type:'select', options:['Paal1','Paal2','Paal3','Paal4'], multiple:true});
       fields.push({label:'Alle palen af laten gaan?', type:'select', options:['Nee','Ja']});
     } else if(system.id === 'amberalert') {
       fields.push({label:'Naam van het kind', type:'text', placeholder:'Typ hier de Roblox naam'})
