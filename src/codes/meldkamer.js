@@ -968,24 +968,45 @@ function openSystemPopup(system) {
     if (!valid) return alert('Vul alle velden in!');
 
     // ================================
-    // 🚨 LUCHTALARM API MAPPING
+    // 🧠 AUTO DETECT SYSTEM TYPE
     // ================================
 
     let payload = {};
+    let url = "";
 
-    const mode = data["Alle palen af laten gaan?"] || data["Mode"];
-    const selectie = data["Palenselectie"];
+    // 🚨 AMBER ALERT DETECTIE
+    if (data["Naam van het kind"] || data["Opvallende kenmerken"]) {
 
-    if (mode === "Ja" || mode === "Alle palen") {
-      payload.type = "all";
-    } else {
-      payload.type = "single";
+      url = "https://apiservi-uba4.onrender.com/api/amberalert";
 
-      // als multiple select → array
-      if (Array.isArray(selectie)) {
-        payload.nummer = selectie.map(p => parseInt(p.replace("Paal", "")));
+      payload = {
+        type: "amberalert",
+        playerName: data["Naam van het kind"],
+        age: data["Leeftijd van het kind"],
+        features: data["Opvallende kenmerken"],
+        location: data["Laatste bekende locatie"],
+        datetime: data["Datum & Tijd van verdwijning"]
+      };
+
+    }
+    // 🚨 LUCHTALARM DETECTIE
+    else if (data["Alle palen af laten gaan?"] || data["Palenselectie"] || data["Mode"]) {
+
+      url = "https://apiservi-uba4.onrender.com/api/luchtalarm";
+
+      const mode = data["Alle palen af laten gaan?"] || data["Mode"];
+      const selectie = data["Palenselectie"];
+
+      if (mode === "Ja" || mode === "Alle palen") {
+        payload.type = "all";
       } else {
-        payload.nummer = parseInt(selectie.replace("Paal", ""));
+        payload.type = "single";
+
+        if (Array.isArray(selectie)) {
+          payload.nummer = selectie.map(p => parseInt(p.replace("Paal", "")));
+        } else {
+          payload.nummer = parseInt(selectie.replace("Paal", ""));
+        }
       }
     }
 
@@ -993,7 +1014,11 @@ function openSystemPopup(system) {
     // 📡 SEND TO API
     // ================================
 
-    fetch("https://apiservi-uba4.onrender.com/api/luchtalarm", {
+    if (!url) {
+      return alert("❌ Onbekend systeem");
+    }
+
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1002,8 +1027,7 @@ function openSystemPopup(system) {
     })
     .then(res => res.json())
     .then(res => {
-      console.log("✅ Verstuurd:", res);
-      alert(`🚨 Luchtalarm verstuurd!\n${JSON.stringify(payload, null, 2)}`);
+      alert(`🚨 Verstuurd!\n${JSON.stringify(payload, null, 2)}`);
     })
     .catch(err => {
       console.error("❌ Error:", err);
