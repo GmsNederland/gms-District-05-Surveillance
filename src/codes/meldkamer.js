@@ -24,6 +24,8 @@
 
   let liveMarkers = {};   // ✅ HIER
   let lastSeen = {};      // ✅ HIER
+  let currentIncident = null;  // voor de meldingen
+
 
   const map = L.map('map', {
     crs: L.CRS.Simple,
@@ -371,7 +373,48 @@
     'Gelderland-Zuid',
     'Alle regio\'s',
   ];
+  // popup meldingen
+  window.closeModal = function () {
+  document.getElementById("incident-modal").style.display = "none";
+  };
+  window.addNote = function () {
 
+  const text = document.getElementById("incident-note").value;
+  if (!text || !currentIncident) return;
+
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+  calls = calls.map(c => {
+    if (c.id === currentIncident.id) {
+      if (!c.notes) c.notes = [];
+      c.notes.push(text);
+    }
+    return c;
+  });
+
+  localStorage.setItem("calls", JSON.stringify(calls));
+
+  document.getElementById("incident-note").value = "";
+
+  renderIncidents(calls);
+  openIncidentModal(calls.find(c => c.id === currentIncident.id));
+  };
+  window.closeIncident = function () {
+
+  if (!currentIncident) return;
+
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+  calls = calls.filter(c => c.id !== currentIncident.id);
+
+  localStorage.setItem("calls", JSON.stringify(calls));
+
+  closeModal();
+
+  renderIncidents(calls);
+  renderCallQueue(calls, onAcceptCall);
+  };
+  // eind popup meldingen deel
   // === MAP DEFAULT ===
   window.MAP_CENTER = [52.37, 4.89];
   window.MAP_ZOOM = 13;
@@ -459,8 +502,14 @@
   });
 }
 
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
   //  ===112 meldingen===
   function renderCallQueue(calls, onAcceptCall) {
+    const TYPE_TO_PRIORITY = {
+      "Brandweer": 1,
+      "Ambulance": 2,
+      "Politie": 3
+    };
     const container = document.getElementById("calls-list");
     container.innerHTML = "";
 
@@ -472,7 +521,8 @@
     }
 
     waitingCalls.forEach(call => {
-      const prio = PRIORITY_COLORS[call.priority] || PRIORITY_COLORS[2];
+      const prioIndex = TYPE_TO_PRIORITY[call.priority] || 2;
+      const prio = PRIORITY_COLORS[prioIndex];
 
       const card = document.createElement("div");
       card.className = "call-card";
@@ -513,20 +563,33 @@
     });
   }
   
-  const calls = [
-    { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
-  ];
+  // const calls = [
+  //   { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
+  // ];
 
-  function acceptCall(id) {
-    const call = calls.find(c => c.id === id);
-    if(!call) return;
-    alert(`Melding aangenomen: ${call.caller_id}`);
-    call.status = 'accepted';
-    renderCalls();
+  function onAcceptCall(call){
+
+    let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+    calls = calls.map(c => {
+      if(c.id === call.id){
+        c.status = "accepted";
+      }
+      return c;
+    });
+
+    localStorage.setItem("calls", JSON.stringify(calls));
+
+    renderCallQueue(calls, onAcceptCall);
+    renderIncidents(calls); // 🔥 NIEUW
   }
 
-  renderCallQueue(calls, acceptCall);
+  renderCallQueue(calls, onAcceptCall);
 
+  setInterval(() => {
+  calls = JSON.parse(localStorage.getItem("calls") || "[]");
+  renderCallQueue(calls, onAcceptCall);
+  }, 2000);
   // Vul select-opties
   const typeSelect = document.getElementById("incident-type");
   INCIDENT_TYPES.forEach(t => {
@@ -610,44 +673,57 @@ const incidents = [
 ];
 
 // Render functie
-function renderIncidents() {
-  const container = document.getElementById('incidents');
-  container.innerHTML = '';
+function renderIncidents(calls) {
+    if (!Array.isArray(calls)) calls = [];
 
-  const activeIncidents = incidents.filter(i => i.status !== 'CLOSED');
-  const sortedIncidents = activeIncidents.sort((a,b) => (a.priority || 3) - (b.priority || 3));
+  const container = document.getElementById("incidents");
+  container.innerHTML = "";
 
-  if(sortedIncidents.length === 0){
-    container.innerHTML = '<div style="text-align:center; padding:12px; color:#94a3b8;">Geen actieve incidenten</div>';
+  const activeCalls = calls.filter(c => c.status === "accepted");
+
+  if (activeCalls.length === 0) {
+    container.innerHTML = "<p>Geen actieve incidenten</p>";
     return;
   }
 
-  sortedIncidents.forEach(inc => {
-    const card = document.createElement('div');
-    card.className = 'incident-card';
-    card.style.borderColor = PRIORITY_COLORS[inc.priority]?.border || 'orange';
+  activeCalls.forEach(call => {
 
-    const assigned = inc.assigned_units?.length || 0;
-    const claimed = inc.claimed_by ? inc.claimed_by.split('@')[0] : '';
+    const card = document.createElement("div");
+    card.className = "call-card";
 
-    card.innerHTML = `
-      <div class="header">
-        <div class="title">${inc.incident_number}</div>
-        <div class="badge">${STATUS_LABELS[inc.status] || inc.status}</div>
-      </div>
-      <div class="title-main">${inc.title}</div>
-      ${inc.location ? `<div class="location">📍 ${inc.location}</div>` : ''}
-      <div class="footer">
-        <div>
-          ${assigned > 0 ? assigned + ' eenhe' + (assigned===1?'id':'den') : ''}
-          ${claimed ? ' • ' + claimed : ''}
-        </div>
-      </div>
+    const header = document.createElement("div");
+    header.className = "call-header";
+    header.innerHTML = `
+      <span>INC-${call.id}</span>
+      <span style="color:lime; font-size:10px;">ACTIEF</span>
     `;
+    card.appendChild(header);
 
-    card.addEventListener('click', () => {
-      alert(`Incident geopend: ${inc.title}`);
-    });
+    const body = document.createElement("div");
+    body.className = "call-body";
+
+    const loc = document.createElement("div");
+    loc.innerText = `Locatie: ${call.caller_location}`;
+    body.appendChild(loc);
+
+    if (call.description) {
+      const desc = document.createElement("div");
+      desc.innerText = `Info: ${call.description}`;
+      body.appendChild(desc);
+    }
+
+    const time = document.createElement("div");
+    time.innerText = `Gestart: ${new Date(call.created_date).toLocaleTimeString()}`;
+    body.appendChild(time);
+
+    card.appendChild(body);
+    const btn = document.createElement("button");
+      btn.className = "call-button";
+      btn.innerText = "Bekijk melding";
+
+      btn.onclick = () => openIncidentModal(call);
+
+      card.appendChild(btn);
 
     container.appendChild(card);
   });
@@ -1086,6 +1162,69 @@ function openSystemPopup(system) {
   const activeTab = document.querySelector('.tab-trigger.active').dataset.tab;
   loadTabContent(activeTab);
 });
+
+// meldingen popup open
+function openIncidentModal(call) {
+  currentIncident = call;
+
+  const modal = document.getElementById("incident-modal");
+  const content = document.getElementById("modal-content");
+
+  content.innerHTML = `
+    <div><b>ID:</b> INC-${call.id}</div>
+    <div><b>Locatie:</b> ${call.caller_location}</div>
+    <div><b>Type:</b> ${call.priority}</div>
+    <div><b>Omschrijving:</b> ${call.description || "-"}</div>
+    <div><b>Status:</b> ${call.status}</div>
+    <div><b>Notities:</b> ${(call.notes || []).join("<br>")}</div>
+  `;
+
+  modal.style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("incident-modal").style.display = "none";
+  currentIncident = null;
+}
+
+function addNote() {
+
+  const text = document.getElementById("incident-note").value;
+  if (!text || !currentIncident) return;
+
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+  calls = calls.map(c => {
+    if (c.id === currentIncident.id) {
+      if (!c.notes) c.notes = [];
+      c.notes.push(text);
+    }
+    return c;
+  });
+
+  localStorage.setItem("calls", JSON.stringify(calls));
+
+  document.getElementById("incident-note").value = "";
+
+  renderIncidents(calls);
+  openIncidentModal(calls.find(c => c.id === currentIncident.id));
+}
+
+function closeIncident() {
+
+  if (!currentIncident) return;
+
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+  calls = calls.filter(c => c.id !== currentIncident.id);
+
+  localStorage.setItem("calls", JSON.stringify(calls));
+
+  closeModal();
+
+  renderIncidents(calls);
+  renderCallQueue(calls, onAcceptCall);
+}
 
 // Initial render
 renderIncidents();

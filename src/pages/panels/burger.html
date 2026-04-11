@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>112 Burger Panel — District 05</title>
 <link rel="icon" type="image/x-icon" href="/icone/logo.png">
-<script src="/codes/topbar.js" defer></script>
-<script src="/codes/scripts.js" defer></script>
-<script src="/codes/burger.js" defer></script>
+<script src="/src/codes/topbar.js" defer></script>
+<script src="/src/codes/scripts.js" defer></script>
+<script src="/src/codes/burger.js" defer></script>
 
 <style>
 body{
@@ -279,21 +279,45 @@ button:disabled{
   });
 
   document.getElementById("submitBtn").onclick = async () => {
+
     let type = document.getElementById("type").value;
-    let loc = document.getElementById("location").value;
-    if(!type || !loc) return;
+    let location = document.getElementById("location").value;
+    let phone = document.getElementById("phone").value;
+    let desc = document.getElementById("desc").value;
+
+    if(!type || !location) return;
 
     let btn = document.getElementById("submitBtn");
     btn.innerText = "Versturen...";
     btn.disabled = true;
 
-    await new Promise(r=>setTimeout(r,600));
+    await new Promise(r => setTimeout(r, 600));
 
+    // 🔥 HIER GING HET MIS → NU FIXEN WE HET
+    let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+    const newCall = {
+      id: Date.now(), // belangrijk!
+      caller_id: phone || "Anoniem",
+      caller_location: location,
+      description: desc,
+      priority: type,
+      status: "waiting",
+      created_date: new Date().toISOString()
+    };
+
+    calls.push(newCall);
+
+    localStorage.setItem("calls", JSON.stringify(calls));
+
+    console.log("OPGESLAGEN:", calls); // debug
+
+    // UI
     document.getElementById("formPanel").style.display="none";
     document.getElementById("successPanel").style.display="block";
 
-    document.getElementById("summary").innerText = `${type} — ${loc}`;
-  }
+    document.getElementById("summary").innerText = `${type} — ${location}`;
+  };
 
   function resetCall(){
     document.getElementById("formPanel").style.display="block";

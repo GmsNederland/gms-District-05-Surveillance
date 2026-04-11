@@ -7,9 +7,26 @@ function send(){
 
   playTone();
 
+  const newCall = {
+    caller_id: "Burger",
+    caller_location: loc,
+    priority: Number(type),
+    status: "waiting",
+    created_date: new Date().toISOString()
+  };
+
+  // haal bestaande calls op
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+
+  // voeg nieuwe toe
+  calls.push(newCall);
+
+  // opslaan
+  localStorage.setItem("calls", JSON.stringify(calls));
+
+  // UI feedback
   document.getElementById("form").style.display="none";
   document.getElementById("success").style.display="block";
-
 }
 
 function reset(){
@@ -39,6 +56,7 @@ document.getElementById("successPanel").style.display="none"
 
 document.getElementById("submitBtn").disabled=false
 document.getElementById("submitBtn").innerText="Noodoproep Versturen"
+
 
 }
 
