@@ -165,6 +165,13 @@
         const uid = userCred.user.uid;
 
         // 👤 OPSLAAN USER DATA IN RTDB
+        await logToDiscord(`
+          ✅ LOGIN SUCCES
+          👤 Username: ${username}
+          📧 Email: ${email}
+          🆔 UID: ${uid}
+          🕒 Tijd: ${new Date().toLocaleString()}
+        `);
         await set(ref(db, "users/" + uid), {
           username: username,
           rol: "user",
