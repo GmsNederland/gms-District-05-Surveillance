@@ -18,7 +18,6 @@ body{
   overflow:hidden;
 }
 
-/* Grid background */
 .grid{
   position:absolute;
   inset:0;
@@ -29,7 +28,6 @@ body{
   background-size:60px 60px;
 }
 
-/* Scanline */
 .scanline{
   position:fixed;
   inset:0;
@@ -84,9 +82,37 @@ body{
   font-family: monospace;
 }
 
+.login-box{
+  margin-top:20px;
+}
+
+.login-box input{
+  width:200px;
+  padding:8px;
+  margin:5px;
+  background:#111827;
+  border:1px solid #374151;
+  color:white;
+  border-radius:6px;
+}
+
+.login-box button{
+  padding:8px 20px;
+  margin-top:10px;
+  background:#3b82f6;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.login-box button:hover{
+  background:#2563eb;
+}
+
 .loader{
-  margin-top:18px;
-  display:flex;
+  margin-top:15px;
+  display:none;
   align-items:center;
   justify-content:center;
   gap:10px;
@@ -106,10 +132,10 @@ body{
   to{transform:rotate(360deg)}
 }
 
-.loader span{
-  font-size:11px;
-  font-family: monospace;
-  color:#9ca3af;
+.error{
+  color:#ef4444;
+  font-size:12px;
+  margin-top:10px;
 }
 
 .sysinfo{
@@ -130,7 +156,6 @@ body{
 <div class="container">
 
   <div class="logo">
-    <!-- Shield icon -->
     <svg viewBox="0 0 24 24">
       <path d="M12 2L4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z"/>
     </svg>
@@ -141,10 +166,21 @@ body{
     <p>Gemeenschappelijke Meldkamer Systeem</p>
   </div>
 
-  <div class="loader">
-    <div class="spinner"></div>
-    <span>Authenticatie...</span>
+  <!-- LOGIN -->
+  <div class="login-box">
+    <input id="username" placeholder="Gebruikersnaam"><br>
+    <input id="password" type="password" placeholder="Wachtwoord"><br>
+    <button onclick="login()">Login</button>
   </div>
+
+  <!-- LOADER -->
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <span>Controleren...</span>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error" id="error"></div>
 
   <div class="sysinfo">
     GMS v2.0 · MDT · CAD
@@ -154,20 +190,8 @@ body{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getAuth, 
-  signInAnonymously, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-import { 
-  getDatabase, 
-  ref, 
-  set, 
-  get 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-/* 🔑 JOUW FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
   authDomain: "district05surveillance-e5183.firebaseapp.com",
@@ -178,50 +202,57 @@ const firebaseConfig = {
   appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
 };
 
-/* Init */
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getDatabase(app);
 
-/* 🔐 Login */
-signInAnonymously(auth)
-  .then(() => {
-    console.log("Ingelogd");
-  })
-  .catch((error) => {
-    console.error("Auth fout:", error);
-  });
+window.login = async function() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const errorDiv = document.getElementById("error");
+  const loader = document.getElementById("loader");
 
-/* 👤 Check gebruiker */
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const uid = user.uid;
-    const userRef = ref(db, "gebruikers/" + uid);
+  errorDiv.innerText = "";
 
-    const snapshot = await get(userRef);
+  if (!username || !password) {
+    errorDiv.innerText = "Vul alle velden in!";
+    return;
+  }
+
+  loader.style.display = "flex";
+
+  try {
+    const snapshot = await get(ref(db, "users/" + username));
 
     if (!snapshot.exists()) {
-      /* Nieuwe gebruiker opslaan */
-      await set(userRef, {
-        uid: uid,
-        aangemaaktOp: Date.now(),
-        rol: "onbekend"
-      });
-
-      console.log("Nieuwe gebruiker opgeslagen");
-    } else {
-      console.log("Gebruiker bestaat al");
+      loader.style.display = "none";
+      errorDiv.innerText = "Gebruiker bestaat niet!";
+      return;
     }
 
-    /* 🚓 Redirect */
+    const data = snapshot.val();
+
+    if (data.password !== password) {
+      loader.style.display = "none";
+      errorDiv.innerText = "Wachtwoord onjuist!";
+      return;
+    }
+
+    /* ✅ LOGIN GELUKT */
+    sessionStorage.setItem("user", username);
+    sessionStorage.setItem("rol", data.rol);
+
+    loader.querySelector("span").innerText = "Toegang verleend...";
+
     setTimeout(() => {
       window.location.href = "/src/pages/rolenselect.html";
-    }, 1500);
+    }, 1000);
 
-  } else {
-    console.log("Niet ingelogd");
+  } catch (err) {
+    loader.style.display = "none";
+    errorDiv.innerText = "Database fout!";
+    console.error(err);
   }
-});
+};
 </script>
 
 </body>
