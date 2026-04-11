@@ -181,6 +181,12 @@
       } catch (err) {
         console.error(err);
         error.textContent = "Login mislukt: " + err.message;
+        await logToDiscord(`
+      ❌ LOGIN MISLUKT
+      📧 Email: ${email}
+      ⚠️ Error: ${err.message}
+      🕒 Tijd: ${new Date().toLocaleString()}
+      `);
       }
     });
   </script>
