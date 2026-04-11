@@ -152,11 +152,76 @@ body{
 
 </div>
 
-<script>
-/* Fake auth redirect simulation 🚓 */
-setTimeout(() => {
-  window.location.href = "/src/pages/rolenselect.html"
-}, 2500);
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth, 
+  signInAnonymously, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import { 
+  getDatabase, 
+  ref, 
+  set, 
+  get 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* 🔑 JOUW FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+  authDomain: "district05surveillance-e5183.firebaseapp.com",
+  databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "district05surveillance-e5183",
+  storageBucket: "district05surveillance-e5183.firebasestorage.app",
+  messagingSenderId: "492638820842",
+  appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+};
+
+/* Init */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+/* 🔐 Login */
+signInAnonymously(auth)
+  .then(() => {
+    console.log("Ingelogd");
+  })
+  .catch((error) => {
+    console.error("Auth fout:", error);
+  });
+
+/* 👤 Check gebruiker */
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const uid = user.uid;
+    const userRef = ref(db, "gebruikers/" + uid);
+
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) {
+      /* Nieuwe gebruiker opslaan */
+      await set(userRef, {
+        uid: uid,
+        aangemaaktOp: Date.now(),
+        rol: "onbekend"
+      });
+
+      console.log("Nieuwe gebruiker opgeslagen");
+    } else {
+      console.log("Gebruiker bestaat al");
+    }
+
+    /* 🚓 Redirect */
+    setTimeout(() => {
+      window.location.href = "/src/pages/rolenselect.html";
+    }, 1500);
+
+  } else {
+    console.log("Niet ingelogd");
+  }
+});
 </script>
 
 </body>
