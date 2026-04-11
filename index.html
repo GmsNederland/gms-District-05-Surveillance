@@ -168,7 +168,6 @@
         await logToDiscord(`
           ✅ LOGIN SUCCES
           👤 Username: ${username}
-          📧 Email: ${email}
           🆔 UID: ${uid}
           🕒 Tijd: ${new Date().toLocaleString()}
         `);
@@ -190,7 +189,6 @@
         error.textContent = "Login mislukt: " + err.message;
         await logToDiscord(`
       ❌ LOGIN MISLUKT
-      📧 Email: ${email}
       ⚠️ Error: ${err.message}
       🕒 Tijd: ${new Date().toLocaleString()}
       `);
