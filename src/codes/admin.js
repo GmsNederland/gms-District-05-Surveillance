@@ -12,30 +12,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ---------------- Map ---------------- */
     const preview = document.getElementById("preview");
+    let selectedFile = null;
+
+    // laad opgeslagen map bij refresh
+    const savedMap = localStorage.getItem("mapUrl");
+    if (savedMap && preview) {
+        preview.src = savedMap;
+    }
 
     function previewMap(e) {
         const file = e.target.files[0];
         if (!file) return;
+
+        selectedFile = file;
+
         const reader = new FileReader();
-        reader.onload = ev => preview.src = ev.target.result;
+        reader.onload = ev => {
+            if (preview) preview.src = ev.target.result;
+        };
         reader.readAsDataURL(file);
     }
 
     function uploadMap() {
-        alert("Kaart geüpload! Backend call hier toevoegen.");
-        // TODO: Voeg hier fetch/axios call naar backend toe
+        if (!selectedFile) {
+            alert("Selecteer eerst een afbeelding!");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const base64 = e.target.result;
+
+            // sla op in localStorage
+            localStorage.setItem("mapImage", base64);
+
+            alert("Kaart lokaal opgeslagen!");
+        };
+
+        reader.readAsDataURL(selectedFile);
     }
 
     function deleteMap() {
-        if (confirm("Weet je zeker dat je de kaart wilt verwijderen?")) {
-            preview.src = "";
-            alert("Kaart verwijderd!");
-        }
+        if (!confirm("Weet je zeker dat je de kaart wilt verwijderen?")) return;
+
+        preview.src = "";
+        selectedFile = null;
+
+        // verwijder opgeslagen pad
+        localStorage.removeItem("mapUrl");
+
+        alert("Kaart verwijderd!");
     }
 
+    /* events */
     document.getElementById("mapInput")?.addEventListener("change", previewMap);
     document.getElementById("uploadMapBtn")?.addEventListener("click", uploadMap);
     document.getElementById("deleteMapBtn")?.addEventListener("click", deleteMap);
+    // klik op upload box opent file picker
+    document.getElementById("uploadBox")?.addEventListener("click", () => {
+        document.getElementById("mapInput").click();
+    });
 
     /* ---------------- Audio ---------------- */
     function playTone(freq) {

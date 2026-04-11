@@ -650,3 +650,79 @@ button {
   font-size: 28px;
   cursor: pointer;
 }
+
+.player-marker .marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.player-tooltip {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.leaflet-tooltip {
+  white-space: nowrap;
+}
+
+.marker.politie { background: #2376f6; }
+.marker.brandweer { background: #e83f3f; }
+.marker.ambulance { background: #f18d29; }
+
+.dispatch-tooltip {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.dispatch-label {
+  background: rgba(20, 20, 20, 0.92);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 6px;
+  min-width: 140px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.dispatch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.dispatch-header .name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.dispatch-header .badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #444;
+}
+
+.dispatch-body {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.status {
+  color: #4caf50;
+  font-weight: bold;
+}

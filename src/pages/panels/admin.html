@@ -51,12 +51,19 @@
     <!-- MAP -->
     <div id="map" class="panel">
         <h3>Kaartbeheer</h3>
-        <div class="uploadBox" onclick="file.click()">Klik om kaart te uploaden</div>
-        <input type="file" id="file" hidden onchange="previewMap(event)">
+
+        <div class="uploadBox" id="uploadBox">
+            Klik om kaart te uploaden
+        </div>
+
+        <input type="file" id="mapInput" hidden>
+
         <img id="preview">
+
         <br>
-        <button onclick="uploadMap()">Upload</button>
-        <button onclick="deleteMap()">Verwijder Kaart</button>
+
+        <button id="uploadMapBtn">Upload</button>
+        <button id="deleteMapBtn">Verwijder Kaart</button>
     </div>
 
     <!-- AUDIO -->

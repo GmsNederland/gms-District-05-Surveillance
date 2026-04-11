@@ -19,15 +19,127 @@
   }, 1000);
 
   // Map
-  const map = L.map('map').setView([52.37, 4.895], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(map);
+  const mapWidth = 1000;
+  const mapHeight = 1000;
+
+  let liveMarkers = {};   // ✅ HIER
+  let lastSeen = {};      // ✅ HIER
+
+  const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2
+  });
+
+  const imageUrl = "/map.png";
+  const bounds = [[0, 0], [mapHeight, mapWidth]];
+  L.imageOverlay(imageUrl, bounds).addTo(map);
+  map.fitBounds(bounds);
 
   const callsList = document.getElementById('calls-list');
   const incidentList = document.getElementById('incident-list');
   const unitsList = document.getElementById('units-list');
 
+
   const markers = { units:new Map(), incidents:new Map(), calls:new Map() };
 
+  //map funcitons
+  const DEBUG = true;
+
+  function debug(...args) {
+    if (DEBUG) console.log("[MAP DEBUG]", ...args);
+  }
+
+  function toMapCoords(mapPos) {
+    return [
+      mapPos.y * mapHeight,
+      mapPos.x * mapWidth
+    ];
+  }
+
+  async function loadPlayers() {
+    try {
+      const res = await fetch("https://apiservi-uba4.onrender.com/player-locations");
+      const raw = await res.json();
+
+      const data = raw.players || [];
+
+      if (!Array.isArray(data)) {
+        console.error("API structuur fout:", raw);
+        return;
+      }
+
+      const activeIds = new Set();
+
+      data.forEach(player => {
+        if (!player || !player.mapPosition) return;
+
+        const id = player.userId;
+        activeIds.add(id);
+
+        const coords = toMapCoords(player.mapPosition);
+        lastSeen[id] = Date.now();
+
+        if (liveMarkers[id]) {
+          liveMarkers[id].setLatLng(coords);
+        } else {
+          const marker = L.marker(coords).addTo(map);
+
+          // ALTijd zichtbaar (label)
+          const label = `
+            <div class="marker-label">
+              <b>${player.username}</b><br>
+              Team: ${player.team}<br>
+              Roepnummer: ${player.roepnummer || "N/A"}
+            </div>
+          `;
+
+          marker.bindTooltip(label, {
+            permanent: true,
+            direction: "top",
+            offset: [0, -10],
+            className: "player-tooltip"
+          });
+
+          // Klik popup (extra details)
+          const popupContent = `
+            <div>
+              <b>${player.username}</b><br><br>
+              <b>Team:</b> ${player.team}<br>
+              <b>Roepnummer:</b> ${player.roepnummer || "N/A"}<br>
+              <b>User ID:</b> ${player.userId}<br>
+              <b>Laatste update:</b> ${new Date().toLocaleTimeString()}
+            </div>
+          `;
+
+          marker.bindPopup(popupContent);
+
+          liveMarkers[id] = marker;
+        }
+      });
+
+      // cleanup
+      Object.keys(liveMarkers).forEach(id => {
+        if (!activeIds.has(Number(id))) {
+          if (Date.now() - (lastSeen[id] || 0) > 5000) {
+            map.removeLayer(liveMarkers[id]);
+            delete liveMarkers[id];
+            debug("Removed:", id);
+          }
+        }
+      });
+
+    } catch (err) {
+      console.error("API fout:", err);
+    }
+  }
+
+  // elke 2 seconden refresh
+  setInterval(loadPlayers, 2000);
+
+  // eerste keer direct laden
+  loadPlayers();
+  
+  // stop map functions
   function updateCalls(calls) {
     callsList.innerHTML='';
     calls.forEach(call => {
@@ -772,7 +884,6 @@ function renderSystems(container) {
 }
 
 // de inhoud van de systemen
-// Functie om een systeem-popup te openen
 // Functie om een systeem-popup te openen
 function openSystemPopup(system) {
   // Check of popup al bestaat
