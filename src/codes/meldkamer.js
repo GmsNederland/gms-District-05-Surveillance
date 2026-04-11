@@ -240,11 +240,6 @@
     document.getElementById('map-units').textContent=units.length;
   }
 
-  // function acceptCall(id) {
-  //   console.log('Call accepted:',id);
-  //   // TODO: API call of Firebase update
-  // }
-
   // Listen for realtime updates from Firebase
   db.ref('meldingen').on('value', snapshot => {
     const calls = [];
@@ -512,7 +507,7 @@
   // let calls = JSON.parse(localStorage.getItem("calls") || "[]");
   //  ===112 meldingen===
 function renderCalls(calls) {
-  callsList.innerHTML = "";
+  callsList.innerHTML = "Nog geen Nieuwe Meldingen";
 
   const waiting = calls.filter(c => c.status === "waiting");
 
@@ -717,13 +712,12 @@ window.onFocusUnit = (unit) => {
 };
 
 function renderUnits(container) {
-
   container.innerHTML = '';
 
   const SERVICE_LABELS = {
-    politie: 'politie',
-    ambulance: 'ambulance',
-    brandweer: 'brandweer',
+    politie: 'Politie',
+    ambulance: 'Ambulance',
+    brandweer: 'Brandweer',
     knrm: 'KNRM'
   };
 
@@ -735,6 +729,11 @@ function renderUnits(container) {
   };
 
   const units = window.units || [];
+
+  // 🔥 SAFE INCIDENT ARRAY
+  const incidents = Array.isArray(window.incidents)
+    ? window.incidents
+    : Object.values(window.incidents || {});
 
   if (!units.length) {
     container.innerHTML =
@@ -750,25 +749,17 @@ function renderUnits(container) {
   };
 
   Object.entries(grouped).forEach(([service, serviceUnits]) => {
-
     if (!serviceUnits.length) return;
 
-    // ⭐ SERVICE BOX
     const serviceBox = document.createElement('div');
     serviceBox.className = 'units-service';
 
-    // ⭐ HEADER
     const header = document.createElement('div');
-    header.className =
-      'units-service-header ' +
-      (SERVICE_COLORS[service] || '');
-
-    header.textContent =
-      `${SERVICE_LABELS[service]} (${serviceUnits.length})`;
+    header.className = 'units-service-header ' + (SERVICE_COLORS[service] || '');
+    header.textContent = `${SERVICE_LABELS[service]} (${serviceUnits.length})`;
 
     serviceBox.appendChild(header);
 
-    // ⭐ UNITS
     serviceUnits.forEach(unit => {
 
       const card = document.createElement('div');
@@ -776,7 +767,6 @@ function renderUnits(container) {
 
       card.innerHTML = `
         <div class="units-top">
-          
           <div class="units-left">
             <div class="units-status ${unit.statusColor || ''}"></div>
             <span class="units-callsign">${unit.callsign}</span>
@@ -785,7 +775,6 @@ function renderUnits(container) {
           <div class="units-service-badge ${SERVICE_COLORS[service]}">
             ${SERVICE_LABELS[service]}
           </div>
-
         </div>
 
         <div class="units-subinfo">
@@ -793,39 +782,87 @@ function renderUnits(container) {
         </div>
       `;
 
-      const btnmeldingselecer = document.createElement('div');
-      btnmeldingselecer.className = 'units-button';
+      // =========================
+      // 🔥 INCIDENT DROPDOWN
+      // =========================
+      const wrapper = document.createElement('div');
+      wrapper.className = 'units-button';
 
-      const select = document.createElement('option');
-      select.className = 'untis-incident-select';
+      const select = document.createElement('select');
+      select.className = 'units-incident-select';
 
       const defaultOption = document.createElement('option');
       defaultOption.value = '';
       defaultOption.textContent = 'Kies een melding...';
       select.appendChild(defaultOption);
 
-      (window.incident || []).filter(i => i.status !== 'CLOSED').forEach(incident => {
-        const option = document.createElement('option');
-        option.value = incident.id;
-        option.textContent = `${incident.title} (#${incident.incident_number})`;
-        select.appendChild(option);
-      });
+      incidents
+        .filter(i => i.status !== 'CLOSED')
+        .forEach(incident => {
 
-      btnmeldingselecer.appendChild(select);
-      card.appendChild(btnmeldingselecer);
+          const assignedCount = incident.assignedUnits
+            ? Object.keys(incident.assignedUnits).length
+            : (incident.assignedUnit ? 1 : 0);
 
+          const option = document.createElement('option');
+          option.value = incident.firebaseKey || incident.id;
+
+          option.textContent =
+            `${incident.title || 'Incident'} (#${incident.incident_number || 'N/A'}) - ${assignedCount} units`;
+
+          select.appendChild(option);
+        });
+
+      wrapper.appendChild(select);
+      card.appendChild(wrapper);
+
+      // =========================
+      // BUTTONS
+      // =========================
       const btnContainer = document.createElement('div');
       btnContainer.className = 'units-card-buttons';
 
       const dispatchBtn = document.createElement('div');
       dispatchBtn.className = 'units-button';
       dispatchBtn.textContent = 'Alarm';
-      dispatchBtn.onclick = () => {
+
+      dispatchBtn.onclick = async () => {
         const incidentId = select.value;
         if (!incidentId) return alert('Kies eerst een melding!');
-        const incident = (window.incidents || []).find(i => i.id === incidentId);
-        if (!incident) return;
-        window.onDispatchUnit?.(unit, incident);
+
+        const incident = incidents.find(i =>
+          (i.firebaseKey || i.id) === incidentId
+        );
+
+        if (!incident) return alert('Incident niet gevonden');
+
+        const key = incident.firebaseKey || incident.id;
+
+        try {
+          const ref = db.ref(`calls/${key}`);
+          const snap = await ref.once('value');
+          const data = snap.val() || {};
+
+          const assignedUnits = data.assignedUnits || {};
+
+          // 🔥 add unit
+          assignedUnits[unit.id] = {
+            id: unit.id,
+            callsign: unit.callsign,
+            service: unit.service,
+            time: Date.now()
+          };
+
+          await ref.update({
+            assignedUnits,
+            status: 'DISPATCHED'
+          });
+
+          alert(`🚨 ${unit.callsign} gekoppeld aan incident`);
+        } catch (err) {
+          console.error(err);
+          alert('Fout bij koppelen');
+        }
       };
 
       const focusBtn = document.createElement('div');
@@ -843,15 +880,11 @@ function renderUnits(container) {
 
       card.appendChild(btnContainer);
       serviceBox.appendChild(card);
-
     });
 
     container.appendChild(serviceBox);
-
   });
-
 }
-
 
 // 🔹 1️⃣ Dummy data
 window.systems = [
