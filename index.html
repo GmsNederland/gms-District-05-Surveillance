@@ -12,16 +12,15 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(to bottom, #0f172a, #1e293b);
       background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #6366f1);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
     }
 
     @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .glass {
@@ -30,21 +29,10 @@
       border-radius: 1rem;
     }
 
-    .form-input {
-      @apply w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
-             text-white text-sm focus:outline-none transition;
-             color: black;
-    }
-
-    .form-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-    }
-
     .inputfeils {
-      width: 80%;
-      padding: 6px 8px;
-      border-radius: 4px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
       color: black;
       border: 1px solid #ccc;
     }
@@ -53,29 +41,8 @@
 
 <body class="h-screen flex items-center justify-center">
 
-    <script type="module">
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // Jouw config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
-      authDomain: "district05surveillance-e5183.firebaseapp.com",
-      projectId: "district05surveillance-e5183",
-      storageBucket: "district05surveillance-e5183.firebasestorage.app",
-      messagingSenderId: "492638820842",
-      appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
-    };
-
-    // Firebase initialiseren
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    console.log("Firebase connected!");
-  </script>
-
-  <div class="glass px-12 py-10 max-w-md w-full border border-blue-900 neon-blue animate-fade-in">
+  <!-- LOGIN CARD -->
+  <div class="glass px-12 py-10 max-w-md w-full border border-blue-900">
 
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -86,71 +53,115 @@
       <p class="text-gray-400 text-sm">Meldkamer | GMS Systeem</p>
     </div>
 
-    <form class="space-y-4 max-w-sm mx-auto text-center">
+    <form id="loginForm" class="space-y-4 text-center">
 
+      <!-- EMAIL -->
       <div>
-        <label class="block text-xs uppercase text-gray-400 mb-1 ">
-          Discord ID
+        <label class="block text-xs uppercase text-gray-400 mb-1">
+          Email
         </label>
-        <input class="inputfeils" type="text" placeholder="Dsicord-ID" class="form-input" required>
+        <input id="email" class="inputfeils" type="email" placeholder="Email" required>
       </div>
 
+      <!-- USERNAME (optioneel opslag in DB) -->
       <div>
         <label class="block text-xs uppercase text-gray-400 mb-1">
           Gebruikersnaam
         </label>
-        <input class="inputfeils" type="text" placeholder="Gebruikersnaam" class="form-input" required>
+        <input id="username" class="inputfeils" type="text" placeholder="Gebruikersnaam" required>
       </div>
 
+      <!-- PASSWORD -->
       <div>
-        <label class="block text-xs uppercase text-gray-400 mb-">
+        <label class="block text-xs uppercase text-gray-400 mb-1">
           Wachtwoord
         </label>
-        <input class="inputfeils" type="password" placeholder="wachtwoord" class="form-input" required>
+        <input id="password" class="inputfeils" type="password" placeholder="Wachtwoord" required>
       </div>
 
       <button id="loginBtn" type="submit"
-        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold tracking-wide transition-all duration-200">
         Inloggen
       </button>
-<!-- inloggen -->
-      <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-6 py-4 rounded-lg shadow-lg hidden z-50">
-        Je bent ingelogd!
-      </div>
-      <div class="flex justify-center mt-1">
-        <a href="/src/pages/wachtwoordvergeten.html"
-        class="text-xs text-blue-400 hover:text-blue-300 transition">
-        Wachtwoord vergeten?
-        </a>
-      </div>
+
+      <p id="error" class="text-red-400 text-sm"></p>
 
     </form>
 
     <p class="text-center text-gray-500 text-xs mt-6">
       Officieel systeem voor Nederlandse RP-servers
     </p>
-<!-- support buttons -->
-    <p class="text-center text-gray-400 text-xs mt-6">
-        Voor support klik hier.
 
-        <a href="https://discord.gg/JPFFRTrkn" target="_blank"
-        class="inline-block mt-3 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-xs font-medium transition-all duration-200 hoven:scale-105">
-                help
-        </a>
-    </p>
   </div>
 
-<script>
-  document.getElementById('loginBtn').addEventListener('click', function() {
-    const popup = document.getElementById('popup');
-    popup.classList.remove('hidden');
-    setTimeout(() => {
-      popup.classList.add('hidden');
-      window.location.href = '/src/pages/login.html';
-    }, 2000); // 2 seconden zichtbaar
-  });
-</script>
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+    import { 
+      getDatabase, 
+      ref, 
+      set, 
+      get 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+      authDomain: "district05surveillance-e5183.firebaseapp.com",
+      databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "district05surveillance-e5183",
+      storageBucket: "district05surveillance-e5183.firebasestorage.app",
+      messagingSenderId: "492638820842",
+      appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const form = document.getElementById("loginForm");
+    const error = document.getElementById("error");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value;
+
+      error.textContent = "";
+
+      try {
+        // 🔐 LOGIN MET FIREBASE AUTH
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+        const uid = userCred.user.uid;
+
+        // 👤 OPSLAAN USER DATA IN RTDB
+        await set(ref(db, "users/" + uid), {
+          username: username,
+          email: email,
+          rol: "user",
+          lastLogin: Date.now()
+        });
+
+        // 💾 SESSION
+        sessionStorage.setItem("uid", uid);
+        sessionStorage.setItem("username", username);
+
+        // 🚀 REDIRECT
+        window.location.href = "/src/pages/rolenselect.html";
+
+      } catch (err) {
+        console.error(err);
+        error.textContent = "Login mislukt: " + err.message;
+      }
+    });
+  </script>
 
 </body>
 </html>
