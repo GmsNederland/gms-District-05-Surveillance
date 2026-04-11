@@ -1,15 +1,17 @@
  // Firebase config (vul in met jouw eigen project config)
   const firebaseConfig = {
-      apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
-      authDomain: "district05surveillance-e5183.firebaseapp.com",
-      databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "district05surveillance-e5183",
-      storageBucket: "district05surveillance-e5183.firebasestorage.app",
-      messagingSenderId: "492638820842",
-      appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+    apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+    authDomain: "district05surveillance-e5183.firebaseapp.com",
+    databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "district05surveillance-e5183",
+    storageBucket: "district05surveillance-e5183.firebasestorage.app",
+    messagingSenderId: "492638820842",
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
+    measurementId: "G-4WLXZ1L4MG"
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+  const callsRef = db.ref("calls");
 
   // Clock
   const clock = document.getElementById('clock');
@@ -247,7 +249,10 @@
   db.ref('meldingen').on('value', snapshot => {
     const calls = [];
     snapshot.forEach(child => {
-      calls.push(child.val());
+      calls.push({
+        firebaseKey: child.key,
+        ...child.val()
+      });
     });
     updateCalls(calls);
   });
@@ -255,13 +260,27 @@
   db.ref('incidenten').on('value', snapshot => {
     const incidents=[];
     snapshot.forEach(child => { incidents.push(child.val()); });
-    updateIncidents(incidents);
+    renderIncidents(incidents);
   });
 
   db.ref('eenheden').on('value', snapshot => {
     const units=[];
     snapshot.forEach(child => { units.push(child.val()); });
     updateUnits(units);
+  });
+
+  db.ref('calls').on('value', snap => {
+    const calls = [];
+
+    snap.forEach(child => {
+      calls.push({
+        firebaseKey: child.key,
+        ...child.val()
+      });
+    });
+
+    renderCalls(calls);
+    renderIncidents(calls);
   });
 
 //   // test geluiden
@@ -378,41 +397,29 @@
   document.getElementById("incident-modal").style.display = "none";
   };
   window.addNote = function () {
+    const text = document.getElementById("incident-note").value;
+    if (!text || !currentIncident) return;
 
-  const text = document.getElementById("incident-note").value;
-  if (!text || !currentIncident) return;
+    const ref = db.ref("calls/" + currentIncident.firebaseKey);
 
-  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+    ref.once("value", snap => {
+      const data = snap.val();
+      const notes = data.notes || [];
 
-  calls = calls.map(c => {
-    if (c.id === currentIncident.id) {
-      if (!c.notes) c.notes = [];
-      c.notes.push(text);
-    }
-    return c;
-  });
+      notes.push(text);
 
-  localStorage.setItem("calls", JSON.stringify(calls));
+      ref.update({ notes });
+    });
 
-  document.getElementById("incident-note").value = "";
-
-  renderIncidents(calls);
-  openIncidentModal(calls.find(c => c.id === currentIncident.id));
+    document.getElementById("incident-note").value = "";
   };
   window.closeIncident = function () {
+    if (!currentIncident) return;
 
-  if (!currentIncident) return;
+    db.ref("calls/" + currentIncident.firebaseKey).remove();
 
-  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
-
-  calls = calls.filter(c => c.id !== currentIncident.id);
-
-  localStorage.setItem("calls", JSON.stringify(calls));
-
-  closeModal();
-
-  renderIncidents(calls);
-  renderCallQueue(calls, onAcceptCall);
+    closeModal();
+    currentIncident = null;
   };
   // eind popup meldingen deel
   // === MAP DEFAULT ===
@@ -502,94 +509,50 @@
   });
 }
 
-  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+  // let calls = JSON.parse(localStorage.getItem("calls") || "[]");
   //  ===112 meldingen===
-  function renderCallQueue(calls, onAcceptCall) {
-    const TYPE_TO_PRIORITY = {
-      "Brandweer": 1,
-      "Ambulance": 2,
-      "Politie": 3
-    };
-    const container = document.getElementById("calls-list");
-    container.innerHTML = "";
+function renderCalls(calls) {
+  callsList.innerHTML = "";
 
-    const waitingCalls = calls.filter(c => c.status === "waiting");
+  const waiting = calls.filter(c => c.status === "waiting");
 
-    if (waitingCalls.length === 0) {
-      container.innerHTML = "<p>Geen wachtende meldingen</p>";
-      return;
-    }
+  waiting.forEach(call => {
+    const div = document.createElement("div");
+    div.className = "call-card";
 
-    waitingCalls.forEach(call => {
-      const prioIndex = TYPE_TO_PRIORITY[call.priority] || 2;
-      const prio = PRIORITY_COLORS[prioIndex];
+    div.innerHTML = `
+      <div>
+        <b>${call.caller_id}</b>
+        <span>PRIO ${call.priority}</span>
+      </div>
+      <div>${call.caller_location}</div>
+    `;
 
-      const card = document.createElement("div");
-      card.className = "call-card";
-      card.style.borderLeftColor = prio.border;
+    const btn = document.createElement("button");
+    btn.innerText = "Aannemen";
+    btn.onclick = () => onAcceptCall(call);
 
-      const header = document.createElement("div");
-      header.className = "call-header";
-      header.innerHTML = `
-        <span>${call.caller_id}</span>
-        <span style="color:${prio.text}; font-size:10px;">${prio.label}</span>
-      `;
-      card.appendChild(header);
-
-      const body = document.createElement("div");
-      body.className = "call-body";
-
-      if (call.caller_location) {
-        const loc = document.createElement("div");
-        loc.innerText = `Locatie: ${call.caller_location}`;
-        body.appendChild(loc);
-      }
-
-      const waitTime = Math.floor((Date.now() - new Date(call.created_date)) / 60000);
-      const wait = document.createElement("div");
-      wait.innerText = `Wacht: ${waitTime} min`;
-      body.appendChild(wait);
-
-      card.appendChild(body);
-
-      const btn = document.createElement("button");
-      btn.className = "call-button";
-      btn.innerText = "Aannemen";
-      btn.onclick = () => onAcceptCall(call);
-
-      card.appendChild(btn);
-
-      container.appendChild(card);
-    });
-  }
+    div.appendChild(btn);
+    callsList.appendChild(div);
+  });
+}
   
   // const calls = [
   //   { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
   // ];
 
-  function onAcceptCall(call){
-
-    let calls = JSON.parse(localStorage.getItem("calls") || "[]");
-
-    calls = calls.map(c => {
-      if(c.id === call.id){
-        c.status = "accepted";
-      }
-      return c;
+  function onAcceptCall(call) {
+    db.ref("calls/" + call.firebaseKey).update({
+      status: "accepted"
     });
-
-    localStorage.setItem("calls", JSON.stringify(calls));
-
-    renderCallQueue(calls, onAcceptCall);
-    renderIncidents(calls); // 🔥 NIEUW
   }
 
-  renderCallQueue(calls, onAcceptCall);
+  // renderCallQueue(calls, onAcceptCall);
 
-  setInterval(() => {
-  calls = JSON.parse(localStorage.getItem("calls") || "[]");
-  renderCallQueue(calls, onAcceptCall);
-  }, 2000);
+  // setInterval(() => {
+  // // calls = JSON.parse(localStorage.getItem("calls") || "[]");
+  // renderCallQueue(calls, onAcceptCall);
+  // }, 2000);
   // Vul select-opties
   const typeSelect = document.getElementById("incident-type");
   INCIDENT_TYPES.forEach(t => {
@@ -667,10 +630,6 @@
 
   // Annuleer knop in het formulier
   document.getElementById("incident-cancel").addEventListener("click", hideIncidentPopup);
-
-const incidents = [
-  { id: 1, incident_number: 'INC-20260323-001', title: 'Brand woning', priority: 1, status: 'NEW', location: 'Amsterdam', assigned_units: ['Unit1'], claimed_by: 'jan@politie.nl' },
-];
 
 // Render functie
 function renderIncidents(calls) {
@@ -1188,42 +1147,27 @@ function closeModal() {
 }
 
 function addNote() {
-
   const text = document.getElementById("incident-note").value;
   if (!text || !currentIncident) return;
 
-  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+  const ref = db.ref("calls/" + currentIncident.firebaseKey);
 
-  calls = calls.map(c => {
-    if (c.id === currentIncident.id) {
-      if (!c.notes) c.notes = [];
-      c.notes.push(text);
-    }
-    return c;
+  ref.once("value", snap => {
+    const data = snap.val();
+    const notes = data.notes || [];
+
+    notes.push(text);
+
+    ref.update({ notes: notes });
   });
 
-  localStorage.setItem("calls", JSON.stringify(calls));
-
   document.getElementById("incident-note").value = "";
-
-  renderIncidents(calls);
-  openIncidentModal(calls.find(c => c.id === currentIncident.id));
 }
 
 function closeIncident() {
-
   if (!currentIncident) return;
-
-  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
-
-  calls = calls.filter(c => c.id !== currentIncident.id);
-
-  localStorage.setItem("calls", JSON.stringify(calls));
-
+  db.ref("calls/" + currentIncident.firebaseKey).remove();
   closeModal();
-
-  renderIncidents(calls);
-  renderCallQueue(calls, onAcceptCall);
 }
 
 // Initial render

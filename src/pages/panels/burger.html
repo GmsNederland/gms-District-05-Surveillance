@@ -7,6 +7,8 @@
 <script src="/src/codes/topbar.js" defer></script>
 <script src="/src/codes/scripts.js" defer></script>
 <script src="/src/codes/burger.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
 
 <style>
 body{
@@ -269,56 +271,52 @@ button:disabled{
 
 <script>
   fetch('/src/components/shared/TopBar.html')
-    .then(r=>r.text())
-    .then(html=>document.getElementById('topbar-container').innerHTML=html);
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('topbar-container').innerHTML = html;
+    });
 
   document.querySelectorAll("[data-include]").forEach(async el=>{
     const file = el.dataset.include
     const html = await fetch(file).then(r=>r.text())
     el.innerHTML = html
   });
-
+  
   document.getElementById("submitBtn").onclick = async () => {
 
-    let type = document.getElementById("type").value;
-    let location = document.getElementById("location").value;
-    let phone = document.getElementById("phone").value;
-    let desc = document.getElementById("desc").value;
+  let type = document.getElementById("type").value;
+  let location = document.getElementById("location").value;
+  let phone = document.getElementById("phone").value;
+  let desc = document.getElementById("desc").value;
 
-    if(!type || !location) return;
+  if (!type || !location) return;
 
-    let btn = document.getElementById("submitBtn");
-    btn.innerText = "Versturen...";
-    btn.disabled = true;
+  let btn = document.getElementById("submitBtn");
+  btn.innerText = "Versturen...";
+  btn.disabled = true;
 
-    await new Promise(r => setTimeout(r, 600));
-
-    // 🔥 HIER GING HET MIS → NU FIXEN WE HET
-    let calls = JSON.parse(localStorage.getItem("calls") || "[]");
-
-    const newCall = {
-      id: Date.now(), // belangrijk!
-      caller_id: phone || "Anoniem",
-      caller_location: location,
-      description: desc,
-      priority: type,
-      status: "waiting",
-      created_date: new Date().toISOString()
-    };
-
-    calls.push(newCall);
-
-    localStorage.setItem("calls", JSON.stringify(calls));
-
-    console.log("OPGESLAGEN:", calls); // debug
-
-    // UI
-    document.getElementById("formPanel").style.display="none";
-    document.getElementById("successPanel").style.display="block";
-
-    document.getElementById("summary").innerText = `${type} — ${location}`;
+  const newCall = {
+    caller_id: phone || "Anoniem",
+    caller_location: location,
+    description: desc,
+    priority: type,
+    status: "waiting",
+    created_date: new Date().toISOString()
   };
 
+  try {
+    await firebase.database().ref("calls").push(newCall);
+
+    document.getElementById("formPanel").style.display = "none";
+    document.getElementById("successPanel").style.display = "block";
+
+    document.getElementById("summary").innerText = `${type} — ${location}`;
+
+  } catch (err) {
+    console.error(err);
+    alert("Fout bij versturen!");
+  }
+};
   function resetCall(){
     document.getElementById("formPanel").style.display="block";
     document.getElementById("successPanel").style.display="none";
