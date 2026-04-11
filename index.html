@@ -121,6 +121,13 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+        /* 🔐 CHECK LOGIN */
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // ❌ Niet ingelogd → terug naar login
+        window.location.href = "/index.html";
+      }
+    });
     const db = getDatabase(app);
 
     const form = document.getElementById("loginForm");
