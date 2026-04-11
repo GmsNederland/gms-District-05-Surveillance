@@ -81,17 +81,21 @@
       </div>
 
       <button id="loginBtn" type="submit"
-        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold tracking-wide transition-all duration-200">
+        class="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold tracking-wide transition-all duration-200 ">
         Inloggen
       </button>
 
-      <button id="wachtwoordvergetn">
-      test
-      </button>
+      <a id="wachtwoordvergetn" href="/src/pages/wachtwoordvergeten.html">
+      Wachtwoord vergeten?
+      </a>
 
       <p id="error" class="text-red-400 text-sm"></p>
 
     </form>
+
+    <div id="successPopup" class="hidden fixed top-5 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg">
+      ✅ Succesvol ingelogd!
+    </div>
 
     <p class="text-center text-gray-500 text-xs mt-6">
       Officieel systeem voor Nederlandse RP-servers
@@ -188,7 +192,11 @@
         sessionStorage.setItem("username", username);
 
         // 🚀 REDIRECT
+        const popup = document.getElementById("successPopup");
+        popup.classList.remove("hidden");
+        setTimeout(() => {
         window.location.href = "/src/pages/rolenselect.html";
+        }, 900);
 
       } catch (err) {
         console.error(err);
