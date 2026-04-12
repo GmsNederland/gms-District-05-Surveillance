@@ -14,13 +14,21 @@
   const auth = firebase.auth();
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
-    document.body.innerHTML = "Geen toegang";
     window.location.replace("/src/index.html");
     return;
   }
 
-  startApp(user);
+  initMeldkamer(user);
 });
+
+function initMeldkamer(user) {
+  console.log("Meldkamer gestart:", user.uid);
+
+  // alles starten hier:
+  loadTickets();
+  loadUsers();
+  startRealtimeUpdates();
+}
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {
   //     // ✔ gebruiker is ingelogd
