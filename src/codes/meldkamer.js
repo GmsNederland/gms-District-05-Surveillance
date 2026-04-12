@@ -13,6 +13,16 @@
   const db = firebase.database();
   const callsRef = db.ref("calls");
 
+  import { onAuthStateChanged } from "firebase-auth";
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "/src/index.html";
+    } else {
+      console.log("User UID:", user.uid);
+    }
+  });
+
   // Clock
   const clock = document.getElementById('clock');
   setInterval(() => {
