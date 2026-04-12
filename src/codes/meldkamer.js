@@ -12,23 +12,17 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const auth = firebase.auth();
-firebase.auth().onAuthStateChanged((user) => {
-  if (!user) {
-    window.location.replace("/src/index.html");
-    return;
-  }
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      window.location.replace("/src/index.html");
+      return;
+    }
 
-  initMeldkamer(user);
-});
+    console.log("✔ Ingelogd:", user.uid);
 
-function initMeldkamer(user) {
-  console.log("Meldkamer gestart:", user.uid);
-
-  // alles starten hier:
-  renderCalls();
-  loadPlayers();
-  renderIncidents();
-}
+    // 🔓 laat UI pas zien als login OK is
+    document.body.style.display = "block";
+  });
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {
   //     // ✔ gebruiker is ingelogd
