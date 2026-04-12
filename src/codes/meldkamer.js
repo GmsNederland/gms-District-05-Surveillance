@@ -25,9 +25,9 @@ function initMeldkamer(user) {
   console.log("Meldkamer gestart:", user.uid);
 
   // alles starten hier:
-  loadTickets();
-  loadUsers();
-  startRealtimeUpdates();
+  renderCalls();
+  loadPlayers();
+  renderIncidents();
 }
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {
