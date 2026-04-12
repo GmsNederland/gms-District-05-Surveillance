@@ -6,6 +6,10 @@
 <title>Dienst Selectie — District 05</title>
 <link rel="icon" type="image/x-icon" href="/src/icone/logo.png">
 
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
 <style>
 body{
   margin: 0;
@@ -228,14 +232,6 @@ body{
 
 <div id="topbar-container"></div>
 
-<script>
-  fetch('/src/components/shared/TopBar.html')
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('topbar-container').innerHTML = html;
-    });
-</script>
-
 <div class="main">
   <div class="header">
     <div class="header-icon">🚨</div>
@@ -251,6 +247,31 @@ body{
 </div>
 
 <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+    authDomain: "district05surveillance-e5183.firebaseapp.com",
+    databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "district05surveillance-e5183",
+    storageBucket: "district05surveillance-e5183.firebasestorage.app",
+    messagingSenderId: "492638820842",
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
+    measurementId: "G-4WLXZ1L4MG"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // ❌ niet ingelogd → terug naar login
+      window.location.replace("/src/index.html");
+      return;
+    }
+
+    // ✅ wel ingelogd → toegang geven
+    console.log("Ingelogd:", user.uid);
+
+    document.body.style.display = "block";
+  });
   const SERVICES = {
     politie:{label:"Politie", subLabel:'Wet', description:"Toegang tot meldingen, surveillance en interventies", color:'#0078ff', icon:'👮'},
     ambulance:{label:"Ambulance", subLabel:'Medisch', description:"Medische meldingen en noodhulp", color:'#00ff78', icon:'🚑'},
@@ -289,6 +310,15 @@ body{
     sessionStorage.setItem("role", role);
     window.location.href = "/src/pages/panels/" + role + ".html";
   }
+fetch('/src/components/shared/TopBar.html')
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById('topbar-container').innerHTML = html;
+  });
+</script>
+
+<!-- 🔥 BELANGRIJK: JS LOS INLADEN -->
+<script src="/src/codes/topbar.js"></script>
 </script>
 
 </body>

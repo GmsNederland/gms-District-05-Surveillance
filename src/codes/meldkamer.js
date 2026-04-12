@@ -12,18 +12,18 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const auth = firebase.auth();
-firebase.auth().onAuthStateChanged((user) => {
-  if (!user) {
-    // ❌ niet ingelogd → terug naar login
-    window.location.replace("/src/index.html");
-    return;
-  }
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // ❌ niet ingelogd → terug naar login
+      window.location.replace("/src/index.html");
+      return;
+    }
 
-  // ✅ wel ingelogd → toegang geven
-  console.log("Ingelogd:", user.uid);
+    // ✅ wel ingelogd → toegang geven
+    console.log("Ingelogd:", user.uid);
 
-  document.body.style.display = "block";
-});
+    document.body.style.display = "block";
+  });
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {
   //     // ✔ gebruiker is ingelogd

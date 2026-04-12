@@ -1,0 +1,546 @@
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+/* ================= TOPBAR ================= */
+#topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(20,20,40,0.7);
+  backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 10;
+}
+
+.left, .center, .right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ================= HAMBURGER ================= */
+.hamburger {
+  cursor: pointer;
+  font-size: 22px;
+  transition: 0.2s;
+}
+.hamburger:hover {
+  transform: scale(1.2);
+}
+
+/* ================= SIDEBAR ================= */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: linear-gradient(180deg, #0f172a, #0b1220);
+  color: white;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+
+  z-index: 9999; /* 🔥 BELANGRIJK: altijd boven alles */
+    box-shadow: 20px 0 60px rgba(0,0,0,0.6);
+
+}
+#sidebar.open {
+  left: 0;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.sidebar-header {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-header .logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.sidebar-header .sub {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 4px;
+}
+
+/* =========================
+   SECTION TITLE
+   ========================= */
+
+.section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  opacity: 0.4;
+  margin: 10px 0;
+}
+
+/* =========================
+   NAV ITEMS
+   ========================= */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  margin-bottom: 8px;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+  color: white;
+
+  background: rgba(255,255,255,0.02);
+
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(59,130,246,0.15);
+  transform: translateX(5px);
+}
+
+.nav-item.active {
+  background: rgba(59,130,246,0.25);
+  border-left: 3px solid #3b82f6;
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.icon {
+  width: 20px;
+  text-align: center;
+}
+
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.sidebar-footer {
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* =========================
+   STATUS DOT
+   ========================= */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.online {
+  background: #00ff88;
+}
+
+.status-dot.busy {
+  background: #ffcc00;
+}
+
+.status-dot.offline {
+  background: #ff4444;
+}
+
+/* ================= OVERLAY ================= */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 9998;
+}
+#overlay.active {
+  display: block;
+}
+
+/* ================= STATUS ================= */
+.statusBox {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 10px;
+  display: none;
+  min-width: 160px;
+}
+
+.menu div {
+  padding: 8px;
+  cursor: pointer;
+}
+.menu div:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* ================= USER ================= */
+.userBox {
+  position: relative;
+  cursor: pointer;
+}
+
+.userMenu {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 10px;
+  display: none;
+}
+
+/* ================= DOTS ================= */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+.online { background: #00ff88; }
+.busy { background: #ffcc00; }
+.offline { background: #ff4444; }
+
+/* ================= CONNECTION ================= */
+.conn {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.conn.online { background: rgba(0,255,150,0.15); color: #00ff88; }
+.conn.offline { background: rgba(255,80,80,0.15); color: #ff5555; }
+.conn.warn { background: rgba(255,200,0,0.15); color: #ffcc00; }
+
+/* ================= DATETIME ================= */
+.datetime {
+  text-align: right;
+  font-size: 12px;
+  display: flex;
+}
+
+/* ================= USER BOX ================= */
+
+.userBox {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* TRIGGER (bovenste balkje) */
+.userTrigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 6px 10px;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,0.03);
+  transition: 0.2s;
+}
+
+.userTrigger:hover {
+  background: rgba(59,130,246,0.15);
+}
+
+/* AVATAR */
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.08);
+}
+
+/* USER INFO */
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* CHEVRON */
+.chevron {
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+/* ================= DROPDOWN MENU ================= */
+
+.userMenu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+
+  width: 180px;
+
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  border-radius: 12px;
+
+  display: none;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  z-index: 9999;
+}
+
+.userMenu.show {
+  display: flex;
+}
+
+/* MENU ITEMS */
+.menu-item {
+  padding: 10px 12px;
+  font-size: 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  transition: 0.2s;
+}
+
+.menu-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* DANGER ITEM */
+.menu-item.danger {
+  color: #ff4444;
+}
+
+.menu-item.danger:hover {
+  background: rgba(255,68,68,0.1);
+}
+
+/* Item settings */
+.menu-item.settings {
+  color: #afabab;
+}
+
+/* LOGOUT POPUP */
+/* ================= MODAL ================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-box {
+  width: 320px;
+  max-width: 90%;
+
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.1);
+
+  border-radius: 14px;
+  padding: 20px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.modal-box h3 {
+  margin: 0 0 10px;
+}
+
+.modal-box p {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* buttons */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn.cancel {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.btn.danger {
+  background: #ff4444;
+  color: white;
+}
+
+/* ================= NOTIF ICON ================= */
+
+.notifBox {
+  position: relative;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.notifDot {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  background: #ff4444;
+  box-shadow: 0 0 8px #ff4444;
+}
+
+/* ================= PANEL ================= */
+
+.notifPanel {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+
+  width: 320px;
+  max-height: 400px;
+
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+
+  overflow: hidden;
+  z-index: 99999;
+
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+
+  transition: 0.25s ease;
+}
+
+.notifPanel.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* HEADER */
+.notifHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.notifHeader h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.close {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+/* LIST */
+.notifList {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 340px;
+}
+
+.notifItem {
+  padding: 10px;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,0.03);
+
+  font-size: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notifItem span {
+  font-size: 10px;
+  opacity: 0.5;
+}
