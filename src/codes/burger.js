@@ -1,137 +1,88 @@
 // ===============================
-// 🔥 FIREBASE INIT (SAFE)
+// 🔥 FIREBASE CALL SYSTEEM
 // ===============================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
-  authDomain: "district05surveillance-e5183.firebaseapp.com",
-  databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "district05surveillance-e5183",
-  storageBucket: "district05surveillance-e5183.firebasestorage.app",
-  messagingSenderId: "492638820842",
-  appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
-  measurementId: "G-4WLXZ1L4MG"
-};
-
-// 🔥 INIT ONLY ONCE
-if (!firebase.apps.length) {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+    authDomain: "district05surveillance-e5183.firebaseapp.com",
+    databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "district05surveillance-e5183",
+    storageBucket: "district05surveillance-e5183.firebasestorage.app",
+    messagingSenderId: "492638820842",
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
+    measurementId: "G-4WLXZ1L4MG"
+  };
   firebase.initializeApp(firebaseConfig);
-}
-
-const db = firebase.database();
-const callsRef = db.ref("calls");
-
-// ===============================
-// 🚀 DOM READY
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-
-  const btn = document.getElementById("submitBtn");
-
-  if (!btn) return;
-
-  btn.addEventListener("click", sendCall);
-
-});
+  const db = firebase.database();
+// Vereist: firebase is al geïnitialiseerd in je project
+const callsRef = firebase.database().ref("calls");
 
 // ===============================
-// 📞 SEND CALL
+// 📞 CALL VERSTUREN
 // ===============================
-async function sendCall() {
+function send() {
 
-  const typeEl = document.getElementById("type");
-  const locationEl = document.getElementById("location");
-  const phoneEl = document.getElementById("phone");
-  const descEl = document.getElementById("desc");
-  const btn = document.getElementById("submitBtn");
+  const type = document.getElementById("type").value;
+  const loc = document.getElementById("loc").value;
 
-  if (!typeEl || !locationEl || !btn) return;
-
-  const type = typeEl.value;
-  const location = locationEl.value;
-  const phone = phoneEl?.value || "";
-  const desc = descEl?.value || "";
-
-  if (!type || !location) {
-    alert("Vul alle verplichte velden in!");
-    return;
-  }
-
-  // 🔒 prevent double click
-  if (btn.disabled) return;
-
-  btn.disabled = true;
-  btn.innerText = "Versturen...";
+  if (!type || !loc) return;
 
   playTone();
 
   const newCall = {
-    caller_id: phone || "Anoniem",
-    caller_location: location,
-    description: desc,
-    priority: type,
+    caller_id: "Burger",
+    caller_location: loc,
+    priority: Number(type),
     status: "waiting",
     created_date: new Date().toISOString()
   };
 
-  try {
-    await callsRef.push(newCall);
+  // 🔥 push naar Firebase
+  callsRef.push(newCall)
+    .then(() => {
+      // UI succes
+      document.getElementById("form").style.display = "none";
+      document.getElementById("success").style.display = "block";
 
-    const form = document.getElementById("formPanel");
-    const success = document.getElementById("successPanel");
-    const summary = document.getElementById("summary");
-
-    if (form) form.style.display = "none";
-    if (success) success.style.display = "block";
-    if (summary) summary.innerText = `${type} — ${location}`;
-
-  } catch (err) {
-    console.error("Firebase error:", err);
-    alert("❌ Kon melding niet verzenden!");
-
-    btn.disabled = false;
-    btn.innerText = "Noodoproep Versturen";
-  }
+      // optioneel reset inputs
+      document.getElementById("type").value = "";
+      document.getElementById("loc").value = "";
+    })
+    .catch((err) => {
+      console.error("Firebase error:", err);
+      alert("❌ Kon melding niet verzenden!");
+    });
 }
 
 // ===============================
-// 🔁 RESET
+// 🔄 RESET UI
 // ===============================
-function resetCall() {
-
-  const form = document.getElementById("formPanel");
-  const success = document.getElementById("successPanel");
-  const btn = document.getElementById("submitBtn");
-
-  if (form) form.style.display = "block";
-  if (success) success.style.display = "none";
-
-  if (btn) {
-    btn.disabled = false;
-    btn.innerText = "Noodoproep Versturen";
-  }
-
-  const fields = ["type", "location", "phone", "desc"];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
+function reset() {
+  document.getElementById("form").style.display = "block";
+  document.getElementById("success").style.display = "none";
 }
 
 // ===============================
-// 🔊 SOUND
+// 🔊 PIEP GELUID
 // ===============================
 function playTone() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
 
-    osc.frequency.value = 900;
-    osc.connect(ctx.destination);
-    osc.start();
+  osc.frequency.value = 900;
+  osc.connect(ctx.destination);
+  osc.start();
 
-    setTimeout(() => osc.stop(), 300);
-  } catch (e) {
-    console.warn("Audio not supported");
-  }
+  setTimeout(() => osc.stop(), 300);
+}
+
+// ===============================
+// 🔁 RESET CALL UI
+// ===============================
+function resetCall() {
+  document.getElementById("formPanel").style.display = "block";
+  document.getElementById("successPanel").style.display = "none";
+
+  document.getElementById("submitBtn").disabled = false;
+  document.getElementById("submitBtn").innerText = "Noodoproep Versturen";
 }

@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>112 Burger Panel — District 05</title>
-<link rel="icon" type="image/x-icon" href="/icone/logo.png">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link rel="icon" type="image/x-icon" href="/src/icone/logo.png">
 <script src="/src/codes/topbar.js" defer></script>
 <script src="/src/codes/scripts.js" defer></script>
 <script src="/src/codes/burger.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
 
 <style>
 body{
@@ -305,7 +305,7 @@ button:disabled{
   };
 
   try {
-    // await firebase.database().ref("calls").push(newCall);
+    await firebase.database().ref("calls").push(newCall);
 
     document.getElementById("formPanel").style.display = "none";
     document.getElementById("successPanel").style.display = "block";
@@ -317,8 +317,7 @@ button:disabled{
     alert("Fout bij versturen!");
   }
 };
-  
-function resetCall(){
+  function resetCall(){
     document.getElementById("formPanel").style.display="block";
     document.getElementById("successPanel").style.display="none";
     document.getElementById("submitBtn").disabled=false;
