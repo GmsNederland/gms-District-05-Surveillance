@@ -305,7 +305,7 @@ button:disabled{
   };
 
   try {
-    await firebase.database().ref("calls").push(newCall);
+    // await firebase.database().ref("calls").push(newCall);
 
     document.getElementById("formPanel").style.display = "none";
     document.getElementById("successPanel").style.display = "block";
