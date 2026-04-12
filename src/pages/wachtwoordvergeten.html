@@ -1,85 +1,158 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <script type="module" src="/src/codes/wachtwoordvergetn.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wachtwoord Vergeten</title>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom, #0f172a, #1e293b);
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #6366f1);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wachtwoord Vergeten</title>
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .container {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        h2 {
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        input[type="email"] {
-            width: 100%;
-            padding: 0.8rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background: #007bff;
-            color: #fff;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .message {
-            margin-top: 1rem;
-            color: green;
-        }
-        .error {
-            color: red;
-        }
-    </style>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 350px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 { text-align: center; }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(59,130,246,0.7);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #2563eb;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: #111827;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    .popup.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: all;
+    }
+
+    .popup button {
+      margin-top: 15px;
+      background: #22c55e;
+    }
+
+    .popup button:hover {
+      background: #16a34a;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Wachtwoord Vergeten</h2>
-        <p>Vul je e-mailadres in om je wachtwoord te resetten.</p>
-        <input type="email" id="email" placeholder="E-mail adres" required>
-        <button onclick="sendResetEmail()">Verstuur reset link</button>
-        <button id="inloggen" type="button">Inloggen</button>
-        <p class="message" id="message"></p>
-    </div>
+  <div class="card">
+    <h2>🔐 Wachtwoord Vergeten</h2>
+    <p>Voer je e-mailadres in om je wachtwoord opnieuw in te stellen.</p>
+    <input type="email" id="email" placeholder="E-mailadres" required>
+    <button onclick="resetPassword()">Verstuur reset link</button>
+  </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-database-compat.js"></script>
+  <div class="popup" id="popup">
+    <h3>✅ Gelukt!</h3>
+    <p>De reset e-mail is verzonden.</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+    authDomain: "district05surveillance-e5183.firebaseapp.com",
+    databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "district05surveillance-e5183",
+    storageBucket: "district05surveillance-e5183.firebasestorage.app",
+    messagingSenderId: "492638820842",
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
+    measurementId: "G-4WLXZ1L4MG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.resetPassword = function () {
+      const email = document.getElementById('email').value;
+
+      if (!email) {
+        alert("Vul een e-mailadres in");
+        return;
+      }
+
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          document.getElementById('popup').classList.add('active');
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    };
+
+    window.closePopup = function () {
+      document.getElementById('popup').classList.remove('active');
+    };
+  </script>
+
 </body>
 </html>
