@@ -46,7 +46,7 @@ function send() {
 
       // optioneel reset inputs
       document.getElementById("type").value = "";
-      document.getElementById("loc").value = "";
+      document.getElementById("location").value = "";
     })
     .catch((err) => {
       console.error("Firebase error:", err);
