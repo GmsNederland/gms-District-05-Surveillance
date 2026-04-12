@@ -11,6 +11,28 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+  const auth = firebase.auth();
+  firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    window.location.replace("/src/index.html");
+  } else {
+    console.log("Ingelogd:", user.uid);
+    startApp(user);
+  }
+});
+  // firebase.auth().onAuthStateChanged((user) => {
+  //   if (user) {
+  //     // ✔ gebruiker is ingelogd
+  //     console.log("Ingelogd als:", user.uid);
+
+  //     // hier kun je je meldkamer laden
+  //     loadMeldkamer(user);
+
+  //   } else {
+  //     // ❌ niet ingelogd → terug naar login
+  //     window.location.href = "/src/index.html";
+  //   }
+  // });
   const callsRef = db.ref("calls");
 
   // Clock
