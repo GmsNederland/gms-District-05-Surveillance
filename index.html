@@ -104,111 +104,113 @@
   </div>
 
   <!-- FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      get 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+  authDomain: "district05surveillance-e5183.firebaseapp.com",
+  databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "district05surveillance-e5183",
+  storageBucket: "district05surveillance-e5183.firebasestorage.app",
+  messagingSenderId: "492638820842",
+  appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
-      authDomain: "district05surveillance-e5183.firebaseapp.com",
-      databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "district05surveillance-e5183",
-      storageBucket: "district05surveillance-e5183.firebasestorage.app",
-      messagingSenderId: "492638820842",
-      appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
-    };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+const form = document.getElementById("loginForm");
+const error = document.getElementById("error");
+const popup = document.getElementById("successPopup");
 
-    const form = document.getElementById("loginForm");
-    const error = document.getElementById("error");
+/* 🔐 DISCORD LOG */
+async function logToDiscord(message) {
+  try {
+    const webhookURL = "YOUR_WEBHOOK_HERE";
 
-    async function logToDiscord(message) {
-      try {
-        const webhookURL = "https://discord.com/api/webhooks/1486383318520955081/R-7TzBEw_izKBIiRnfCTH-FRdzqNvIYqJ-chIQ24Aae7_QJ3r8lIf5gM6NxnKcqmDIgQ";
-
-        await fetch(webhookURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            embeds: [{
-              title: "🔐 Login Event",
-              description: message,
-              color: 3447003,
-              timestamp: new Date()
-            }]
-          })
-        });
-      } catch (e) {
-        console.warn("Discord logging gefaald");
-      }
-    }
-    
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const username = document.getElementById("username").value;
-
-      error.textContent = "";
-
-      try {
-        // 🔐 LOGIN MET FIREBASE AUTH
-        const userCred = await signInWithEmailAndPassword(auth, email, password);
-
-        const uid = userCred.user.uid;
-
-        // 👤 OPSLAAN USER DATA IN RTDB
-        await logToDiscord(`
-          ✅ LOGIN SUCCES
-          👤 Username: ${username}
-          🆔 UID: ${uid}
-          🕒 Tijd: ${new Date().toLocaleString()}
-        `);
-        
-        await set(ref(db, "users/" + uid), {
-          username: username,
-          rol: "user",
-          lastLogin: Date.now()
-        });
-
-        // 💾 SESSION
-        sessionStorage.setItem("uid", uid);
-        sessionStorage.setItem("username", username);
-
-        // 🚀 REDIRECT
-        const popup = document.getElementById("successPopup");
-        popup.classList.remove("hidden");
-        setTimeout(() => {
-        window.location.href = "/src/pages/rolenselect.html";
-        }, 900);
-
-      } catch (err) {
-        console.error(err);
-        error.textContent = "Login mislukt: " + err.message;
-        await logToDiscord(`
-      ❌ LOGIN MISLUKT
-      ⚠️ Error: ${err.message}
-      🕒 Tijd: ${new Date().toLocaleString()}
-      `);
-      }
+    await fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: "🔐 Login Event",
+          description: message,
+          color: 3447003,
+          timestamp: new Date().toISOString()
+        }]
+      })
     });
-  </script>
+  } catch (e) {
+    console.warn("Discord logging gefaald");
+  }
+}
+
+/* 🚀 LOGIN */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim();
+
+  error.textContent = "";
+  popup.classList.add("hidden");
+
+  try {
+    // 🔐 LOGIN
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
+
+    const uid = user.uid;
+
+    // 👤 SAVE USER DATA
+    await set(ref(db, "users/" + uid), {
+      username: username || "unknown",
+      email: user.email,
+      rol: "user",
+      lastLogin: Date.now()
+    });
+
+    // 💾 SESSION (voor snelle frontend checks)
+    sessionStorage.setItem("uid", uid);
+    sessionStorage.setItem("username", username);
+
+    // 📡 DISCORD LOG SUCCESS
+    await logToDiscord(`
+✅ LOGIN SUCCES
+👤 Username: ${username}
+📧 Email: ${email}
+🆔 UID: ${uid}
+🕒 Tijd: ${new Date().toLocaleString()}
+    `);
+
+    // 🎉 UI FEEDBACK
+    popup.classList.remove("hidden");
+
+    // 🚀 REDIRECT (veiliger dan href)
+    setTimeout(() => {
+      window.location.replace("/src/pages/rolenselect.html");
+    }, 900);
+
+  } catch (err) {
+
+    console.error(err);
+
+    error.textContent = "❌ Login mislukt: " + err.message;
+
+    await logToDiscord(`
+❌ LOGIN MISLUKT
+📧 Email: ${email}
+⚠️ Error: ${err.message}
+🕒 Tijd: ${new Date().toLocaleString()}
+    `);
+  }
+});
+</script>
 
 </body>
 </html>
