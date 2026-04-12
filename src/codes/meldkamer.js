@@ -12,13 +12,14 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const auth = firebase.auth();
-  firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
+    document.body.innerHTML = "Geen toegang";
     window.location.replace("/src/index.html");
-  } else {
-    console.log("Ingelogd:", user.uid);
-    startApp(user);
+    return;
   }
+
+  startApp(user);
 });
   // firebase.auth().onAuthStateChanged((user) => {
   //   if (user) {
