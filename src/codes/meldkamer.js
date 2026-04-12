@@ -1,17 +1,4 @@
  // Firebase config (vul in met jouw eigen project config)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { 
-    getAuth,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-  import {
-    getDatabase,
-    ref,
-    set,
-    get
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"; 
-
   const firebaseConfig = {
     apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
     authDomain: "district05surveillance-e5183.firebaseapp.com",
@@ -19,21 +6,12 @@
     projectId: "district05surveillance-e5183",
     storageBucket: "district05surveillance-e5183.firebasestorage.app",
     messagingSenderId: "492638820842",
-    appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+    appId: "1:492638820842:web:a3ff331099f9f4e88efa93",
+    measurementId: "G-4WLXZ1L4MG"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
   const callsRef = db.ref("calls");
-
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "/src/index.html";
-    } else {
-      console.log("User UID:", user.uid);
-    }
-  });
 
   // Clock
   const clock = document.getElementById('clock');
