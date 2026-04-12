@@ -281,43 +281,7 @@ button:disabled{
     const html = await fetch(file).then(r=>r.text())
     el.innerHTML = html
   });
-  
-  document.getElementById("submitBtn").onclick = async () => {
-
-  let type = document.getElementById("type").value;
-  let location = document.getElementById("location").value;
-  let phone = document.getElementById("phone").value;
-  let desc = document.getElementById("desc").value;
-
-  if (!type || !location) return;
-
-  let btn = document.getElementById("submitBtn");
-  btn.innerText = "Versturen...";
-  btn.disabled = true;
-
-  const newCall = {
-    caller_id: phone || "Anoniem",
-    caller_location: location,
-    description: desc,
-    priority: type,
-    status: "waiting",
-    created_date: new Date().toISOString()
-  };
-
-  try {
-    await firebase.database().ref("calls").push(newCall);
-
-    document.getElementById("formPanel").style.display = "none";
-    document.getElementById("successPanel").style.display = "block";
-
-    document.getElementById("summary").innerText = `${type} — ${location}`;
-
-  } catch (err) {
-    console.error(err);
-    alert("Fout bij versturen!");
-  }
-};
-  function resetCall(){
+function resetCall(){
     document.getElementById("formPanel").style.display="block";
     document.getElementById("successPanel").style.display="none";
     document.getElementById("submitBtn").disabled=false;
