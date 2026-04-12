@@ -108,14 +108,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { 
       getAuth, 
-      signInWithEmailAndPassword 
+      signInWithEmailAndPassword,
+      setPersistence,
+      browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     import { 
       getDatabase, 
       ref, 
-      set, 
-      get 
+      set 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
@@ -134,6 +135,8 @@
 
     const form = document.getElementById("loginForm");
     const error = document.getElementById("error");
+
+    await setPersistence(auth, browserLocalPersistence);
 
     async function logToDiscord(message) {
       try {
