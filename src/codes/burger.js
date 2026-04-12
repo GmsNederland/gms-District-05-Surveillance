@@ -1,5 +1,5 @@
 // ===============================
-// 🔥 FIREBASE INIT
+// 🔥 FIREBASE INIT (SAFE)
 // ===============================
 
 const firebaseConfig = {
@@ -13,7 +13,7 @@ const firebaseConfig = {
   measurementId: "G-4WLXZ1L4MG"
 };
 
-// 🔥 voorkomt dubbele init errors
+// 🔥 INIT ONLY ONCE
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -22,40 +22,53 @@ const db = firebase.database();
 const callsRef = db.ref("calls");
 
 // ===============================
-// 🚀 START ALS DOM GELADEN IS
+// 🚀 DOM READY
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("submitBtn");
 
-  if (btn) {
-    btn.onclick = sendCall;
-  }
+  if (!btn) return;
+
+  btn.addEventListener("click", sendCall);
 
 });
 
 // ===============================
-// 📞 CALL VERSTUREN
+// 📞 SEND CALL
 // ===============================
 async function sendCall() {
 
-  const type = document.getElementById("type").value;
-  const location = document.getElementById("location").value;
-  const phone = document.getElementById("phone").value;
-  const desc = document.getElementById("desc").value;
-
-  if (!type || !location) return;
-
+  const typeEl = document.getElementById("type");
+  const locationEl = document.getElementById("location");
+  const phoneEl = document.getElementById("phone");
+  const descEl = document.getElementById("desc");
   const btn = document.getElementById("submitBtn");
-  btn.innerText = "Versturen...";
+
+  if (!typeEl || !locationEl || !btn) return;
+
+  const type = typeEl.value;
+  const location = locationEl.value;
+  const phone = phoneEl?.value || "";
+  const desc = descEl?.value || "";
+
+  if (!type || !location) {
+    alert("Vul alle verplichte velden in!");
+    return;
+  }
+
+  // 🔒 prevent double click
+  if (btn.disabled) return;
+
   btn.disabled = true;
+  btn.innerText = "Versturen...";
 
   playTone();
 
   const newCall = {
     caller_id: phone || "Anoniem",
     caller_location: location,
-    description: desc || "",
+    description: desc,
     priority: type,
     status: "waiting",
     created_date: new Date().toISOString()
@@ -64,11 +77,13 @@ async function sendCall() {
   try {
     await callsRef.push(newCall);
 
-    // ✅ UI succes
-    document.getElementById("formPanel").style.display = "none";
-    document.getElementById("successPanel").style.display = "block";
+    const form = document.getElementById("formPanel");
+    const success = document.getElementById("successPanel");
+    const summary = document.getElementById("summary");
 
-    document.getElementById("summary").innerText = `${type} — ${location}`;
+    if (form) form.style.display = "none";
+    if (success) success.style.display = "block";
+    if (summary) summary.innerText = `${type} — ${location}`;
 
   } catch (err) {
     console.error("Firebase error:", err);
@@ -80,32 +95,43 @@ async function sendCall() {
 }
 
 // ===============================
-// 🔁 RESET UI
+// 🔁 RESET
 // ===============================
 function resetCall() {
-  document.getElementById("formPanel").style.display = "block";
-  document.getElementById("successPanel").style.display = "none";
 
+  const form = document.getElementById("formPanel");
+  const success = document.getElementById("successPanel");
   const btn = document.getElementById("submitBtn");
-  btn.disabled = false;
-  btn.innerText = "Noodoproep Versturen";
 
-  document.getElementById("type").value = "";
-  document.getElementById("location").value = "";
-  document.getElementById("phone").value = "";
-  document.getElementById("desc").value = "";
+  if (form) form.style.display = "block";
+  if (success) success.style.display = "none";
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerText = "Noodoproep Versturen";
+  }
+
+  const fields = ["type", "location", "phone", "desc"];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
 }
 
 // ===============================
-// 🔊 PIEP GELUID
+// 🔊 SOUND
 // ===============================
 function playTone() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
 
-  osc.frequency.value = 900;
-  osc.connect(ctx.destination);
-  osc.start();
+    osc.frequency.value = 900;
+    osc.connect(ctx.destination);
+    osc.start();
 
-  setTimeout(() => osc.stop(), 300);
+    setTimeout(() => osc.stop(), 300);
+  } catch (e) {
+    console.warn("Audio not supported");
+  }
 }
