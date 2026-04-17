@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Account Settings — D05 GMS</title>
+<link rel="icon" type="image/x-icon" href="/src/icone/logo.png">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+<!-- Firebase (ready for later use) -->
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
+<style>
+body {
+  margin: 0;
+  background: #0b1220;
+  color: white;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* PAGE */
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+/* CARDS */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+/* PROFILE */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 26px;
+}
+
+h2 { margin: 0; }
+small { opacity: 0.6; }
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+label {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  color: white;
+}
+
+/* BUTTONS */
+.btn {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #3b82f6;
+  color: white;
+}
+
+.btn:hover { background: #2563eb; }
+
+.danger {
+  background: rgba(255,68,68,0.15);
+  color: #ff4444;
+}
+
+/* 2FA */
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.switch {
+  width: 40px;
+  height: 20px;
+  background: #333;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.switch::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.switch.active {
+  background: #3b82f6;
+}
+
+.switch.active::after {
+  left: 22px;
+}
+
+/* LOGS */
+.log {
+  font-size: 12px;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔥 TOPBAR (shared include) -->
+<div id="topbar-container"></div>
+
+<script>
+fetch('/src/components/shared/topbar.html')
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("topbar-container").innerHTML = html;
+  });
+</script>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- PROFILE -->
+  <div class="card">
+    <div class="profile">
+      <div class="avatar">👤</div>
+      <div>
+        <h2 id="username">Laden...</h2>
+        <small id="email">...</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT -->
+  <div class="card">
+    <h3>Persoonlijke gegevens</h3>
+
+    <div class="grid">
+      <div>
+        <label>Gebruikersnaam</label>
+        <input id="inputName" type="text">
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input id="inputEmail" type="email">
+      </div>
+    </div>
+
+    <button class="btn" onclick="save()">Opslaan</button>
+  </div>
+
+  <!-- 🔐 2FA -->
+  <div class="card">
+    <h3>Beveiliging (2FA)</h3>
+
+    <div class="toggle">
+      <span>Two-Factor Authentication</span>
+      <div class="switch" id="twofa" onclick="toggle2FA()"></div>
+    </div>
+  </div>
+
+  <!-- 📊 LOGS -->
+  <div class="card">
+    <h3>Activiteit logs</h3>
+
+    <div id="logs">
+      <div class="log">Login — 12:45</div>
+      <div class="log">Password changed — 2 dagen geleden</div>
+      <div class="log">Nieuwe login device — Chrome Windows</div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="card">
+    <h3>Account acties</h3>
+
+    <button class="btn danger" onclick="logout()">Uitloggen</button>
+  </div>
+
+</div>
+
+<script>
+/* ================= FIREBASE READY HOOK ================= */
+// later direct plug-in
+const user = {
+  name: "Loading...",
+  email: "loading..."
+};
+
+/* ================= AUTO USER (READY FOR FIREBASE) ================= */
+function loadUser() {
+  // later: firebase.auth().currentUser
+  document.getElementById("username").textContent = user.name;
+  document.getElementById("email").textContent = user.email;
+  document.getElementById("inputName").value = user.name;
+  document.getElementById("inputEmail").value = user.email;
+}
+
+loadUser();
+
+/* ================= SAVE ================= */
+function save() {
+  alert("Saved (ready for Firebase update)");
+}
+
+/* ================= 2FA TOGGLE ================= */
+function toggle2FA() {
+  const el = document.getElementById("twofa");
+  el.classList.toggle("active");
+
+  // later: Firebase update user setting
+}
+
+/* ================= LOGOUT ================= */
+function logout() {
+  // later: firebase.auth().signOut()
+  window.location.href = "/src/index.html";
+}
+</script>
+
+</body>
+</html>

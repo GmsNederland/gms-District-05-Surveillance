@@ -999,10 +999,85 @@ function openSystemPopup(system) {
 
     // Velden per systeem
     const fields = [];
-    if(system.id === 'p20000') {
-      fields.push({label: 'Type eenheid', type:'select', options:['Brandweer','Ambulance']});
-      fields.push({label: 'Roblox speler', type:'select', options:['-- kies speler --','Player1','Player2']});
-      fields.push({label: 'Incident beschrijving', type:'textarea', placeholder:'Wat is er aan de hand?'});
+if(system.id === 'p20000') {
+
+  // 🔥 velden
+  fields.push({label: 'Type eenheid', type:'select', options:['Brandweer','Ambulance']});
+  fields.push({label: 'Post / Team', type:'select', options:['Laden...']});
+  fields.push({label: 'Incident beschrijving', type:'textarea', placeholder:'Wat is er aan de hand?'});
+
+  // 🔥 NA render → posten laden
+  setTimeout(async () => {
+
+    try {
+      const res = await fetch("https://apiservi-uba4.onrender.com/api/p2000/posten");
+      const data = await res.json();
+
+      const selects = popup.querySelectorAll("select");
+
+      const typeSelect = selects[0];
+      const postSelect = selects[1];
+
+      const updatePosten = () => {
+        const type = typeSelect.value;
+
+        postSelect.innerHTML = "";
+
+        if (type === "Brandweer") {
+
+          // 🔥 VRIJWILLIGERS
+          if (data.brandweer?.vrijwilligers?.length) {
+            const optgroupV = document.createElement("optgroup");
+            optgroupV.label = "Vrijwilligers";
+
+            data.brandweer.vrijwilligers.forEach(post => {
+              const opt = document.createElement("option");
+              opt.value = post.naam;
+              opt.textContent = post.naam;
+              optgroupV.appendChild(opt);
+            });
+
+            postSelect.appendChild(optgroupV);
+          }
+
+          // 🔥 BEROEPS
+          if (data.brandweer?.beroeps?.length) {
+            const optgroupB = document.createElement("optgroup");
+            optgroupB.label = "Beroeps";
+
+            data.brandweer.beroeps.forEach(post => {
+              const opt = document.createElement("option");
+              opt.value = post.naam;
+              opt.textContent = post.naam;
+              optgroupB.appendChild(opt);
+            });
+
+            postSelect.appendChild(optgroupB);
+          }
+
+        } else if (type === "Ambulance") {
+
+          data.ambulance?.forEach(team => {
+            const opt = document.createElement("option");
+            opt.value = team.naam;
+            opt.textContent = team.naam;
+            postSelect.appendChild(opt);
+          });
+
+        }
+      };
+
+      // eerste load
+      updatePosten();
+
+      // bij wijziging type
+      typeSelect.addEventListener("change", updatePosten);
+
+    } catch (err) {
+      console.error("❌ Posten laden mislukt:", err);
+    }
+
+  }, 100);
     } else if(system.id === 'nlalert') {
       fields.push({label: 'Bericht', type:'textarea', placeholder:'Wat moeten mensen weten?'});
       fields.push({label: 'Locatie', type:'text', placeholder:'Straatnaam, Stad'});
