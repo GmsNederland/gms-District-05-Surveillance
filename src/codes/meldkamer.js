@@ -862,32 +862,40 @@ function renderUnits(container) {
 
         if (!incident) return alert('Incident niet gevonden');
 
-        const key = incident.firebaseKey || incident.id;
-
         try {
-          const ref = db.ref(`calls/${key}`);
-          const snap = await ref.once('value');
-          const data = snap.val() || {};
-
-          const assignedUnits = data.assignedUnits || {};
-
-          // 🔥 add unit
-          assignedUnits[unit.id] = {
-            id: unit.id,
-            callsign: unit.callsign,
-            service: unit.service,
-            time: Date.now()
-          };
-
-          await ref.update({
-            assignedUnits,
-            status: 'DISPATCHED'
+          const res = await fetch("https://apiservi-uba4.onrender.com/api/p2000", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              type: "dispatch",
+              unit: {
+                id: unit.id,
+                callsign: unit.callsign,
+                service: unit.service,
+              },
+              incident: {
+                id: incident.firebaseKey || incident.id,
+                title: incident.title,
+                location: incident.location,
+                priority: incident.priority,
+                description: incident.description || ""
+              }
+            })
           });
 
-          alert(`🚨 ${unit.callsign} gekoppeld aan incident`);
+          const data = await res.json();
+
+          if (!res.ok) {
+            console.error(data);
+            return alert("❌ Dispatch mislukt");
+          }
+
+          alert(`🚨 Verstuurd via P2000 API naar Roblox!\n${unit.callsign}`);
         } catch (err) {
           console.error(err);
-          alert('Fout bij koppelen');
+          alert("❌ Netwerkfout bij dispatch");
         }
       };
 
@@ -999,85 +1007,85 @@ function openSystemPopup(system) {
 
     // Velden per systeem
     const fields = [];
-if(system.id === 'p20000') {
+    if(system.id === 'p20000') {
 
-  // 🔥 velden
-  fields.push({label: 'Type eenheid', type:'select', options:['Brandweer','Ambulance']});
-  fields.push({label: 'Post / Team', type:'select', options:['Laden...']});
-  fields.push({label: 'Incident beschrijving', type:'textarea', placeholder:'Wat is er aan de hand?'});
+      // 🔥 velden
+      fields.push({label: 'Type eenheid', type:'select', options:['Brandweer','Ambulance']});
+      fields.push({label: 'Post / Team', type:'select', options:['Laden...']});
+      fields.push({label: 'Incident beschrijving', type:'textarea', placeholder:'Wat is er aan de hand?'});
 
-  // 🔥 NA render → posten laden
-  setTimeout(async () => {
+      // 🔥 NA render → posten laden
+      setTimeout(async () => {
 
-    try {
-      const res = await fetch("https://apiservi-uba4.onrender.com/api/p2000/posten");
-      const data = await res.json();
+        try {
+          const res = await fetch("https://apiservi-uba4.onrender.com/api/p2000/posten");
+          const data = await res.json();
 
-      const selects = popup.querySelectorAll("select");
+          const selects = popup.querySelectorAll("select");
 
-      const typeSelect = selects[0];
-      const postSelect = selects[1];
+          const typeSelect = selects[0];
+          const postSelect = selects[1];
 
-      const updatePosten = () => {
-        const type = typeSelect.value;
+          const updatePosten = () => {
+            const type = typeSelect.value;
 
-        postSelect.innerHTML = "";
+            postSelect.innerHTML = "";
 
-        if (type === "Brandweer") {
+            if (type === "Brandweer") {
 
-          // 🔥 VRIJWILLIGERS
-          if (data.brandweer?.vrijwilligers?.length) {
-            const optgroupV = document.createElement("optgroup");
-            optgroupV.label = "Vrijwilligers";
+              // 🔥 VRIJWILLIGERS
+              if (data.brandweer?.vrijwilligers?.length) {
+                const optgroupV = document.createElement("optgroup");
+                optgroupV.label = "Vrijwilligers";
 
-            data.brandweer.vrijwilligers.forEach(post => {
-              const opt = document.createElement("option");
-              opt.value = post.naam;
-              opt.textContent = post.naam;
-              optgroupV.appendChild(opt);
-            });
+                data.brandweer.vrijwilligers.forEach(post => {
+                  const opt = document.createElement("option");
+                  opt.value = post.naam;
+                  opt.textContent = post.naam;
+                  optgroupV.appendChild(opt);
+                });
 
-            postSelect.appendChild(optgroupV);
-          }
+                postSelect.appendChild(optgroupV);
+              }
 
-          // 🔥 BEROEPS
-          if (data.brandweer?.beroeps?.length) {
-            const optgroupB = document.createElement("optgroup");
-            optgroupB.label = "Beroeps";
+              // 🔥 BEROEPS
+              if (data.brandweer?.beroeps?.length) {
+                const optgroupB = document.createElement("optgroup");
+                optgroupB.label = "Beroeps";
 
-            data.brandweer.beroeps.forEach(post => {
-              const opt = document.createElement("option");
-              opt.value = post.naam;
-              opt.textContent = post.naam;
-              optgroupB.appendChild(opt);
-            });
+                data.brandweer.beroeps.forEach(post => {
+                  const opt = document.createElement("option");
+                  opt.value = post.naam;
+                  opt.textContent = post.naam;
+                  optgroupB.appendChild(opt);
+                });
 
-            postSelect.appendChild(optgroupB);
-          }
+                postSelect.appendChild(optgroupB);
+              }
 
-        } else if (type === "Ambulance") {
+            } else if (type === "Ambulance") {
 
-          data.ambulance?.forEach(team => {
-            const opt = document.createElement("option");
-            opt.value = team.naam;
-            opt.textContent = team.naam;
-            postSelect.appendChild(opt);
-          });
+              data.ambulance?.forEach(team => {
+                const opt = document.createElement("option");
+                opt.value = team.naam;
+                opt.textContent = team.naam;
+                postSelect.appendChild(opt);
+              });
 
+            }
+          };
+
+          // eerste load
+          updatePosten();
+
+          // bij wijziging type
+          typeSelect.addEventListener("change", updatePosten);
+
+        } catch (err) {
+          console.error("❌ Posten laden mislukt:", err);
         }
-      };
 
-      // eerste load
-      updatePosten();
-
-      // bij wijziging type
-      typeSelect.addEventListener("change", updatePosten);
-
-    } catch (err) {
-      console.error("❌ Posten laden mislukt:", err);
-    }
-
-  }, 100);
+      }, 100);
     } else if(system.id === 'nlalert') {
       fields.push({label: 'Bericht', type:'textarea', placeholder:'Wat moeten mensen weten?'});
       fields.push({label: 'Locatie', type:'text', placeholder:'Straatnaam, Stad'});
