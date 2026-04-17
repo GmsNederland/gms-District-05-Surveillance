@@ -1191,6 +1191,20 @@ function openSystemPopup(system) {
     // 📡 SEND TO API
     // ================================
 
+    // 🚨 P2000 DETECTIE
+    if (system.id === "p20000") {
+
+      url = "https://apiservi-uba4.onrender.com/api/p2000";
+
+      payload = {
+        title: data["Incident beschrijving"] || "Onbekend",
+        message: data["Incident beschrijving"] || "",
+        location: data["Type eenheid"] || "Onbekend",
+        priority: 1,
+        required: 1
+      };
+    }
+
     if (!url) {
       return alert("❌ Onbekend systeem");
     }
