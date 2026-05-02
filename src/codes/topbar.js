@@ -74,6 +74,68 @@ window.logout = () => {
 };
 
 /* ================= CLOCK ================= */
+function createTopbar() {
+  const el = document.getElementById("topbar-container");
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="topbar" id="topbar">
+
+      <div class="left">
+        <div class="brand">D05·GMS</div>
+      </div>
+
+      <div class="center">
+        <div id="clock"></div>
+        <div id="date"></div>
+      </div>
+
+      <div class="right">
+
+        <button onclick="toggleNotifications(event)">🔔</button>
+
+        <div class="user" onclick="toggleUserMenu(event)">
+          👤 ${getUserEmail()}
+          
+          <div id="userMenu" class="userMenu">
+            <div onclick="openLogout()">🚪 Uitloggen</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  initClock();
+}
+
+/* ================= USER ================= */
+function getUserEmail() {
+  return window.firebase?.auth()?.currentUser?.email || "guest";
+}
+
+/* ================= CLOCK ================= */
+function initClock() {
+  function updateClock() {
+    const now = new Date();
+
+    const clock = document.getElementById("clock");
+    const date = document.getElementById("date");
+
+    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+    if (date) date.textContent = now.toLocaleDateString("nl-NL");
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", () => {
+  createTopbar();
+});
+
 function updateClock() {
   const now = new Date();
 
