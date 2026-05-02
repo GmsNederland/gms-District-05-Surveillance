@@ -231,6 +231,7 @@ body{
 
 <div class="grid"></div>
 <div class="scanline"></div>
+
 <div id="topbar-container"></div>
 
 <div class="main">
@@ -311,11 +312,11 @@ body{
     sessionStorage.setItem("role", role);
     window.location.href = "/src/pages/panels/" + role + ".html";
   }
-// fetch('/src/pages/topbar.html')
-//   .then(res => res.text())
-//   .then(html => {
-//     document.getElementById('topbar-container').innerHTML = html;
-//   });
+fetch('/src/pages/topbar.html')
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById('topbar-container').innerHTML = html;
+  });
 </script>
 
 <!-- 🔥 BELANGRIJK: JS LOS INLADEN -->

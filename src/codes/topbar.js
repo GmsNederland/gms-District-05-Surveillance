@@ -1,168 +1,43 @@
+    // 🔥 MENU
+window.toggleMenu = function(force = null) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
 
-/* ================= STATE ================= */
+  if (!sidebar || !overlay) return;
+
+  let open = sidebar.classList.contains("open");
+
+  if (force !== null) open = force;
+
+  sidebar.classList.toggle("open", open);
+  overlay.classList.toggle("active", open);
+};
+
+// 🔥 STATUS
+window.toggleStatus = function(e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("statusMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+window.setStatus = function(text, cls) {
+  const btn = document.getElementById("statusBtn");
+  const menu = document.getElementById("statusMenu");
+
+  if (!btn || !menu) return;
+
+  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
+  menu.style.display = "none";
+};
+
+// 🔥 USER MENU
 let sidebarOpen = false;
 
-/* ================= INIT ================= */
-document.addEventListener("DOMContentLoaded", () => {
-  injectTopbar();
-  startClock();
-});
-
-/* ================= TOPBAR ================= */
-function injectTopbar() {
-  const el = document.getElementById("topbar-container");
-  if (!el) return;
-
-  el.innerHTML = `
-  
-  <div id="overlay" onclick="toggleMenu(false)"></div>
-
-  <div id="sidebar">
-
-    <div class="sidebar-header">
-      <div class="logo">D05 GMS</div>
-      <div class="sub">Dispatch System</div>
-    </div>
-
-    <div class="sidebar-section">
-
-      <div class="section-title">Navigatie</div>
-
-      <a class="nav-item active" href="/src/pages/rolenselect.html">
-        <span class="icon">🏠</span> Dashboard
-      </a>
-
-      <a class="nav-item" href="/src/pages/panels/meldkamer.html">
-        <span class="icon">🚨</span> Meldkamer
-      </a>
-
-      <a class="nav-item" href="#">
-        <span class="icon">🚓</span> Eenheden
-      </a>
-
-      <a class="nav-item" href="/src/pages/accountsettings.html">
-        <span class="icon">⚙️</span> Instellingen
-      </a>
-
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="status-dot online"></div>
-      <span>Systeem Online</span>
-    </div>
-
-  </div>
-
-  <div id="topbar">
-
-    <div class="left">
-      <div class="hamburger" onclick="toggleMenu()">☰</div>
-      <strong>D05·GMS</strong>
-
-      <div class="conn online">API</div>
-      <div class="conn offline">RBLX</div>
-      <div class="conn warn">RTDB</div>
-    </div>
-
-    <div class="center"></div>
-
-    <div class="right">
-
-      <div class="datetime">
-        <div id="date"></div>
-        <div id="clock"></div>
-      </div>
-
-      <div class="notifBox" onclick="toggleNotifications(event)">
-        🔔
-        <span class="notifDot"></span>
-      </div>
-
-      <div class="userBox" onclick="toggleUserMenu(event)">
-
-        <div class="userTrigger">
-          <div class="avatar">👤</div>
-
-          <div class="userInfo">
-            <div class="username">${getUser()}</div>
-            <div class="role">Agent</div>
-          </div>
-
-          <div class="chevron">▼</div>
-        </div>
-
-        <!-- 🔥 BELANGRIJK: nu CLASS based i.p.v. style.display -->
-        <div id="userMenu" class="userMenu">
-
-          <div class="menu-item settings" onclick="openprofile()">
-            👤 Profiel
-          </div>
-
-          <div class="menu-item settings" onclick="settingsopen()">
-            ⚙️ Instellingen
-          </div>
-
-          <div class="menu-item danger" onclick="openLogout()">
-            🚪 Uitloggen
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <div id="logoutModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Uitloggen bevestigen</h3>
-      <p>Weet je zeker dat je wilt uitloggen?</p>
-
-      <div class="modal-actions">
-        <button class="btn cancel" onclick="closeLogout()">Annuleren</button>
-        <button class="btn danger" onclick="logout()">Uitloggen</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="notifPanel" class="notifPanel">
-    <div class="notifHeader">
-      <h3>Meldingen</h3>
-      <span onclick="toggleNotifications()" class="close">✖</span>
-    </div>
-
-    <div class="notifList">
-      <div class="notifItem">🚨 Nieuwe melding <span>nu</span></div>
-    </div>
-  </div>
-
-  `;
-}
-
-/* ================= USER ================= */
-function getUser() {
-  return window.firebase?.auth()?.currentUser?.email || "agent@test.nl";
-}
-
-/* ================= CLOCK ================= */
-function startClock() {
-  function update() {
-    const now = new Date();
-
-    const clock = document.getElementById("clock");
-    const date = document.getElementById("date");
-
-    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-    if (date) date.textContent = now.toLocaleDateString("nl-NL");
-  }
-
-  update();
-  setInterval(update, 1000);
-}
-
 /* ================= SIDEBAR ================= */
-window.toggleMenu = function (force = null) {
+window.toggleMenu = function(force = null) {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
 
@@ -174,19 +49,88 @@ window.toggleMenu = function (force = null) {
   overlay.classList.toggle("active", sidebarOpen);
 };
 
-/* ================= USER MENU (FIXED) ================= */
-window.toggleUserMenu = function (e) {
+/* ================= STATUS ================= */
+window.toggleStatus = function(e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("statusMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+window.setStatus = function(text, cls) {
+  const btn = document.getElementById("statusBtn");
+  const menu = document.getElementById("statusMenu");
+
+  if (!btn || !menu) return;
+
+  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
+  menu.style.display = "none";
+};
+
+/* ================= USER MENU ================= */
+window.toggleUserMenu = function(e) {
   if (e) e.stopPropagation();
 
   const menu = document.getElementById("userMenu");
   if (!menu) return;
 
-  // 🔥 FIX: class-based i.p.v style.display
-  menu.classList.toggle("show");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
 };
 
-/* ================= NOTIFICATIONS ================= */
-window.toggleNotifications = function (e) {
+/* ================= CLOCK ================= */
+function updateClock() {
+  const now = new Date();
+
+  const clock = document.getElementById("clock");
+  const date = document.getElementById("date");
+
+  if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+  if (date) date.textContent = now.toLocaleDateString("nl-NL");
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ================= CLOSE MENUS ================= */
+document.addEventListener("click", () => {
+  const statusMenu = document.getElementById("statusMenu");
+  const userMenu = document.getElementById("userMenu");
+
+  if (statusMenu) statusMenu.style.display = "none";
+  if (userMenu) userMenu.style.display = "none";
+});
+
+/* ================= ESC ================= */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    toggleMenu(false);
+
+    const statusMenu = document.getElementById("statusMenu");
+    const userMenu = document.getElementById("userMenu");
+
+    if (statusMenu) statusMenu.style.display = "none";
+    if (userMenu) userMenu.style.display = "none";
+  }
+});
+
+/*=================Logout popup ==========*/
+window.openLogout = function() {
+  document.getElementById("logoutModal").classList.remove("hidden");
+};
+
+window.closeLogout = function() {
+  document.getElementById("logoutModal").classList.add("hidden");
+};
+
+window.logout = function() {
+  // hier jouw firebase logout of redirect
+  window.location.href = "/index.html";
+};
+
+/*===============Notifications===========*/
+window.toggleNotifications = function(e) {
   if (e) e.stopPropagation();
 
   const panel = document.getElementById("notifPanel");
@@ -195,29 +139,45 @@ window.toggleNotifications = function (e) {
   panel.classList.toggle("show");
 };
 
-/* ================= LOGOUT ================= */
-window.openLogout = () =>
-  document.getElementById("logoutModal")?.classList.remove("hidden");
-
-window.closeLogout = () =>
-  document.getElementById("logoutModal")?.classList.add("hidden");
-
-window.logout = () => {
-  window.location.href = "/";
-};
-
-/* ================= CLOSE OUTSIDE ================= */
+/* klik buiten sluiten */
 document.addEventListener("click", () => {
-  document.getElementById("userMenu")?.classList.remove("show");
-  document.getElementById("notifPanel")?.classList.remove("show");
+  const panel = document.getElementById("notifPanel");
+  if (panel) panel.classList.remove("show");
 });
+    // // Clock update
+    // const clockEl = document.getElementById('clock');
+    // setInterval(() => {
+    //   const now = new Date();
+    //   clockEl.textContent = now.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+    // }, 1000);
 
-/* ================= ESC ================= */
-document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
+    // // Roepnummer edit
+    // function editRnr() {
+    //   const span = document.getElementById('roepnummer');
+    //   const input = document.getElementById('rnrInput');
+    //   input.value = span.textContent === 'RNR instellen' ? '' : span.textContent;
+    //   span.style.display = 'none';
+    //   input.style.display = 'inline-block';
+    //   input.focus();
+    //   input.addEventListener('blur', saveRnr);
+    //   input.addEventListener('keydown', e => { if(e.key==='Enter') saveRnr(); });
+    // }
+    // function saveRnr() {
+    //   const span = document.getElementById('roepnummer');
+    //   const input = document.getElementById('rnrInput');
+    //   span.textContent = input.value.trim() || 'RNR instellen';
+    //   span.style.display = 'inline-block';
+    //   input.style.display = 'none';
+    // }
 
-  toggleMenu(false);
+    // // Status toggle
+    // function toggleStatus() {
+    //   const menu = document.getElementById('statusMenu');
+    //   menu.style.display = (menu.style.display==='block') ? 'none' : 'block';
+    // }
 
-  document.getElementById("userMenu")?.classList.remove("show");
-  document.getElementById("notifPanel")?.classList.remove("show");
-});
+    // function setStatus(statusText, statusClass) {
+    //   const btn = document.getElementById('statusBtn');
+    //   btn.innerHTML = `<div class="dot ${statusClass}"></div ${statusText}▼`;
+    //   document.getElementById('statusMenu').style.display = 'none';
+    // }
