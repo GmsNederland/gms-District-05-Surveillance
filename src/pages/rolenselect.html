@@ -9,7 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
-<script type="module" src="/src/codes/topbar.js" defer></script>
 
 <style>
 body{
@@ -264,7 +263,7 @@ body{
   firebase.auth().onAuthStateChanged((user) => {
     if (!user) {
       // ❌ niet ingelogd → terug naar login
-      window.location.replace("/index.html");
+      window.location.replace("/src/index.html");
       return;
     }
 
@@ -311,7 +310,7 @@ body{
     sessionStorage.setItem("role", role);
     window.location.href = "/src/pages/panels/" + role + ".html";
   }
-fetch('/src/pages/topbar.html')
+fetch('/src/components/shared/TopBar.html')
   .then(res => res.text())
   .then(html => {
     document.getElementById('topbar-container').innerHTML = html;
@@ -319,6 +318,7 @@ fetch('/src/pages/topbar.html')
 </script>
 
 <!-- 🔥 BELANGRIJK: JS LOS INLADEN -->
+<script src="/src/codes/topbar.js"></script>
 </script>
 
 </body>
