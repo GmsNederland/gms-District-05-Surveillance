@@ -138,10 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   el.innerHTML = `
   
-  <!-- OVERLAY -->
   <div id="overlay" onclick="toggleMenu(false)"></div>
 
-  <!-- SIDEBAR -->
   <div id="sidebar">
 
     <div class="sidebar-header">
@@ -151,29 +149,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <div class="sidebar-section">
 
+      <div class="section-title">Navigatie</div>
+
       <a class="nav-item active" href="/src/pages/rolenselect.html">
-        🏠 Dashboard
+        <span class="icon">🏠</span> Dashboard
       </a>
 
       <a class="nav-item" href="/src/pages/panels/meldkamer.html">
-        🚨 Meldkamer
+        <span class="icon">🚨</span> Meldkamer
       </a>
 
       <a class="nav-item" href="#">
-        🚓 Eenheden
+        <span class="icon">🚓</span> Eenheden
       </a>
 
       <a class="nav-item" href="/src/pages/accountsettings.html">
-        ⚙️ Instellingen
+        <span class="icon">⚙️</span> Instellingen
       </a>
 
     </div>
 
+    <div class="sidebar-footer">
+      <div class="status-dot online"></div>
+      <span>Systeem Online</span>
+    </div>
+
   </div>
 
-  <!-- TOPBAR -->
   <div id="topbar">
 
+    <!-- LEFT -->
     <div class="left">
       <div class="hamburger" onclick="toggleMenu()">☰</div>
       <strong>D05·GMS</strong>
@@ -183,6 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="conn warn">RTDB</div>
     </div>
 
+    <!-- CENTER -->
+    <div class="center"></div>
+
+    <!-- RIGHT -->
     <div class="right">
 
       <div class="datetime">
@@ -192,33 +201,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div class="notifBox" onclick="toggleNotifications(event)">
         🔔
+        <span class="notifDot"></span>
       </div>
 
       <div class="userBox" onclick="toggleUserMenu(event)">
-        👤 ${getUser()}
+
+        <div class="userTrigger">
+          <div class="avatar">👤</div>
+
+          <div class="userInfo">
+            <div class="username">${getUser()}</div>
+            <div class="role">Agent</div>
+          </div>
+
+          <div class="chevron">▼</div>
+        </div>
 
         <div id="userMenu" class="userMenu">
-          <div onclick="openprofile()">👤 Profiel</div>
-          <div onclick="settingsopen()">⚙️ Instellingen</div>
-          <div onclick="openLogout()">🚪 Uitloggen</div>
+          <div class="menu-item settings" onclick="openprofile()">👤 Profiel</div>
+          <div class="menu-item settings" onclick="settingsopen()">⚙️ Instellingen</div>
+          <div class="menu-item danger" onclick="openLogout()">🚪 Uitloggen</div>
         </div>
+
       </div>
 
     </div>
 
   </div>
 
-  <!-- MODALS -->
   <div id="logoutModal" class="modal hidden">
     <div class="modal-box">
       <h3>Uitloggen bevestigen</h3>
-      <button onclick="closeLogout()">Annuleren</button>
-      <button onclick="logout()">Uitloggen</button>
+      <p>Weet je zeker dat je wilt uitloggen?</p>
+
+      <div class="modal-actions">
+        <button class="btn cancel" onclick="closeLogout()">Annuleren</button>
+        <button class="btn danger" onclick="logout()">Uitloggen</button>
+      </div>
     </div>
   </div>
 
   <div id="notifPanel" class="notifPanel">
-    🚨 Nieuwe melding
+    <div class="notifHeader">
+      <h3>Meldingen</h3>
+      <span onclick="toggleNotifications()" class="close">✖</span>
+    </div>
+
+    <div class="notifList">
+      <div class="notifItem">🚨 Nieuwe melding <span>nu</span></div>
+    </div>
   </div>
 
   `;
