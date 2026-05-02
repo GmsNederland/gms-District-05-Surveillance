@@ -133,8 +133,119 @@ function initClock() {
 
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
-  createTopbar();
+  const el = document.getElementById("topbar-container");
+  if (!el) return;
+
+  el.innerHTML = `
+  
+  <!-- OVERLAY -->
+  <div id="overlay" onclick="toggleMenu(false)"></div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+
+    <div class="sidebar-header">
+      <div class="logo">D05 GMS</div>
+      <div class="sub">Dispatch System</div>
+    </div>
+
+    <div class="sidebar-section">
+
+      <a class="nav-item active" href="/src/pages/rolenselect.html">
+        🏠 Dashboard
+      </a>
+
+      <a class="nav-item" href="/src/pages/panels/meldkamer.html">
+        🚨 Meldkamer
+      </a>
+
+      <a class="nav-item" href="#">
+        🚓 Eenheden
+      </a>
+
+      <a class="nav-item" href="/src/pages/accountsettings.html">
+        ⚙️ Instellingen
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+
+    <div class="left">
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
+      <strong>D05·GMS</strong>
+
+      <div class="conn online">API</div>
+      <div class="conn offline">RBLX</div>
+      <div class="conn warn">RTDB</div>
+    </div>
+
+    <div class="right">
+
+      <div class="datetime">
+        <div id="date"></div>
+        <div id="clock"></div>
+      </div>
+
+      <div class="notifBox" onclick="toggleNotifications(event)">
+        🔔
+      </div>
+
+      <div class="userBox" onclick="toggleUserMenu(event)">
+        👤 ${getUser()}
+
+        <div id="userMenu" class="userMenu">
+          <div onclick="openprofile()">👤 Profiel</div>
+          <div onclick="settingsopen()">⚙️ Instellingen</div>
+          <div onclick="openLogout()">🚪 Uitloggen</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- MODALS -->
+  <div id="logoutModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Uitloggen bevestigen</h3>
+      <button onclick="closeLogout()">Annuleren</button>
+      <button onclick="logout()">Uitloggen</button>
+    </div>
+  </div>
+
+  <div id="notifPanel" class="notifPanel">
+    🚨 Nieuwe melding
+  </div>
+
+  `;
+
+  initClock();
 });
+
+/* ================= USER ================= */
+function getUser() {
+  return window.firebase?.auth()?.currentUser?.email || "agent@test.nl";
+}
+
+/* ================= CLOCK ================= */
+function initClock() {
+  function updateClock() {
+    const now = new Date();
+
+    const clock = document.getElementById("clock");
+    const date = document.getElementById("date");
+
+    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+    if (date) date.textContent = now.toLocaleDateString("nl-NL");
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+}
 
 function updateClock() {
   const now = new Date();
