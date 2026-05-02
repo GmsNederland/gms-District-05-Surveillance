@@ -232,20 +232,20 @@ function getUser() {
 }
 
 /* ================= CLOCK ================= */
-function initClock() {
-  function updateClock() {
-    const now = new Date();
+// function initClock() {
+//   function updateClock() {
+//     const now = new Date();
 
-    const clock = document.getElementById("clock");
-    const date = document.getElementById("date");
+//     const clock = document.getElementById("clock");
+//     const date = document.getElementById("date");
 
-    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-    if (date) date.textContent = now.toLocaleDateString("nl-NL");
-  }
+//     if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+//     if (date) date.textContent = now.toLocaleDateString("nl-NL");
+//   }
 
-  updateClock();
-  setInterval(updateClock, 1000);
-}
+//   updateClock();
+//   setInterval(updateClock, 1000);
+// }
 
 function updateClock() {
   const now = new Date();
