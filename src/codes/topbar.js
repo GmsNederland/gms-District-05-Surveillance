@@ -1,146 +1,127 @@
-    // 🔥 MENU
-window.toggleMenu = function(force = null) {
+export function initTopbar() {
+  /* ================= ELEMENTS ================= */
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
+  const hamburger = document.querySelector(".hamburger");
 
-  if (!sidebar || !overlay) return;
-
-  let open = sidebar.classList.contains("open");
-
-  if (force !== null) open = force;
-
-  sidebar.classList.toggle("open", open);
-  overlay.classList.toggle("active", open);
-};
-
-// 🔥 STATUS
-window.toggleStatus = function(e) {
-  if (e) e.stopPropagation();
-
-  const menu = document.getElementById("statusMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-};
-
-window.setStatus = function(text, cls) {
-  const btn = document.getElementById("statusBtn");
-  const menu = document.getElementById("statusMenu");
-
-  if (!btn || !menu) return;
-
-  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
-  menu.style.display = "none";
-};
-
-// 🔥 USER MENU
-let sidebarOpen = false;
-
-/* ================= SIDEBAR ================= */
-window.toggleMenu = function(force = null) {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-
-  if (!sidebar || !overlay) return;
-
-  sidebarOpen = force !== null ? force : !sidebarOpen;
-
-  sidebar.classList.toggle("open", sidebarOpen);
-  overlay.classList.toggle("active", sidebarOpen);
-};
-
-/* ================= STATUS ================= */
-window.toggleStatus = function(e) {
-  if (e) e.stopPropagation();
-
-  const menu = document.getElementById("statusMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-};
-
-window.setStatus = function(text, cls) {
-  const btn = document.getElementById("statusBtn");
-  const menu = document.getElementById("statusMenu");
-
-  if (!btn || !menu) return;
-
-  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
-  menu.style.display = "none";
-};
-
-/* ================= USER MENU ================= */
-window.toggleUserMenu = function(e) {
-  if (e) e.stopPropagation();
-
-  const menu = document.getElementById("userMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-};
-
-/* ================= CLOCK ================= */
-function updateClock() {
-  const now = new Date();
-
-  const clock = document.getElementById("clock");
-  const date = document.getElementById("date");
-
-  if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-  if (date) date.textContent = now.toLocaleDateString("nl-NL");
-}
-
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ================= CLOSE MENUS ================= */
-document.addEventListener("click", () => {
-  const statusMenu = document.getElementById("statusMenu");
+  const userBox = document.querySelector(".userBox");
   const userMenu = document.getElementById("userMenu");
 
-  if (statusMenu) statusMenu.style.display = "none";
-  if (userMenu) userMenu.style.display = "none";
-});
+  const notifBox = document.querySelector(".notifBox");
+  const notifPanel = document.getElementById("notifPanel");
 
-/* ================= ESC ================= */
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    toggleMenu(false);
+  const logoutModal = document.getElementById("logoutModal");
+  const logoutCancelBtn = logoutModal?.querySelector(".btn.cancel");
+  const logoutConfirmBtn = logoutModal?.querySelector(".btn.danger");
 
-    const statusMenu = document.getElementById("statusMenu");
-    const userMenu = document.getElementById("userMenu");
+  let sidebarOpen = false;
+  let userMenuOpen = false;
+  let notifOpen = false;
 
-    if (statusMenu) statusMenu.style.display = "none";
-    if (userMenu) userMenu.style.display = "none";
+  /* ================= CLOCK ================= */
+  function updateClock() {
+    const now = new Date();
+
+    const clockEl = document.getElementById("clock");
+    const dateEl = document.getElementById("date");
+
+    if (clockEl) {
+      clockEl.textContent = now.toLocaleTimeString("nl-NL");
+    }
+
+    if (dateEl) {
+      dateEl.textContent = now.toLocaleDateString("nl-NL");
+    }
   }
-});
 
-/*=================Logout popup ==========*/
-window.openLogout = function() {
-  document.getElementById("logoutModal").classList.remove("hidden");
-};
+  setInterval(updateClock, 1000);
+  updateClock();
 
-window.closeLogout = function() {
-  document.getElementById("logoutModal").classList.add("hidden");
-};
+  /* ================= SIDEBAR ================= */
+  function toggleSidebar(force = null) {
+    if (!sidebar || !overlay) return;
 
-window.logout = function() {
-  // hier jouw firebase logout of redirect
-  window.location.href = "/index.html";
-};
+    sidebarOpen = force !== null ? force : !sidebarOpen;
 
-/*===============Notifications===========*/
-window.toggleNotifications = function(e) {
-  if (e) e.stopPropagation();
+    sidebar.classList.toggle("open", sidebarOpen);
+    overlay.classList.toggle("active", sidebarOpen);
+  }
 
-  const panel = document.getElementById("notifPanel");
-  if (!panel) return;
+  hamburger?.addEventListener("click", () => toggleSidebar());
+  overlay?.addEventListener("click", () => toggleSidebar(false));
 
-  panel.classList.toggle("show");
-};
+  /* ================= USER MENU ================= */
+  function toggleUserMenu() {
+    if (!userMenu) return;
 
-/* klik buiten sluiten */
-document.addEventListener("click", () => {
-  const panel = document.getElementById("notifPanel");
-  if (panel) panel.classList.remove("show");
-});
+    userMenuOpen = !userMenuOpen;
+    userMenu.style.display = userMenuOpen ? "block" : "none";
+  }
+
+  userBox?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleUserMenu();
+  });
+
+  /* ================= NOTIFICATIONS ================= */
+  function toggleNotifications() {
+    if (!notifPanel) return;
+
+    notifOpen = !notifOpen;
+    notifPanel.style.display = notifOpen ? "block" : "none";
+  }
+
+  notifBox?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleNotifications();
+  });
+
+  /* ================= LOGOUT MODAL ================= */
+  function openLogout() {
+    if (!logoutModal) return;
+    logoutModal.classList.remove("hidden");
+  }
+
+  function closeLogout() {
+    if (!logoutModal) return;
+    logoutModal.classList.add("hidden");
+  }
+
+  logoutCancelBtn?.addEventListener("click", closeLogout);
+
+  logoutConfirmBtn?.addEventListener("click", () => {
+    // hier later echte logout logica
+    console.log("User logged out");
+    closeLogout();
+  });
+
+  /* ================= GLOBAL CLOSE HANDLERS ================= */
+  document.addEventListener("click", () => {
+    if (userMenu) userMenu.style.display = "none";
+    if (notifPanel) notifPanel.style.display = "none";
+
+    userMenuOpen = false;
+    notifOpen = false;
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      toggleSidebar(false);
+      closeLogout();
+
+      if (userMenu) userMenu.style.display = "none";
+      if (notifPanel) notifPanel.style.display = "none";
+
+      userMenuOpen = false;
+      notifOpen = false;
+    }
+  });
+
+  /* ================= EXPOSE IF NEEDED ================= */
+  return {
+    toggleSidebar,
+    openLogout,
+    closeLogout
+  };
+}
+initTopbar();
