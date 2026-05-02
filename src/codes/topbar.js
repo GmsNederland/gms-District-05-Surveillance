@@ -3,141 +3,16 @@ let sidebarOpen = false;
 
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
-  updateClock();
-  setInterval(updateClock, 1000);
+  injectTopbar();
+  startClock();
 });
 
-/* ================= SIDEBAR ================= */
-window.toggleMenu = function (force = null) {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-
-  if (!sidebar || !overlay) return;
-
-  sidebarOpen = force !== null ? force : !sidebarOpen;
-
-  sidebar.classList.toggle("open", sidebarOpen);
-  overlay.classList.toggle("active", sidebarOpen);
-};
-
-/* ================= STATUS ================= */
-window.toggleStatus = function (e) {
-  if (e) e.stopPropagation();
-
-  const menu = document.getElementById("statusMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-};
-
-window.setStatus = function (text, cls) {
-  const btn = document.getElementById("statusBtn");
-  const menu = document.getElementById("statusMenu");
-
-  if (!btn || !menu) return;
-
-  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
-  menu.style.display = "none";
-};
-
-/* ================= USER MENU ================= */
-window.toggleUserMenu = function (e) {
-  if (e) e.stopPropagation();
-
-  const menu = document.getElementById("userMenu");
-  if (!menu) return;
-
-  menu.style.display =
-    menu.style.display === "block" ? "none" : "block";
-};
-
-/* ================= NOTIFICATIONS ================= */
-window.toggleNotifications = function (e) {
-  if (e) e.stopPropagation();
-
-  const panel = document.getElementById("notifPanel");
-  if (!panel) return;
-
-  panel.classList.toggle("show");
-};
-
-/* ================= LOGOUT ================= */
-window.openLogout = () =>
-  document.getElementById("logoutModal")?.classList.remove("hidden");
-
-window.closeLogout = () =>
-  document.getElementById("logoutModal")?.classList.add("hidden");
-
-window.logout = () => {
-  // Vercel safe redirect
-  window.location.href = "/";
-};
-
-/* ================= CLOCK ================= */
-function createTopbar() {
+/* ================= TOPBAR INJECT ================= */
+function injectTopbar() {
   const el = document.getElementById("topbar-container");
   if (!el) return;
 
   el.innerHTML = `
-    <div class="topbar" id="topbar">
-
-      <div class="left">
-        <div class="brand">D05·GMS</div>
-      </div>
-
-      <div class="center">
-        <div id="clock"></div>
-        <div id="date"></div>
-      </div>
-
-      <div class="right">
-
-        <button onclick="toggleNotifications(event)">🔔</button>
-
-        <div class="user" onclick="toggleUserMenu(event)">
-          👤 ${getUserEmail()}
-          
-          <div id="userMenu" class="userMenu">
-            <div onclick="openLogout()">🚪 Uitloggen</div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  `;
-
-  initClock();
-}
-
-/* ================= USER ================= */
-function getUserEmail() {
-  return window.firebase?.auth()?.currentUser?.email || "guest";
-}
-
-/* ================= CLOCK ================= */
-function initClock() {
-  function updateClock() {
-    const now = new Date();
-
-    const clock = document.getElementById("clock");
-    const date = document.getElementById("date");
-
-    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-    if (date) date.textContent = now.toLocaleDateString("nl-NL");
-  }
-
-  updateClock();
-  setInterval(updateClock, 1000);
-}
-
-/* ================= INIT ================= */
-document.addEventListener("DOMContentLoaded", () => {
-  const el = document.getElementById("topbar-container");
-  if (!el) return;
-
-  el.innerHTML = `
-  
   <div id="overlay" onclick="toggleMenu(false)"></div>
 
   <div id="sidebar">
@@ -178,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <div id="topbar">
 
-    <!-- LEFT -->
     <div class="left">
       <div class="hamburger" onclick="toggleMenu()">☰</div>
       <strong>D05·GMS</strong>
@@ -188,10 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="conn warn">RTDB</div>
     </div>
 
-    <!-- CENTER -->
     <div class="center"></div>
 
-    <!-- RIGHT -->
     <div class="right">
 
       <div class="datetime">
@@ -205,24 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <div class="userBox" onclick="toggleUserMenu(event)">
-
-        <div class="userTrigger">
-          <div class="avatar">👤</div>
-
-          <div class="userInfo">
-            <div class="username">${getUser()}</div>
-            <div class="role">Agent</div>
-          </div>
-
-          <div class="chevron">▼</div>
-        </div>
-
+        👤 ${getUser()}
         <div id="userMenu" class="userMenu">
           <div class="menu-item settings" onclick="openprofile()">👤 Profiel</div>
           <div class="menu-item settings" onclick="settingsopen()">⚙️ Instellingen</div>
           <div class="menu-item danger" onclick="openLogout()">🚪 Uitloggen</div>
         </div>
-
       </div>
 
     </div>
@@ -251,11 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="notifItem">🚨 Nieuwe melding <span>nu</span></div>
     </div>
   </div>
-
   `;
-
-  initClock();
-});
+}
 
 /* ================= USER ================= */
 function getUser() {
@@ -263,40 +120,71 @@ function getUser() {
 }
 
 /* ================= CLOCK ================= */
-// function initClock() {
-//   function updateClock() {
-//     const now = new Date();
+function startClock() {
+  function update() {
+    const now = new Date();
 
-//     const clock = document.getElementById("clock");
-//     const date = document.getElementById("date");
+    const clock = document.getElementById("clock");
+    const date = document.getElementById("date");
 
-//     if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-//     if (date) date.textContent = now.toLocaleDateString("nl-NL");
-//   }
+    if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+    if (date) date.textContent = now.toLocaleDateString("nl-NL");
+  }
 
-//   updateClock();
-//   setInterval(updateClock, 1000);
-// }
-
-function updateClock() {
-  const now = new Date();
-
-  const clock = document.getElementById("clock");
-  const date = document.getElementById("date");
-
-  if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
-  if (date) date.textContent = now.toLocaleDateString("nl-NL");
+  update();
+  setInterval(update, 1000);
 }
 
-/* ================= CLOSE ON CLICK OUTSIDE ================= */
-document.addEventListener("click", () => {
-  const statusMenu = document.getElementById("statusMenu");
-  const userMenu = document.getElementById("userMenu");
-  const notifPanel = document.getElementById("notifPanel");
+/* ================= SIDEBAR ================= */
+window.toggleMenu = function (force = null) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
 
-  if (statusMenu) statusMenu.style.display = "none";
-  if (userMenu) userMenu.style.display = "none";
-  if (notifPanel) notifPanel.classList.remove("show");
+  if (!sidebar || !overlay) return;
+
+  sidebarOpen = force !== null ? force : !sidebarOpen;
+
+  sidebar.classList.toggle("open", sidebarOpen);
+  overlay.classList.toggle("active", sidebarOpen);
+};
+
+/* ================= USER MENU ================= */
+window.toggleUserMenu = function (e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("userMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+/* ================= NOTIFICATIONS ================= */
+window.toggleNotifications = function (e) {
+  if (e) e.stopPropagation();
+
+  const panel = document.getElementById("notifPanel");
+  if (!panel) return;
+
+  panel.classList.toggle("show");
+};
+
+/* ================= LOGOUT ================= */
+window.openLogout = () =>
+  document.getElementById("logoutModal")?.classList.remove("hidden");
+
+window.closeLogout = () =>
+  document.getElementById("logoutModal")?.classList.add("hidden");
+
+window.logout = () => {
+  window.location.href = "/";
+};
+
+/* ================= CLOSE OUTSIDE ================= */
+document.addEventListener("click", () => {
+  document.getElementById("userMenu")?.style &&
+    (document.getElementById("userMenu").style.display = "none");
+
+  document.getElementById("notifPanel")?.classList?.remove("show");
 });
 
 /* ================= ESC ================= */
@@ -304,9 +192,6 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
 
   toggleMenu(false);
-
-  document.getElementById("statusMenu")?.style &&
-    (document.getElementById("statusMenu").style.display = "none");
 
   document.getElementById("userMenu")?.style &&
     (document.getElementById("userMenu").style.display = "none");
