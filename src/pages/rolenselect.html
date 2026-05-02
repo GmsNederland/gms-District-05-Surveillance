@@ -264,7 +264,7 @@ body{
   firebase.auth().onAuthStateChanged((user) => {
     if (!user) {
       // ❌ niet ingelogd → terug naar login
-      window.location.replace("/src/index.html");
+      window.location.replace("/index.html");
       return;
     }
 
