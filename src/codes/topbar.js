@@ -1,3 +1,4 @@
+
 /* ================= STATE ================= */
 let sidebarOpen = false;
 
@@ -7,12 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
   startClock();
 });
 
-/* ================= TOPBAR INJECT ================= */
+/* ================= TOPBAR ================= */
 function injectTopbar() {
   const el = document.getElementById("topbar-container");
   if (!el) return;
 
   el.innerHTML = `
+  
   <div id="overlay" onclick="toggleMenu(false)"></div>
 
   <div id="sidebar">
@@ -77,12 +79,35 @@ function injectTopbar() {
       </div>
 
       <div class="userBox" onclick="toggleUserMenu(event)">
-        👤 ${getUser()}
-        <div id="userMenu" class="userMenu">
-          <div class="menu-item settings" onclick="openprofile()">👤 Profiel</div>
-          <div class="menu-item settings" onclick="settingsopen()">⚙️ Instellingen</div>
-          <div class="menu-item danger" onclick="openLogout()">🚪 Uitloggen</div>
+
+        <div class="userTrigger">
+          <div class="avatar">👤</div>
+
+          <div class="userInfo">
+            <div class="username">${getUser()}</div>
+            <div class="role">Agent</div>
+          </div>
+
+          <div class="chevron">▼</div>
         </div>
+
+        <!-- 🔥 BELANGRIJK: nu CLASS based i.p.v. style.display -->
+        <div id="userMenu" class="userMenu">
+
+          <div class="menu-item settings" onclick="openprofile()">
+            👤 Profiel
+          </div>
+
+          <div class="menu-item settings" onclick="settingsopen()">
+            ⚙️ Instellingen
+          </div>
+
+          <div class="menu-item danger" onclick="openLogout()">
+            🚪 Uitloggen
+          </div>
+
+        </div>
+
       </div>
 
     </div>
@@ -111,6 +136,7 @@ function injectTopbar() {
       <div class="notifItem">🚨 Nieuwe melding <span>nu</span></div>
     </div>
   </div>
+
   `;
 }
 
@@ -148,14 +174,15 @@ window.toggleMenu = function (force = null) {
   overlay.classList.toggle("active", sidebarOpen);
 };
 
-/* ================= USER MENU ================= */
+/* ================= USER MENU (FIXED) ================= */
 window.toggleUserMenu = function (e) {
   if (e) e.stopPropagation();
 
   const menu = document.getElementById("userMenu");
   if (!menu) return;
 
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
+  // 🔥 FIX: class-based i.p.v style.display
+  menu.classList.toggle("show");
 };
 
 /* ================= NOTIFICATIONS ================= */
@@ -181,10 +208,8 @@ window.logout = () => {
 
 /* ================= CLOSE OUTSIDE ================= */
 document.addEventListener("click", () => {
-  document.getElementById("userMenu")?.style &&
-    (document.getElementById("userMenu").style.display = "none");
-
-  document.getElementById("notifPanel")?.classList?.remove("show");
+  document.getElementById("userMenu")?.classList.remove("show");
+  document.getElementById("notifPanel")?.classList.remove("show");
 });
 
 /* ================= ESC ================= */
@@ -193,8 +218,6 @@ document.addEventListener("keydown", (e) => {
 
   toggleMenu(false);
 
-  document.getElementById("userMenu")?.style &&
-    (document.getElementById("userMenu").style.display = "none");
-
-  document.getElementById("notifPanel")?.classList?.remove("show");
+  document.getElementById("userMenu")?.classList.remove("show");
+  document.getElementById("notifPanel")?.classList.remove("show");
 });
