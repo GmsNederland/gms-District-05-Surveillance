@@ -311,7 +311,7 @@ body{
     sessionStorage.setItem("role", role);
     window.location.href = "/src/pages/panels/" + role + ".html";
   }
-fetch('/src/components/shared/TopBar.html')
+fetch('/components/shared/TopBar.html')
   .then(res => res.text())
   .then(html => {
     document.getElementById('topbar-container').innerHTML = html;
