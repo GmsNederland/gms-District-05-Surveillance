@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>112 Burger Panel — District 05</title>
 <link rel="icon" type="image/x-icon" href="/src/icone/logo.png">
+<link rel="stylesheet" href="/src/styletopbar.css">
 
 <style>
 body{
@@ -208,7 +209,103 @@ button:disabled{
 <div class="grid"></div>
 <div class="scanline"></div>
 
-<div id="topbar-container"></div>
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleMenu(false)"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+
+  <div class="sidebar-header">
+    <div class="logo">D05 GMS</div>
+    <div class="sub">Dispatch System</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="section-title">Navigatie</div>
+
+    <a class="nav-item active" href="/src/pages/rolenselect.html">
+      <span class="icon">🏠</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a class="nav-item" href="/src/pages/panels/accountsettings.html">
+      <span class="icon">⚙️</span>
+      <span>Instellingen</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="status-dot online"></div>
+    <span>Systeem Online</span>
+  </div>
+
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <strong>D05·GMS</strong>
+
+    <div class="conn online">API</div>
+    <div class="conn offline">RBLX</div>
+    <div class="conn warn">RTDB</div>
+  </div>
+
+  <!-- CENTER -->
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <div class="datetime">
+      <div id="date"></div>
+      <div id="clock"></div>
+    </div>
+
+    <div class="notifBox" onclick="toggleNotifications(event)">
+      🔔
+      <span class="notifDot"></span>
+    </div>
+
+    <div class="userBox" onclick="toggleUserMenu(event)">
+      👤 agent@test.nl
+
+      <div id="userMenu" class="userMenu">
+        <div class="menu-item settings" onclick="openprofile()"><span> 👤</span>Profiel</div>
+        <div class="menu-item settings" onclick="settingsopen()"><span>⚙️</span>Instellingen</div>
+        <div class="menu-item danger" onclick="openLogout()"><span>🚪</span> Uitloggen</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="logoutModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Uitloggen bevestigen</h3>
+    <p>Weet je zeker dat je wilt uitloggen?</p>
+
+    <div class="modal-actions">
+      <button class="btn cancel" onclick="closeLogout()">Annuleren</button>
+      <button class="btn danger" onclick="logout()">Uitloggen</button>
+    </div>
+  </div>
+</div>
+
+<div id="notifPanel" class="notifPanel">
+  <div class="notifHeader">
+    <h3>Meldingen</h3>
+    <span onclick="toggleNotifications()" class="close">✖</span>
+  </div>
+
+  <div class="notifList">
+    <div class="notifItem">🚨 Nieuwe melding <span>nu</span></div>
+  </div>
+</div>
+
 <div class="wrapper">
 
 <div class="identity">
@@ -329,6 +426,155 @@ button:disabled{
     document.getElementById("phone").value="";
     document.getElementById("desc").value="";
   }
+</script>
+    // 🔥 topbar
+<script>
+    // 🔥 MENU
+window.toggleMenu = function(force = null) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+
+  if (!sidebar || !overlay) return;
+
+  let open = sidebar.classList.contains("open");
+
+  if (force !== null) open = force;
+
+  sidebar.classList.toggle("open", open);
+  overlay.classList.toggle("active", open);
+};
+
+// 🔥 STATUS
+window.toggleStatus = function(e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("statusMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+window.setStatus = function(text, cls) {
+  const btn = document.getElementById("statusBtn");
+  const menu = document.getElementById("statusMenu");
+
+  if (!btn || !menu) return;
+
+  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
+  menu.style.display = "none";
+};
+
+// 🔥 USER MENU
+let sidebarOpen = false;
+
+/* ================= SIDEBAR ================= */
+window.toggleMenu = function(force = null) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+
+  if (!sidebar || !overlay) return;
+
+  sidebarOpen = force !== null ? force : !sidebarOpen;
+
+  sidebar.classList.toggle("open", sidebarOpen);
+  overlay.classList.toggle("active", sidebarOpen);
+};
+
+/* ================= STATUS ================= */
+window.toggleStatus = function(e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("statusMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+window.setStatus = function(text, cls) {
+  const btn = document.getElementById("statusBtn");
+  const menu = document.getElementById("statusMenu");
+
+  if (!btn || !menu) return;
+
+  btn.innerHTML = `<span class="dot ${cls}"></span> ${text} ▼`;
+  menu.style.display = "none";
+};
+
+/* ================= USER MENU ================= */
+window.toggleUserMenu = function(e) {
+  if (e) e.stopPropagation();
+
+  const menu = document.getElementById("userMenu");
+  if (!menu) return;
+
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
+
+/* ================= CLOCK ================= */
+function updateClock() {
+  const now = new Date();
+
+  const clock = document.getElementById("clock");
+  const date = document.getElementById("date");
+
+  if (clock) clock.textContent = now.toLocaleTimeString("nl-NL");
+  if (date) date.textContent = now.toLocaleDateString("nl-NL");
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ================= CLOSE MENUS ================= */
+document.addEventListener("click", () => {
+  const statusMenu = document.getElementById("statusMenu");
+  const userMenu = document.getElementById("userMenu");
+
+  if (statusMenu) statusMenu.style.display = "none";
+  if (userMenu) userMenu.style.display = "none";
+});
+
+/* ================= ESC ================= */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    toggleMenu(false);
+
+    const statusMenu = document.getElementById("statusMenu");
+    const userMenu = document.getElementById("userMenu");
+
+    if (statusMenu) statusMenu.style.display = "none";
+    if (userMenu) userMenu.style.display = "none";
+  }
+});
+
+/*=================Logout popup ==========*/
+window.openLogout = function() {
+  document.getElementById("logoutModal").classList.remove("hidden");
+};
+
+window.closeLogout = function() {
+  document.getElementById("logoutModal").classList.add("hidden");
+};
+
+window.logout = function() {
+  // hier jouw firebase logout of redirect
+  window.location.href = "/index.html";
+};
+
+/*===============Notifications===========*/
+window.toggleNotifications = function(e) {
+  if (e) e.stopPropagation();
+
+  const panel = document.getElementById("notifPanel");
+  if (!panel) return;
+
+  panel.classList.toggle("show");
+};
+
+/* klik buiten sluiten */
+document.addEventListener("click", () => {
+  const panel = document.getElementById("notifPanel");
+  if (panel) panel.classList.remove("show");
+});
 </script>
 
 </body>

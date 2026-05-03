@@ -255,11 +255,6 @@ body{
       <span>Meldkamer</span>
     </a>
 
-    <a class="nav-item" href="#">
-      <span class="icon">🚓</span>
-      <span>Eenheden</span>
-    </a>
-
     <a class="nav-item" href="/src/pages/panels/accountsettings.html">
       <span class="icon">⚙️</span>
       <span>Instellingen</span>
@@ -379,15 +374,12 @@ body{
     document.body.style.display = "block";
   });
   const SERVICES = {
-    politie:{label:"Politie", subLabel:'Wet', description:"Toegang tot meldingen, surveillance en interventies", color:'#0078ff', icon:'👮'},
-    ambulance:{label:"Ambulance", subLabel:'Medisch', description:"Medische meldingen en noodhulp", color:'#00ff78', icon:'🚑'},
-    brandweer:{label:'Brandweer', subLabel:'Nood', description:'HV en Branden', color:'#e53935', icon:'🔥'},
     burger:{label:"Burger", description:"Basis toegang tot systeem", color:'#9ca3af', icon:'🧑'},
     meldkamer:{label:"Meldkamer", description:"Toegang voor Meldkamer personeel", color:'#f59e0b', icon:'📟'},
     admin:{label:"Admin", description: "Alleen voor serverbeheer", color:'#8b5cf6', icon:'🛠️'}
   };
 
-  let userRoles = ["brandweer","politie","ambulance","burger","meldkamer","admin"];
+  let userRoles = ["burger","meldkamer","admin"];
   const roleGrid = document.getElementById('roleGrid');
   document.getElementById('roleCount').textContent = `Beschikbare diensten: ${userRoles.length}`;
 
@@ -553,6 +545,11 @@ window.logout = function() {
   // hier jouw firebase logout of redirect
   window.location.href = "/index.html";
 };
+
+/*=================settings==========*/
+window.settingsopen = function() {
+  window.location.href = "/src/pages/panels/accountsettings.html";
+}
 
 /*===============Notifications===========*/
 window.toggleNotifications = function(e) {
