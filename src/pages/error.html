@@ -1,28 +1,178 @@
 <!DOCTYPE html>
 <html lang="nl">
-    <style>
-        .container{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100%;
-            flex-direction: column;
-            font-family: 'Gill Sans', 'Gill';
-        }
-    </style>
-    <head>
-        <title>Error</title>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Oops!</h1>
-            <h3>404 - Page Not Found</h3>
-            <button> 
-                <a href="/index.html">
-                    Ga Terug naar het HoofdMenu
-                </a>
-            </button>
-        </div>
-    </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 - Pagina niet gevonden</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top, #1e293b, #0f172a);
+        color: white;
+        overflow: hidden;
+    }
+
+    .container {
+        text-align: center;
+        padding: 40px;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    .error-code {
+        font-size: 140px;
+        font-weight: 800;
+        letter-spacing: 5px;
+        color: #60a5fa;
+        position: relative;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* glitch effect */
+    .error-code::before,
+    .error-code::after {
+        content: "404";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .error-code::before {
+        color: #ff3b3b;
+        animation: glitch 2s infinite;
+        z-index: -1;
+    }
+
+    .error-code::after {
+        color: #00ffff;
+        animation: glitch 2s infinite reverse;
+        z-index: -2;
+    }
+
+    h2 {
+        font-size: 28px;
+        margin-top: 10px;
+        color: #e2e8f0;
+    }
+
+    p {
+        margin-top: 10px;
+        color: #94a3b8;
+    }
+
+    .buttons {
+        margin-top: 30px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    a {
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+    .home {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .home:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+    }
+
+    .back {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .back:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes glitch {
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-2px, -2px); }
+        60% { transform: translate(2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        100% { transform: translate(0); }
+    }
+
+    .stars {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .stars::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background-image: radial-gradient(white 1px, transparent 1px);
+        background-size: 50px 50px;
+        opacity: 0.05;
+        animation: moveStars 60s linear infinite;
+    }
+
+    .blauwe-link {
+    color: #636386; /* Dit is de standaard blauwe kleurcode */
+    text-decoration: underline; /* Optioneel: zorgt voor het streepje onder de link */
+    }
+
+    @keyframes moveStars {
+        from { transform: translateY(0); }
+        to { transform: translateY(-500px); }
+    }
+</style>
+</head>
+
+<body>
+<div class="stars"></div>
+
+<div class="container">
+    <div class="error-code">404</div>
+    <h2>Pagina niet gevonden</h2>
+    <p>De pagina die je zoekt bestaat niet of is verplaatst.</p>
+    <p>Bij fouten of vragen. dan kan je via hier met ons contact op nemen. <a href="https://discord.gg/ZrcVuZheqS">Discord</a></p>
+
+    <div class="buttons">
+        <a href="/index.html" class="home">🏠 Home</a>
+        <a href="javascript:history.back()" class="back">↩ Terug</a>
+    </div>
+</div>
+</body>
 </html>
