@@ -16,6 +16,7 @@ export default defineConfig({
         ambulancepanel: resolve(__dirname, 'src/pages/panels/ambulance.html'),
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
         accountsettings: resolve(__dirname, 'src/pages/panels/accountsettings.html'),
+        error: resolve(__dirname, 'src/pages/error.html'),
       }
     }
   }
