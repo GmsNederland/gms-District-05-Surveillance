@@ -16,10 +16,10 @@ export default defineConfig({
         wachtwoordvergeten: resolve(__dirname, 'src/pages/wachtwoordvergeten.html'),
         accountsettings: resolve(__dirname, 'src/pages/panels/accountsettings.html'),
         error: resolve(__dirname, 'src/pages/error.html'),
-        websitemain: reverse(__dirname, 'src/pages/websitemain.html'),
-        solliciteren: reverse(__dirname, 'src/pages/solliciteren.html'),
-        vacatures: reverse(__dirname, 'src/pages/vacatures.html'),
-        support: reverse(__dirname, 'src/pages/support.html'),
+        websitemain: resolve(__dirname, 'src/pages/websitemain.html'),
+        solliciteren: resolve(__dirname, 'src/pages/solliciteren.html'),
+        vacatures: resolve(__dirname, 'src/pages/vacatures.html'),
+        support: resolve(__dirname, 'src/pages/support.html'),
       }
     }
   }
