@@ -27,9 +27,9 @@
 </section>
 
 <!-- MODAL -->
-<div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+<div id="modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
 
-  <div class="bg-white/10 border border-white/10 backdrop-blur-2xl p-6 rounded-2xl w-full max-w-2xl shadow-2xl">
+  <div class="bg-white/10 border border-white/10 backdrop-blur-2xl p-6 rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
 
     <h2 id="modalTitle" class="text-3xl font-bold mb-2"></h2>
     <p id="modalDesc" class="text-gray-300 mb-4"></p>
@@ -37,8 +37,8 @@
     <h3 class="text-gray-200 font-semibold mb-2">Eisen</h3>
     <ul id="modalRequirements" class="list-disc pl-5 text-gray-400 mb-6"></ul>
 
-    <div class="flex gap-3">
-      <a href="/src/pages/solliciteren.html" class="bg-green-500 hover:bg-green-400 px-5 py-2 rounded-xl font-semibold transition">
+    <div class="flex flex-col sm:flex-row gap-3 sticky bottom-0 bg-transparent pt-4">
+      <a href="/src/pages/solliciteren.html" class="bg-green-500 hover:bg-green-400 px-5 py-2 rounded-xl font-semibold transition text-center">
         Solliciteer nu
       </a>
       <button onclick="closeModal()" class="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-xl transition">
