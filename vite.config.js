@@ -17,9 +17,9 @@ export default defineConfig({
         accountsettings: resolve(__dirname, 'src/pages/panels/accountsettings.html'),
         error: resolve(__dirname, 'src/pages/error.html'),
         websitemain: reverse(__dirname, 'src/pages/websitemain.html'),
-        solliciteren: reverse(__dirname, 'src/pages/solliciteren.html'),
-        vacatures: reverse(__dirname, 'src/pages/vacatures.html'),
-        support: reverse(__dirname, 'src/pages/support.html')
+        // solliciteren: reverse(__dirname, 'src/pages/solliciteren.html'),
+        // vacatures: reverse(__dirname, 'src/pages/vacatures.html'),
+        // support: reverse(__dirname, 'src/pages/support.html'),
       }
     }
   }
