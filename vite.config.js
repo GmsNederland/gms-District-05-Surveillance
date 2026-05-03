@@ -19,7 +19,7 @@ export default defineConfig({
         websitemain: reverse(__dirname, 'src/pages/websitemain.html'),
         solliciteren: reverse(__dirname, 'src/pages/solliciteren.html'),
         vacatures: reverse(__dirname, 'src/pages/vacatures.html'),
-        support: reverse(__dirname, 'src/pages/support.html'),
+        support: reverse(__dirname, 'src/pages/support.html')
       }
     }
   }
