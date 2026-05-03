@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regio 20 Surveillance - Control Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: radial-gradient(circle at top, #0a1020, #05070f);
+      overflow-x: hidden;
+    }
+
+    /* animated background glow */
+    .bg-glow {
+      position: fixed;
+      inset: -200px;
+      background: radial-gradient(circle at 20% 20%, rgba(59,130,246,0.15), transparent 40%),
+                  radial-gradient(circle at 80% 80%, rgba(34,211,238,0.10), transparent 40%);
+      animation: moveGlow 10s infinite alternate ease-in-out;
+      z-index: -1;
+    }
+
+    @keyframes moveGlow {
+      from { transform: translateY(0px) scale(1); }
+      to { transform: translateY(40px) scale(1.1); }
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s ease;
+    }
+
+    .fade-in.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn {
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-active {
+      color: white;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    img {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans">
+
+<div class="bg-glow"></div>
+
+<!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-50 glass">
+  <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
+    <h1 class="font-bold text-xl">Regio 20 Surveillance</h1>
+    <nav class="space-x-6 text-sm text-gray-300">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#info" class="nav-link">Info</a>
+      <a href="/src/pages/vacatures.html">Vacatures</a>
+      <a href="/support.html">Support</a>
+      <a href="/index.html">Aanmelden</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="home"
+  class="relative h-screen flex flex-col justify-center items-center text-center px-6 bg-cover bg-center bg-no-repeat"
+  style="background-image: url('https://media.discordapp.net/attachments/1331988980304187463/1489715868958068878/image.png?ex=69f7a904&is=69f65784&hm=cc99d4df252e70feafa9ac5a23e4e3790bd2068e6fb6329c88d2cd4918a119c9&=&format=webp&quality=lossless');">
+
+  <!-- donkere overlay -->
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <!-- content -->
+  <div class="relative z-10">
+    <h2 class="text-6xl font-extrabold mb-4 text-white">CONTROL HUB</h2>
+
+    <p class="text-gray-300 max-w-2xl text-lg">
+      Realistische Nederlandse surveillance operaties in een next-gen Roblox ervaring.
+    </p>
+
+    <div class="mt-8 flex gap-4 justify-center">
+      <a href="/aanmelden.html" class="px-6 py-3 bg-green-600 rounded-xl btn">Solliciteren Nu</a>
+      <a href="#info" class="px-6 py-3 bg-blue-600 rounded-xl btn">Meer Info</a>
+    </div>
+  </div>
+</section>
+
+<!-- INFO -->
+<section id="info" class="py-24 max-w-6xl mx-auto px-6">
+  <h3 class="text-3xl font-bold text-center mb-12 fade-in">Wat wij de beiden hebben</h3>
+
+  <div class="grid md:grid-cols-3 gap-6">
+
+    <div class="fade-in glass p-6 rounded-2xl">
+      <h4 class="text-xl mb-2">📡 Live Surveillance</h4>
+      <p class="text-gray-400">Realtime monitoring van alle zones en verdachte activiteiten.</p>
+    </div>
+
+    <div class="fade-in glass p-6 rounded-2xl">
+      <h4 class="text-xl mb-2">🛰 Team Coördinatie</h4>
+      <p class="text-gray-400">Strategische samenwerking tussen politie en hulpdiensten.</p>
+    </div>
+
+    <div class="fade-in glass p-6 rounded-2xl">
+      <h4 class="text-xl mb-2">🔐 Secure Network</h4>
+      <p class="text-gray-400">Versleutelde communicatie en beveiligde datastromen.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- DUTCH SERVICES -->
+<section id="diensten" class="py-24">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h3 class="text-3xl font-bold mb-10 fade-in">Nederlandse Hulpdiensten</h3>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div class="fade-in glass p-4">
+        <img src="https://source.unsplash.com/800x500/?police,car" />
+        <p class="mt-2">Politie Eenheid NL</p>
+      </div>
+
+      <div class="fade-in glass p-4">
+        <img src="https://source.unsplash.com/800x500/?ambulance,emergency" />
+        <p class="mt-2">Ambulance Dienst</p>
+      </div>
+
+      <div class="fade-in glass p-4">
+        <img src="https://source.unsplash.com/800x500/?firefighters,firetruck" />
+        <p class="mt-2">Brandweer Operaties</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-10 glass mt-10">
+  <div class="text-center text-gray-400">
+    <p>© 2026 Surveillance NL - Control Hub</p>
+    <p>Discord • Support • Privacy Policy</p>
+  </div>
+</footer>
+
+<script>
+  // fade in
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('show');
+    });
+  });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // navbar active state
+  const links = document.querySelectorAll('.nav-link');
+  const sections = ['home','info','diensten'].map(id => document.getElementById(id));
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (sec && window.scrollY >= sec.offsetTop - 200) current = sec.id;
+    });
+
+    links.forEach(link => {
+      link.classList.remove('nav-active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('nav-active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

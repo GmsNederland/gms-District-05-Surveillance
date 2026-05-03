@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support - CONTROL HUB</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+
+<!-- BACKGROUND -->
+<div class="fixed inset-0 bg-gradient-to-b from-black via-gray-950 to-black -z-20"></div>
+<div class="fixed top-[-250px] left-1/2 -translate-x-1/2 w-[850px] h-[850px] bg-blue-500/10 blur-[160px] rounded-full -z-10"></div>
+<div class="fixed bottom-[-200px] right-[-200px] w-[600px] h-[600px] bg-cyan-500/10 blur-[140px] rounded-full -z-10"></div>
+
+<!-- HERO -->
+<section class="relative h-60 flex items-center justify-center bg-cover bg-center" style="background-image:url('/src/codes/achtergrond.png')">
+  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="relative z-10 text-center">
+    <h1 class="text-5xl font-extrabold tracking-[0.35em]">SUPPORT</h1>
+    <p class="text-gray-400 mt-2 text-sm tracking-widest">Regio 20 Surveillance DESK</p>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="max-w-5xl mx-auto p-6">
+
+  <form id="supportForm" class="space-y-8 bg-white/5 border border-white/10 backdrop-blur-2xl p-10 rounded-[30px] shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+
+    <!-- PROGRESS -->
+    <div class="flex justify-center gap-2">
+      <div id="dot1" class="w-2.5 h-2.5 bg-blue-400 rounded-full"></div>
+      <div id="dot2" class="w-2.5 h-2.5 bg-gray-600 rounded-full"></div>
+      <div id="dot3" class="w-2.5 h-2.5 bg-gray-600 rounded-full"></div>
+    </div>
+
+    <!-- TITLE -->
+    <div class="text-center">
+      <h2 class="text-3xl font-bold">Support Ticket</h2>
+      <p class="text-gray-400 text-sm mt-2">Wij helpen je zo snel mogelijk verder</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div id="step1" class="space-y-5">
+      <div class="floating">
+        <select name="type" required>
+          <option value=""></option>
+          <option>Algemene vraag</option>
+          <option>Bug / probleem</option>
+          <option>Account probleem</option>
+          <option>Sollicitatie hulp</option>
+          <option>Bezwaar | Technische ondersteuning</option>
+          <option>Overig</option>
+        </select>
+        <label>Waar gaat je vraag over?</label>
+      </div>
+
+      <button type="button" onclick="nextStep()" class="btn">Volgende</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" class="hidden space-y-5">
+
+      <div class="floating">
+        <input name="discord" required />
+        <label>Discord username (verplicht)</label>
+      </div>
+
+      <div class="floating">
+        <input name="roblox" />
+        <label>Roblox naam (optioneel)</label>
+      </div>
+
+      <button type="button" onclick="nextStep()" class="btn">Volgende</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step3" class="hidden space-y-5">
+
+      <div class="floating">
+        <textarea name="bericht" required></textarea>
+        <label>Beschrijf je probleem</label>
+      </div>
+
+      <input type="file" id="file" class="file" accept="image/*" />
+
+      <label class="flex items-center gap-2 text-sm text-gray-300">
+        <input type="checkbox" required />
+        Ik geef toestemming voor contact via Discord DM
+      </label>
+
+      <button type="submit" class="submit">Versturen</button>
+    </div>
+
+  </form>
+</section>
+
+<!-- POPUP -->
+<div id="popup" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center">
+  <div class="bg-gray-900 border border-white/10 p-8 rounded-2xl text-center max-w-md">
+    <h2 class="text-2xl font-bold text-green-400">Verstuurd!</h2>
+    <p class="text-gray-400 mt-2">We nemen zo snel mogelijk contact met je op.</p>
+    <button onclick="closePopup()" class="mt-5 bg-green-500 px-5 py-2 rounded-xl">Sluiten</button>
+  </div>
+</div>
+
+<style>
+.floating{position:relative;}
+.floating input,
+.floating textarea,
+.floating select{
+  width:100%;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  padding:16px;
+  border-radius:14px;
+  outline:none;
+  transition:0.3s;
+  color:white;
+  appearance:none;
+}
+.floating select option{
+  background:#0a0a0a;
+  color:white;
+}
+.floating label{
+  position:absolute;
+  left:14px;
+  top:14px;
+  color:rgba(255,255,255,0.5);
+  font-size:14px;
+  pointer-events:none;
+  transition:0.2s;
+}
+.floating input:focus,
+.floating textarea:focus,
+.floating select:focus{
+  border-color:#38bdf8;
+}
+.floating input:focus + label,
+.floating textarea:focus + label,
+.floating select:focus + label,
+.floating input:not(:placeholder-shown) + label,
+.floating textarea:not(:placeholder-shown) + label{
+  top:-10px;
+  font-size:12px;
+  color:#38bdf8;
+  background:black;
+  padding:0 6px;
+}
+.btn{
+  width:100%;
+  background:#3b82f6;
+  padding:14px;
+  border-radius:14px;
+  font-weight:bold;
+  transition:0.3s;
+}
+.btn:hover{transform:scale(1.02);}
+.submit{
+  width:100%;
+  background:linear-gradient(to right,#3b82f6,#22d3ee);
+  padding:16px;
+  border-radius:16px;
+  font-weight:bold;
+}
+.file{
+  width:100%;
+  padding:10px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  color:white;
+}
+</style>
+
+<script>
+const form=document.getElementById('supportForm');
+const popup=document.getElementById('popup');
+const WEBHOOK_URL="https://discord.com/api/webhooks/1500337335097757897/1DXatat0EFoExRlx2Ct-kqQ7PKl6KwX4qHY2MIA_-AJftVpjRjlWreQ47xREMDxF1SP4";
+let step=1;
+
+function nextStep(){
+  document.getElementById('step'+step).classList.add('hidden');
+  step++;
+  document.getElementById('step'+step).classList.remove('hidden');
+
+  if(step===2){document.getElementById('dot1').classList.replace('bg-blue-400','bg-green-400');}
+  if(step===3){document.getElementById('dot2').classList.replace('bg-gray-600','bg-blue-400');}
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const d = new FormData(form);
+  const file = document.getElementById('file').files[0];
+
+  const payload = {
+    username: "CONTROL HUB Support",
+    embeds: [{
+      title: `🎫 Support - ${d.get('discord')}`,
+      color: 0x38bdf8,
+      fields: [
+        { name: "Type", value: d.get('type') || "-" },
+        { name: "Discord", value: d.get('discord') },
+        { name: "Roblox", value: d.get('roblox') || "Geen" },
+        { name: "Vraag", value: d.get('bericht') }
+      ],
+        image: file ? { url: "attachment://" + file.name } : undefined,
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  const formData = new FormData();
+  formData.append("payload_json", JSON.stringify(payload));
+
+  if (file) {
+    formData.append("file", file);
+  }
+
+  await fetch(WEBHOOK_URL, {
+    method: "POST",
+    body: formData
+  });
+
+  popup.classList.remove('hidden');
+  form.reset();
+  step = 1;
+});
+
+function closePopup(){popup.classList.add('hidden');}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solliciteren - CONTROL HUB</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+
+<!-- BACKGROUND -->
+<div class="fixed inset-0 bg-gradient-to-b from-black via-gray-950 to-black -z-20"></div>
+<div class="fixed top-[-250px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-green-500/10 blur-[140px] rounded-full -z-10"></div>
+<div class="fixed bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-blue-500/10 blur-[140px] rounded-full -z-10"></div>
+
+<!-- HERO -->
+<section class="relative h-60 flex items-center justify-center bg-cover bg-center" style="background-image:url('/src/codes/achtergrond.png')">
+  <div class="absolute inset-0 bg-black/75"></div>
+  <div class="relative z-10 text-center">
+    <h1 class="text-5xl font-extrabold tracking-[0.35em]">SOLLICITEREN</h1>
+    <p class="text-gray-400 mt-2 text-sm tracking-widest">CONTROL HUB RECRUITMENT</p>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="max-w-5xl mx-auto p-6">
+
+  <form class="space-y-10 bg-white/5 border border-white/10 backdrop-blur-2xl p-10 rounded-[28px] shadow-2xl">
+
+    <!-- HEADER -->
+    <div class="text-center">
+      <h2 class="text-3xl font-bold">Sollicitatie Formulier</h2>
+      <p class="text-gray-400 text-sm mt-2">Vul alles zorgvuldig en eerlijk in</p>
+    </div>
+
+    <!-- PERSONAL -->
+    <div class="space-y-6">
+      <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Persoonlijke informatie</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label class="text-sm text-gray-400">Volledige naam</label>
+          <input name="naam" type="text" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. Jan Jansen" required>
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-400">Leeftijd</label>
+          <input name="leeftijd" type="number" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. 18" required>
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-400">Roblox naam</label>
+          <input name="roblox" type="text" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Player123" required>
+        </div>
+
+        <div>
+          <label class="text-sm text-gray-400">Discord naam</label>
+          <input name="discord" type="text" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="user#1234" required>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="space-y-3">
+      <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Ervaring</h3>
+      <label class="text-sm text-gray-400">Waar heb je ervaring opgedaan?</label>
+      <textarea name="ervaring" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. Discord moderator, Roblox roleplay..." required></textarea>
+    </div>
+
+    <!-- AVAILABILITY -->
+    <div class="space-y-3">
+      <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Beschikbaarheid</h3>
+      <label class="text-sm text-gray-400">Welke dagen ben je beschikbaar?</label>
+      <textarea name="beschikbaarheid" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Maandag t/m vrijdag / weekend" required></textarea>
+    </div>
+
+    <!-- MOTIVATION -->
+    <div class="space-y-4">
+      <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Motivatie</h3>
+
+      <label class="text-sm text-gray-400">Waarom moeten wij jou aannemen?</label>
+      <textarea name="waarom_jij" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" required></textarea>
+
+      <label class="text-sm text-gray-400">Waarom wil je bij ons werken?</label>
+      <textarea name="waarom_ons" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" required></textarea>
+    </div>
+
+    <!-- EXTRA -->
+    <div class="space-y-3">
+      <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Extra informatie</h3>
+      <label class="text-sm text-gray-400">Wat maakt jou uniek?</label>
+      <textarea name="extra" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition"></textarea>
+    </div>
+
+    <!-- BUTTON -->
+    <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-400 hover:scale-[1.02] py-4 rounded-2xl font-bold text-lg transition shadow-lg hover:shadow-green-500/30">
+      Sollicitatie versturen
+    </button>
+
+  </form>
+
+</section>
+
+<script>
+const form = document.querySelector("form");
+
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1500333199145046147/5pKQnDCCAt8SeWpPmAzMvidL_IObZSgFfvB_mf8M1AH5kTZADBQ1Aj3p-QffSoajH84F";
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = new FormData(form);
+
+  const naam = data.get("naam");
+  const leeftijd = data.get("leeftijd");
+  const roblox = data.get("roblox");
+  const discord = data.get("discord");
+
+  const ervaring = data.get("ervaring");
+  const beschikbaarheid = data.get("beschikbaarheid");
+  const waarom_jij = data.get("waarom_jij");
+  const waarom_ons = data.get("waarom_ons");
+  const extra = data.get("extra");
+
+  const embed = {
+    username: "CONTROL HUB Recruitment",
+    embeds: [
+      {
+        title: `🆕 Nieuwe Sollicitatie - ${naam} (${discord})`,
+        color: 0x22c55e,
+        fields: [
+          {
+            name: "👤 Persoonlijke info",
+            value:
+              `Naam: ${naam}\nLeeftijd: ${leeftijd}\nRoblox: ${roblox}\nDiscord: ${discord}`,
+            inline: false
+          },
+          {
+            name: "💼 Ervaring",
+            value: ervaring || "Geen ingevuld",
+            inline: false
+          },
+          {
+            name: "🕒 Beschikbaarheid",
+            value: beschikbaarheid || "Geen ingevuld",
+            inline: false
+          },
+          {
+            name: "❓ Waarom wij jou?",
+            value: waarom_jij || "Geen ingevuld",
+            inline: false
+          },
+          {
+            name: "🏢 Waarom ons?",
+            value: waarom_ons || "Geen ingevuld",
+            inline: false
+          },
+          {
+            name: "⭐ Extra info",
+            value: extra || "Geen ingevuld",
+            inline: false
+          }
+        ],
+        footer: {
+          text: "Solliciteren Regio 20 Surveillance System"
+        },
+        timestamp: new Date().toISOString()
+      }
+    ]
+  };
+
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(embed)
+    });
+
+    alert("Sollicitatie succesvol verstuurd!");
+    form.reset();
+
+  } catch (err) {
+    console.error(err);
+    alert("Er ging iets mis bij het versturen.");
+  }
+});
+</script>
+
+</body>
