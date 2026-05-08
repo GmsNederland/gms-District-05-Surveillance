@@ -218,7 +218,7 @@
     // ESC toets = sluiten
     document.addEventListener("keydown", function(event) {
         if (event.key === "Escape") {
-            if (modal.style.display === "none") {
+            if (modal.style.display === "block") {
                 closePopup();
             }
             else {
