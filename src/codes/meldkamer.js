@@ -24,19 +24,7 @@
 
     document.body.style.display = "block";
   });
-  // firebase.auth().onAuthStateChanged((user) => {
-  //   if (user) {
-  //     // ✔ gebruiker is ingelogd
-  //     console.log("Ingelogd als:", user.uid);
 
-  //     // hier kun je je meldkamer laden
-  //     loadMeldkamer(user);
-
-  //   } else {
-  //     // ❌ niet ingelogd → terug naar login
-  //     window.location.href = "/src/index.html";
-  //   }
-  // });
   const callsRef = db.ref("calls");
 
   // Clock
@@ -304,21 +292,6 @@
     renderIncidents(calls);
   });
 
-//   // test geluiden
-// audioManager.playIncomingCall();
-
-// setTimeout(() => {
-//   audioManager.playDispatchConfirm();
-// }, 1000);
-
-// setTimeout(() => {
-//   audioManager.playAlertSiren();
-// }, 2000);
-
-// setTimeout(() => {
-//   audioManager.playIncidentClosed();
-// }, 3500);
-
   // === PRIORITY COLORS ===
   window.PRIORITY_COLORS = {
     1: { bg: 'bg-red-600', text: 'text-red-400', border: 'border-red-600', label: 'PRIO 1', dot: 'bg-red-500' },
@@ -532,31 +505,31 @@
 
   // let calls = JSON.parse(localStorage.getItem("calls") || "[]");
   //  ===112 meldingen===
-function renderCalls(calls) {
-  callsList.innerHTML = "Nog geen Nieuwe Meldingen";
+  function renderCalls(calls) {
+    callsList.innerHTML = "Nog geen Nieuwe Meldingen";
 
-  const waiting = calls.filter(c => c.status === "waiting");
+    const waiting = calls.filter(c => c.status === "waiting");
 
-  waiting.forEach(call => {
-    const div = document.createElement("div");
-    div.className = "call-card";
+    waiting.forEach(call => {
+      const div = document.createElement("div");
+      div.className = "call-card";
 
-    div.innerHTML = `
-      <div>
-        <b>${call.caller_id}</b>
-        <span>PRIO ${call.priority}</span>
-      </div>
-      <div>${call.caller_location}</div>
-    `;
+      div.innerHTML = `
+        <div>
+          <b>${call.caller_id}</b>
+          <span>PRIO ${call.priority}</span>
+        </div>
+        <div>${call.caller_location}</div>
+      `;
 
-    const btn = document.createElement("button");
-    btn.innerText = "Aannemen";
-    btn.onclick = () => onAcceptCall(call);
+      const btn = document.createElement("button");
+      btn.innerText = "Aannemen";
+      btn.onclick = () => onAcceptCall(call);
 
-    div.appendChild(btn);
-    callsList.appendChild(div);
-  });
-}
+      div.appendChild(btn);
+      callsList.appendChild(div);
+    });
+  }
   
   // const calls = [
   //   { id: 2, caller_id: "Piet", caller_location: "Rotterdam", priority: 2, status: "waiting", created_date: "2026-03-23T12:05:00Z" },
@@ -927,6 +900,7 @@ window.systems = [
   { id: 'anpr', name: 'ANPR', type: 'Verkeer', status: 'Actief' },
   { id: 'luchtalarm', name: 'Luchtalarm', type: 'Melding', status: 'Actief' },
   { id: 'p20000', name: 'P2000', type: 'Melding', status: 'Standby' },
+  { id: 'C2000', name: 'C2000', type: 'Melding', status: 'Actief' },
 ];
 
 // 🔹 2️⃣ Tab-switch functionaliteit
