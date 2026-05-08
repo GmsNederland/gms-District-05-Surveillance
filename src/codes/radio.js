@@ -1,4 +1,4 @@
-    const API_URL = "https://surviveapi-production.up.railway.app";
+    const API_URL = "https://apiservi-uba4.onrender.com";
 
     let selectedUser = null;
     let selectedChannel = null;
