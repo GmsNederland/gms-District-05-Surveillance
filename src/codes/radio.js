@@ -200,7 +200,7 @@
 
         // Open popup
     function openPopup() {
-    modal.style.display = "block";
+    modal.style.display = "flex";
     }
 
     // Close popup
@@ -218,7 +218,7 @@
     // ESC toets = sluiten
     document.addEventListener("keydown", function(event) {
         if (event.key === "Escape") {
-            if (modal.style.display === "block") {
+            if (modal.style.display === "flex") {
                 closePopup();
             }
             else {
