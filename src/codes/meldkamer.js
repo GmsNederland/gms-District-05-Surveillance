@@ -900,7 +900,6 @@ window.systems = [
   { id: 'anpr', name: 'ANPR', type: 'Verkeer', status: 'Actief' },
   { id: 'luchtalarm', name: 'Luchtalarm', type: 'Melding', status: 'Actief' },
   { id: 'p20000', name: 'P2000', type: 'Melding', status: 'Standby' },
-  { id: 'C2000', name: 'C2000', type: 'Melding', status: 'Actief' },
 ];
 
 // 🔹 2️⃣ Tab-switch functionaliteit
