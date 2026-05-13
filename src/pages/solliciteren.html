@@ -20,7 +20,7 @@
   <div class="absolute inset-0 bg-black/75"></div>
   <div class="relative z-10 text-center">
     <h1 class="text-5xl font-extrabold tracking-[0.35em]">SOLLICITEREN</h1>
-    <p class="text-gray-400 mt-2 text-sm tracking-widest">CONTROL HUB RECRUITMENT</p>
+    <p class="text-gray-400 mt-2 text-sm tracking-widest">Regio 20 Surveillance</p>
   </div>
 </section>
 
@@ -42,7 +42,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <div>
-          <label class="text-sm text-gray-400">Volledige naam</label>
+          <label class="text-sm text-gray-400">Volledige naam en eerste leter van je Achternaam</label>
           <input name="naam" type="text" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. Jan Jansen" required>
         </div>
 
@@ -83,17 +83,17 @@
       <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Motivatie</h3>
 
       <label class="text-sm text-gray-400">Waarom moeten wij jou aannemen?</label>
-      <textarea name="waarom_jij" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" required></textarea>
+      <textarea name="waarom_jij" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. om dat ik goed mijn Rol en Function kan doen" required></textarea>
 
       <label class="text-sm text-gray-400">Waarom wil je bij ons werken?</label>
-      <textarea name="waarom_ons" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" required></textarea>
+      <textarea name="waarom_ons" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. om dat ik het team en de game leuk vind." required></textarea>
     </div>
 
     <!-- EXTRA -->
     <div class="space-y-3">
       <h3 class="text-green-400 font-semibold text-lg border-b border-white/10 pb-2">Extra informatie</h3>
       <label class="text-sm text-gray-400">Wat maakt jou uniek?</label>
-      <textarea name="extra" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition"></textarea>
+      <textarea name="extra" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 h-28 outline-none focus:border-green-400 focus:bg-white/15 transition" placeholder="Bijv. ik kan goed mensen helpen." required></textarea>
     </div>
 
     <!-- BUTTON -->
@@ -182,7 +182,7 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(embed)
     });
 
-    alert("Sollicitatie succesvol verstuurd!");
+    alert("Sollicitatie succesvol verstuurd! \n\n we zullen zo snel mogelijk contact met je opnemen.");
     form.reset();
 
   } catch (err) {
