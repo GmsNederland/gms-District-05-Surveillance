@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="nl" class="h-full bg-gray-900 text-white">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>District 05 | Login</title>
-  <link rel="icon" type="image/x-icon" href="/src/icone/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Houten Surveillance | Login</title>
+  <link rel="icon" type="image/x-icon" href="/src/icone/houtenlogo.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     body {
@@ -19,9 +20,17 @@
     }
 
     @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
     .glass {
@@ -46,11 +55,13 @@
   <div class="glass px-12 py-10 max-w-md w-full border border-blue-900">
 
     <div class="text-center mb-8">
-      <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-full mx-auto mb-4 flex items-center justify-center">
-        <span class="text-2xl font-bold">D05</span>
+      <div
+        class="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-full mx-auto mb-4 flex items-center justify-center">
+         <img src="/src/icone/houtenlogo.png" alt="Icon" width="100"
+            style="display:inline-block;"></span>
       </div>
 
-      <h1 class="text-2xl font-bold">District 05</h1>
+      <h1 class="text-2xl font-bold">Houten Surveillance</h1>
       <p class="text-gray-400 text-sm">Meldkamer | GMS Systeem</p>
     </div>
 
@@ -86,7 +97,7 @@
       </button>
 
       <a id="wachtwoordvergetn" href="/src/pages/wachtwoordvergeten.html">
-      Wachtwoord vergeten?
+        Wachtwoord vergeten?
       </a>
 
       <p id="error" class="text-red-400 text-sm"></p>
@@ -94,94 +105,95 @@
       <a id="mainpagina" href="/src/pages/websitemain.html">De Main Website</a>
     </form>
 
-    <div id="successPopup" class="hidden fixed top-5 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg">
+    <div id="successPopup"
+      class="hidden fixed top-5 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg">
       ✅ Succesvol ingelogd!
     </div>
 
     <p class="text-center text-gray-500 text-xs mt-6">
-      Officieel systeem voor Nederlandse RP-servers
+      Officieel systeem voor Houten Surveillance
     </p>
 
   </div>
 
   <!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
-  authDomain: "district05surveillance-e5183.firebaseapp.com",
-  databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "district05surveillance-e5183",
-  storageBucket: "district05surveillance-e5183.firebasestorage.app",
-  messagingSenderId: "492638820842",
-  appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRZCtv2Gr145LSlZw1QHIIkKXSHZoUk-U",
+      authDomain: "district05surveillance-e5183.firebaseapp.com",
+      databaseURL: "https://district05surveillance-e5183-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "district05surveillance-e5183",
+      storageBucket: "district05surveillance-e5183.firebasestorage.app",
+      messagingSenderId: "492638820842",
+      appId: "1:492638820842:web:a3ff331099f9f4e88efa93"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-const form = document.getElementById("loginForm");
-const error = document.getElementById("error");
-const popup = document.getElementById("successPopup");
+    const form = document.getElementById("loginForm");
+    const error = document.getElementById("error");
+    const popup = document.getElementById("successPopup");
 
-/* 🔐 DISCORD LOG */
-async function logToDiscord(message) {
-  try {
-    const webhookURL = "https://discord.com/api/webhooks/1486383318520955081/R-7TzBEw_izKBIiRnfCTH-FRdzqNvIYqJ-chIQ24Aae7_QJ3r8lIf5gM6NxnKcqmDIgQ";
+    /* 🔐 DISCORD LOG */
+    async function logToDiscord(message) {
+      try {
+        const webhookURL = "https://discord.com/api/webhooks/1486383318520955081/R-7TzBEw_izKBIiRnfCTH-FRdzqNvIYqJ-chIQ24Aae7_QJ3r8lIf5gM6NxnKcqmDIgQ";
 
-    await fetch(webhookURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        embeds: [{
-          title: "🔐 Login Event",
-          description: message,
-          color: 3447003,
-          timestamp: new Date().toISOString()
-        }]
-      })
-    });
-  } catch (e) {
-    console.warn("Discord logging gefaald");
-  }
-}
+        await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            embeds: [{
+              title: "🔐 Login Event",
+              description: message,
+              color: 3447003,
+              timestamp: new Date().toISOString()
+            }]
+          })
+        });
+      } catch (e) {
+        console.warn("Discord logging gefaald");
+      }
+    }
 
-/* 🚀 LOGIN */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    /* 🚀 LOGIN */
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value.trim();
 
-  error.textContent = "";
-  popup.classList.add("hidden");
+      error.textContent = "";
+      popup.classList.add("hidden");
 
-  try {
-    // 🔐 LOGIN
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCred.user;
+      try {
+        // 🔐 LOGIN
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCred.user;
 
-    const uid = user.uid;
+        const uid = user.uid;
 
-    // 👤 SAVE USER DATA
-    await set(ref(db, "users/" + uid), {
-      username: username || "unknown",
-      email: user.email,
-      rol: "user",
-      lastLogin: Date.now()
-    });
+        // 👤 SAVE USER DATA
+        await set(ref(db, "users/" + uid), {
+          username: username || "unknown",
+          email: user.email,
+          rol: "user",
+          lastLogin: Date.now()
+        });
 
-    // 💾 SESSION (voor snelle frontend checks)
-    sessionStorage.setItem("uid", uid);
-    sessionStorage.setItem("username", username);
+        // 💾 SESSION (voor snelle frontend checks)
+        sessionStorage.setItem("uid", uid);
+        sessionStorage.setItem("username", username);
 
-    // 📡 DISCORD LOG SUCCESS
-    await logToDiscord(`
+        // 📡 DISCORD LOG SUCCESS
+        await logToDiscord(`
 ✅ LOGIN SUCCES
 👤 Username: ${username}
 📧 Email: ${email}
@@ -189,29 +201,30 @@ form.addEventListener("submit", async (e) => {
 🕒 Tijd: ${new Date().toLocaleString()}
     `);
 
-    // 🎉 UI FEEDBACK
-    popup.classList.remove("hidden");
+        // 🎉 UI FEEDBACK
+        popup.classList.remove("hidden");
 
-    // 🚀 REDIRECT (veiliger dan href)
-    setTimeout(() => {
-      window.location.replace("/src/pages/rolenselect.html");
-    }, 900);
+        // 🚀 REDIRECT (veiliger dan href)
+        setTimeout(() => {
+          window.location.replace("/src/pages/rolenselect.html");
+        }, 900);
 
-  } catch (err) {
+      } catch (err) {
 
-    console.error(err);
+        console.error(err);
 
-    error.textContent = "❌ Login mislukt: " + err.message;
+        error.textContent = "❌ Login mislukt: " + err.message;
 
-    await logToDiscord(`
+        await logToDiscord(`
 ❌ LOGIN MISLUKT
 📧 Email: ${email}
 ⚠️ Error: ${err.message}
 🕒 Tijd: ${new Date().toLocaleString()}
     `);
-  }
-});
-</script>
+      }
+    });
+  </script>
 
 </body>
+
 </html>
